@@ -1,0 +1,795 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Hero;
+use App\Models\Layanan;
+use App\Models\Berita;
+use App\Models\Sejarah;
+use App\Models\Sekila;
+use App\Models\StrukturOrganisasi;
+use App\Models\Kontak;
+use App\Models\Event;
+use App\Models\Artikel;
+use App\Models\Gallery;
+use App\Models\Kemitraan;
+use App\Models\KetuaUmum;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+
+class AdminController extends Controller
+{
+    public function index()
+    {
+        $heroes = Hero::all();
+        $layanans = Layanan::orderBy('order')->get();
+        $beritas = Berita::orderBy('created_at', 'desc')->paginate(10);
+        $sejarah = Sejarah::first();
+        $sekilas = Sekila::all();
+        $strukturs = StrukturOrganisasi::orderBy('order')->get();
+        $kontaks = Kontak::all();
+        $events = Event::all();
+        $artikels = Artikel::all();
+        $galleries = Gallery::orderBy('order')->get();
+        $kemitraans = Kemitraan::orderBy('order')->get();
+        $ketuaUmums = KetuaUmum::orderBy('order')->get();
+        $users = User::all();
+
+        return view('admin.index', compact(
+            'heroes', 'layanans', 'beritas', 'sejarah', 'sekilas',
+            'strukturs', 'kontaks', 'events', 'artikels', 'galleries', 'kemitraans', 'ketuaUmums', 'users'
+        ));
+    }
+
+    private $modelMap = [
+        'heroes' => \App\Models\Hero::class,
+        'layanans' => \App\Models\Layanan::class,
+        'beritas' => \App\Models\Berita::class,
+        'sejarahs' => \App\Models\Sejarah::class,
+        'sekilas' => \App\Models\Sekila::class,
+        'strukturs' => \App\Models\StrukturOrganisasi::class,
+        'kontaks' => \App\Models\Kontak::class,
+        'events' => \App\Models\Event::class,
+        'artikels' => \App\Models\Artikel::class,
+        'galleries' => \App\Models\Gallery::class,
+        'kemitraans' => \App\Models\Kemitraan::class,
+        'ketuaUmums' => \App\Models\KetuaUmum::class,
+        'users' => \App\Models\User::class,
+    ];
+
+    private function ajaxResponse(Request $request, $message, $route = 'admin.index')
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => $message]);
+        }
+        return redirect()->route($route)->with('success', $message);
+    }
+
+    public function getItem($type, $id)
+    {
+        if (!isset($this->modelMap[$type])) {
+            return response()->json(['error' => 'Invalid type'], 404);
+        }
+
+        $item = $this->modelMap[$type]::findOrFail($id);
+        return response()->json($item);
+    }
+
+    // Hero methods
+    public function createHero()
+    {
+        return view('admin.heroes.create');
+    }
+
+    public function storeHero(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'subtitle' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'button_text' => 'nullable|string|max:255',
+            'button_link' => 'nullable|string|max:255',
+            'is_active' => 'boolean',
+        ]);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/heroes'), $imageName);
+            $validated['image'] = asset('uploads/heroes/' . $imageName);
+        }
+
+        Hero::create($validated);
+
+        return $this->ajaxResponse($request, 'Hero berhasil ditambahkan.');
+    }
+
+    public function editHero($id)
+    {
+        $hero = Hero::findOrFail($id);
+        return view('admin.heroes.edit', compact('hero'));
+    }
+
+    public function updateHero(Request $request, $id)
+    {
+        $hero = Hero::findOrFail($id);
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'subtitle' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'button_text' => 'nullable|string|max:255',
+            'button_link' => 'nullable|string|max:255',
+            'is_active' => 'boolean',
+        ]);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/heroes'), $imageName);
+            $validated['image'] = asset('uploads/heroes/' . $imageName);
+        }
+
+        $hero->update($validated);
+
+        return $this->ajaxResponse($request, 'Hero berhasil diperbarui.');
+    }
+
+    // Layanan methods
+    public function createLayanan()
+    {
+        return view('admin.layanans.create');
+    }
+
+    public function storeLayanan(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'icon' => 'required|string',
+            'image' => 'nullable|string',
+            'link' => 'nullable|string',
+            'order' => 'integer',
+            'is_active' => 'boolean',
+        ]);
+
+        Layanan::create($validated);
+
+        return $this->ajaxResponse($request, 'Layanan berhasil ditambahkan.');
+    }
+
+    public function editLayanan($id)
+    {
+        $layanan = Layanan::findOrFail($id);
+        return view('admin.layanans.edit', compact('layanan'));
+    }
+
+    public function updateLayanan(Request $request, $id)
+    {
+        $layanan = Layanan::findOrFail($id);
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'icon' => 'required|string',
+            'image' => 'nullable|string',
+            'link' => 'nullable|string',
+            'order' => 'integer',
+            'is_active' => 'boolean',
+        ]);
+
+        $layanan->update($validated);
+
+        return $this->ajaxResponse($request, 'Layanan berhasil diperbarui.');
+    }
+
+    // Berita methods
+    public function createBerita()
+    {
+        return view('admin.beritas.create');
+    }
+
+    public function storeBerita(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_active' => 'boolean',
+        ]);
+
+        // Auto-generate excerpt from content (strip HTML and limit to 150 chars)
+        if (!empty($validated['content'])) {
+            $plainText = strip_tags($validated['content']);
+            $validated['excerpt'] = substr($plainText, 0, 150) . (strlen($plainText) > 150 ? '...' : '');
+        } else {
+            $validated['excerpt'] = '';
+        }
+
+        // Set author from authenticated user
+        $validated['author'] = auth()->user()->name ?? 'Admin';
+
+        // Handle image upload (same pattern as Ketua Umum / Hero)
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/beritas'), $imageName);
+            $validated['image'] = asset('uploads/beritas/' . $imageName);
+        } else {
+            $validated['image'] = null;
+        }
+
+        $validated['published_at'] = now();
+        $validated['is_active'] = $request->boolean('is_active', true);
+
+        Berita::create($validated);
+
+        return $this->ajaxResponse($request, 'Berita berhasil ditambahkan.');
+    }
+
+    public function editBerita($id)
+    {
+        $berita = Berita::findOrFail($id);
+        return view('admin.beritas.edit', compact('berita'));
+    }
+
+    public function updateBerita(Request $request, $id)
+    {
+        $berita = Berita::findOrFail($id);
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_active' => 'boolean',
+        ]);
+
+        // Auto-generate excerpt from content (strip HTML and limit to 150 chars)
+        if (!empty($validated['content'])) {
+            $plainText = strip_tags($validated['content']);
+            $validated['excerpt'] = substr($plainText, 0, 150) . (strlen($plainText) > 150 ? '...' : '');
+        }
+
+        // Handle image upload (same pattern as Ketua Umum / Hero)
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/beritas'), $imageName);
+            $validated['image'] = asset('uploads/beritas/' . $imageName);
+        } else {
+            unset($validated['image']); // Keep existing image
+        }
+
+        $validated['is_active'] = $request->boolean('is_active', true);
+
+        $berita->update($validated);
+
+        return $this->ajaxResponse($request, 'Berita berhasil diperbarui.');
+    }
+
+    // Sejarah methods
+    public function createSejarah()
+    {
+        $sejarah = Sejarah::first();
+        $ketuaUmums = KetuaUmum::orderBy('order')->get();
+        return view('admin.sejarahs.create', compact('sejarah', 'ketuaUmums'));
+    }
+
+    public function storeSejarah(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_active' => 'boolean',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/sejarah'), $imageName);
+            $validated['image_path'] = 'uploads/sejarah/' . $imageName;
+            $validated['image'] = asset('uploads/sejarah/' . $imageName);
+        }
+
+        // If sejarah exists, update it, otherwise create new
+        $sejarah = Sejarah::first();
+        if ($sejarah) {
+            $sejarah->update($validated);
+        } else {
+            Sejarah::create($validated);
+        }
+
+        return $this->ajaxResponse($request, 'Sejarah berhasil disimpan.');
+    }
+
+    public function editSejarah($id)
+    {
+        $sejarah = Sejarah::findOrFail($id);
+        $ketuaUmums = KetuaUmum::orderBy('order')->get();
+        return view('admin.sejarahs.edit', compact('sejarah', 'ketuaUmums'));
+    }
+
+    public function updateSejarah(Request $request, $id)
+    {
+        $sejarah = Sejarah::findOrFail($id);
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_active' => 'boolean',
+        ]);
+
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($sejarah->image_path && file_exists(public_path($sejarah->image_path))) {
+                unlink(public_path($sejarah->image_path));
+            }
+            
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/sejarah'), $imageName);
+            $validated['image_path'] = 'uploads/sejarah/' . $imageName;
+            $validated['image'] = asset('uploads/sejarah/' . $imageName);
+        }
+
+        $sejarah->update($validated);
+
+        return $this->ajaxResponse($request, 'Sejarah berhasil diperbarui.');
+    }
+
+    // KetuaUmum methods
+    public function storeKetuaUmum(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'period' => 'nullable|string|max:255',
+            'order' => 'nullable|integer',
+            'is_active' => 'boolean',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/ketua-umum'), $imageName);
+            $validated['image_path'] = 'uploads/ketua-umum/' . $imageName;
+            $validated['image'] = asset('uploads/ketua-umum/' . $imageName);
+        }
+
+        KetuaUmum::create($validated);
+
+        return $this->ajaxResponse($request, 'Ketua Umum berhasil ditambahkan.', 'admin.sejarahs.create');
+    }
+
+    public function updateKetuaUmum(Request $request, $id)
+    {
+        $ketuaUmum = KetuaUmum::findOrFail($id);
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'period' => 'nullable|string|max:255',
+            'order' => 'nullable|integer',
+            'is_active' => 'boolean',
+        ]);
+
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($ketuaUmum->image_path && file_exists(public_path($ketuaUmum->image_path))) {
+                unlink(public_path($ketuaUmum->image_path));
+            }
+            
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/ketua-umum'), $imageName);
+            $validated['image_path'] = 'uploads/ketua-umum/' . $imageName;
+            $validated['image'] = asset('uploads/ketua-umum/' . $imageName);
+        }
+
+        $ketuaUmum->update($validated);
+
+        return $this->ajaxResponse($request, 'Ketua Umum berhasil diperbarui.', 'admin.sejarahs.create');
+    }
+
+    public function deleteKetuaUmum(Request $request, $id)
+    {
+        $ketuaUmum = KetuaUmum::findOrFail($id);
+        
+        // Delete image if exists
+        if ($ketuaUmum->image_path && file_exists(public_path($ketuaUmum->image_path))) {
+            unlink(public_path($ketuaUmum->image_path));
+        }
+        
+        $ketuaUmum->delete();
+
+        return $this->ajaxResponse($request, 'Ketua Umum berhasil dihapus.');
+    }
+
+    // Sekila methods
+    public function createSekila()
+    {
+        return view('admin.sekilas.create');
+    }
+
+    public function storeSekila(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'image' => 'nullable|string',
+            'is_active' => 'boolean',
+        ]);
+
+        Sekila::create($validated);
+
+        return $this->ajaxResponse($request, 'Sekilas berhasil ditambahkan.');
+    }
+
+    public function editSekila($id)
+    {
+        $sekila = Sekila::findOrFail($id);
+        return view('admin.sekilas.edit', compact('sekila'));
+    }
+
+    public function updateSekila(Request $request, $id)
+    {
+        $sekila = Sekila::findOrFail($id);
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'image' => 'nullable|string',
+            'is_active' => 'boolean',
+        ]);
+
+        $sekila->update($validated);
+
+        return $this->ajaxResponse($request, 'Sekilas berhasil diperbarui.');
+    }
+
+    // Struktur Organisasi methods
+    public function createStruktur()
+    {
+        return view('admin.strukturs.create');
+    }
+
+    public function storeStruktur(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'position' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'photo' => 'nullable|string',
+            'order' => 'integer',
+            'is_active' => 'boolean',
+        ]);
+
+        StrukturOrganisasi::create($validated);
+
+        return $this->ajaxResponse($request, 'Struktur berhasil ditambahkan.');
+    }
+
+    public function editStruktur($id)
+    {
+        $struktur = StrukturOrganisasi::findOrFail($id);
+        return view('admin.strukturs.edit', compact('struktur'));
+    }
+
+    public function updateStruktur(Request $request, $id)
+    {
+        $struktur = StrukturOrganisasi::findOrFail($id);
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'position' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'photo' => 'nullable|string',
+            'order' => 'integer',
+            'is_active' => 'boolean',
+        ]);
+
+        $struktur->update($validated);
+
+        return $this->ajaxResponse($request, 'Struktur berhasil diperbarui.');
+    }
+
+    // Kontak methods
+    public function createKontak()
+    {
+        return view('admin.kontaks.create');
+    }
+
+    public function storeKontak(Request $request)
+    {
+        $validated = $request->validate([
+            'address' => 'required|string',
+            'phone' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'facebook' => 'nullable|string|max:255',
+            'twitter' => 'nullable|string|max:255',
+            'instagram' => 'nullable|string|max:255',
+            'linkedin' => 'nullable|string|max:255',
+            'youtube' => 'nullable|string|max:255',
+            'map_url' => 'nullable|string',
+            'is_active' => 'boolean',
+        ]);
+
+        Kontak::create($validated);
+
+        return $this->ajaxResponse($request, 'Kontak berhasil ditambahkan.');
+    }
+
+    public function editKontak($id)
+    {
+        $kontak = Kontak::findOrFail($id);
+        return view('admin.kontaks.edit', compact('kontak'));
+    }
+
+    public function updateKontak(Request $request, $id)
+    {
+        $kontak = Kontak::findOrFail($id);
+        $validated = $request->validate([
+            'address' => 'required|string',
+            'phone' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'facebook' => 'nullable|string|max:255',
+            'twitter' => 'nullable|string|max:255',
+            'instagram' => 'nullable|string|max:255',
+            'linkedin' => 'nullable|string|max:255',
+            'youtube' => 'nullable|string|max:255',
+            'map_url' => 'nullable|string',
+            'is_active' => 'boolean',
+        ]);
+
+        $kontak->update($validated);
+
+        return $this->ajaxResponse($request, 'Kontak berhasil diperbarui.');
+    }
+
+    // Event methods
+    public function createEvent()
+    {
+        return view('admin.events.create');
+    }
+
+    public function storeEvent(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'type' => 'required|string|max:255',
+            'description' => 'required|string',
+            'content' => 'nullable|string',
+            'image' => 'nullable|string',
+            'event_date' => 'required|date',
+            'location' => 'required|string|max:255',
+            'link' => 'nullable|string|max:255',
+            'is_active' => 'boolean',
+        ]);
+
+        Event::create($validated);
+
+        return $this->ajaxResponse($request, 'Event berhasil ditambahkan.');
+    }
+
+    public function editEvent($id)
+    {
+        $event = Event::findOrFail($id);
+        return view('admin.events.edit', compact('event'));
+    }
+
+    public function updateEvent(Request $request, $id)
+    {
+        $event = Event::findOrFail($id);
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'type' => 'required|string|max:255',
+            'description' => 'required|string',
+            'content' => 'nullable|string',
+            'image' => 'nullable|string',
+            'event_date' => 'required|date',
+            'location' => 'required|string|max:255',
+            'link' => 'nullable|string|max:255',
+            'is_active' => 'boolean',
+        ]);
+
+        $event->update($validated);
+
+        return $this->ajaxResponse($request, 'Event berhasil diperbarui.');
+    }
+
+    // Artikel methods
+    public function createArtikel()
+    {
+        return view('admin.artikels.create');
+    }
+
+    public function storeArtikel(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'excerpt' => 'required|string',
+            'content' => 'nullable|string',
+            'image' => 'required|string',
+            'published_at' => 'nullable|date',
+            'is_active' => 'boolean',
+        ]);
+
+        Artikel::create($validated);
+
+        return $this->ajaxResponse($request, 'Artikel berhasil ditambahkan.');
+    }
+
+    public function editArtikel($id)
+    {
+        $artikel = Artikel::findOrFail($id);
+        return view('admin.artikels.edit', compact('artikel'));
+    }
+
+    public function updateArtikel(Request $request, $id)
+    {
+        $artikel = Artikel::findOrFail($id);
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'excerpt' => 'required|string',
+            'content' => 'nullable|string',
+            'image' => 'required|string',
+            'published_at' => 'nullable|date',
+            'is_active' => 'boolean',
+        ]);
+
+        $artikel->update($validated);
+
+        return $this->ajaxResponse($request, 'Artikel berhasil diperbarui.');
+    }
+
+    // Gallery methods
+    public function createGallery()
+    {
+        return view('admin.galleries.create');
+    }
+
+    public function storeGallery(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'description' => 'nullable|string',
+            'category' => 'nullable|string|max:255',
+            'order' => 'integer',
+            'is_active' => 'boolean',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . preg_replace('/[^A-Za-z0-9\-_\.]/', '', $image->getClientOriginalName());
+            $image->move(public_path('uploads/galleries'), $imageName);
+            $validated['image'] = '/uploads/galleries/' . $imageName;
+        }
+
+        Gallery::create($validated);
+
+        return $this->ajaxResponse($request, 'Gallery berhasil ditambahkan.');
+    }
+
+    public function editGallery($id)
+    {
+        $gallery = Gallery::findOrFail($id);
+        return view('admin.galleries.edit', compact('gallery'));
+    }
+
+    public function updateGallery(Request $request, $id)
+    {
+        $gallery = Gallery::findOrFail($id);
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'description' => 'nullable|string',
+            'category' => 'nullable|string|max:255',
+            'order' => 'integer',
+            'is_active' => 'boolean',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . preg_replace('/[^A-Za-z0-9\-_\.]/', '', $image->getClientOriginalName());
+            $image->move(public_path('uploads/galleries'), $imageName);
+            $validated['image'] = '/uploads/galleries/' . $imageName;
+        } else {
+            $validated['image'] = $gallery->image;
+        }
+
+        $gallery->update($validated);
+
+        return $this->ajaxResponse($request, 'Gallery berhasil diperbarui.');
+    }
+
+    // Kemitraan methods
+    public function createKemitraan()
+    {
+        return view('admin.kemitraans.create');
+    }
+
+    public function storeKemitraan(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'required|string|max:255',
+            'description' => 'required|string',
+            'content' => 'nullable|string',
+            'logo' => 'nullable|string',
+            'link' => 'nullable|string|max:255',
+            'order' => 'integer',
+            'is_active' => 'boolean',
+        ]);
+
+        Kemitraan::create($validated);
+
+        return $this->ajaxResponse($request, 'Kemitraan berhasil ditambahkan.');
+    }
+
+    public function editKemitraan($id)
+    {
+        $kemitraan = Kemitraan::findOrFail($id);
+        return view('admin.kemitraans.edit', compact('kemitraan'));
+    }
+
+    public function updateKemitraan(Request $request, $id)
+    {
+        $kemitraan = Kemitraan::findOrFail($id);
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'required|string|max:255',
+            'description' => 'required|string',
+            'content' => 'nullable|string',
+            'logo' => 'nullable|string',
+            'link' => 'nullable|string|max:255',
+            'order' => 'integer',
+            'is_active' => 'boolean',
+        ]);
+
+        $kemitraan->update($validated);
+
+        return $this->ajaxResponse($request, 'Kemitraan berhasil diperbarui.');
+    }
+
+    // User management methods
+    public function storeUser(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
+            'role' => 'required|string|in:admin,user',
+        ]);
+
+        $validated['password'] = Hash::make($validated['password']);
+
+        User::create($validated);
+
+        return $this->ajaxResponse($request, 'User berhasil ditambahkan.');
+    }
+
+    public function updateUser(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'password' => 'nullable|string|min:6',
+            'role' => 'required|string|in:admin,user',
+        ]);
+
+        if (!empty($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
+
+        $user->update($validated);
+
+        return $this->ajaxResponse($request, 'User berhasil diperbarui.');
+    }
+}

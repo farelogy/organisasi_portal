@@ -1,0 +1,140 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TentangPiiController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\ArtikelController;
+use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\KemitraanController;
+
+// Authentication routes
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Frontend routes
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Tentang PII routes
+Route::prefix('tentang')->name('tentang.')->group(function () {
+    Route::get('/sejarah', [TentangPiiController::class, 'sejarah'])->name('sejarah');
+    Route::get('/sekilas', [TentangPiiController::class, 'sekilas'])->name('sekilas');
+    Route::get('/struktur', [TentangPiiController::class, 'struktur'])->name('struktur');
+    Route::get('/kontak', [TentangPiiController::class, 'kontak'])->name('kontak');
+});
+
+// Event & Pelatihan routes
+Route::prefix('event')->name('event.')->group(function () {
+    Route::get('/', [EventController::class, 'index'])->name('index');
+    Route::get('/seminar', [EventController::class, 'seminar'])->name('seminar');
+    Route::get('/pelatihan', [EventController::class, 'pelatihan'])->name('pelatihan');
+    Route::get('/konvensi', [EventController::class, 'konvensi'])->name('konvensi');
+    Route::get('/{id}', [EventController::class, 'show'])->name('show');
+});
+
+// Berita & Artikel routes
+Route::prefix('artikel')->name('artikel.')->group(function () {
+    Route::get('/', [ArtikelController::class, 'index'])->name('index');
+    Route::get('/artikel-teknik', [ArtikelController::class, 'artikelTeknik'])->name('artikel_teknik');
+    Route::get('/regulasi', [ArtikelController::class, 'regulasi'])->name('regulasi');
+    Route::get('/inovasi', [ArtikelController::class, 'inovasi'])->name('inovasi');
+    Route::get('/opini', [ArtikelController::class, 'opini'])->name('opini');
+    Route::get('/{id}', [ArtikelController::class, 'show'])->name('show');
+});
+
+// Gallery routes
+Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
+
+// Kemitraan routes
+Route::prefix('kemitraan')->name('kemitraan.')->group(function () {
+    Route::get('/', [KemitraanController::class, 'index'])->name('index');
+    Route::get('/kampus', [KemitraanController::class, 'kampus'])->name('kampus');
+    Route::get('/industri', [KemitraanController::class, 'industri'])->name('industri');
+    Route::get('/pemerintah', [KemitraanController::class, 'pemerintah'])->name('pemerintah');
+});
+
+// Admin routes with authentication middleware
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('index');
+
+    // Hero routes
+    Route::get('/heroes/create', [AdminController::class, 'createHero'])->name('heroes.create');
+    Route::post('/heroes', [AdminController::class, 'storeHero'])->name('heroes.store');
+    Route::get('/heroes/{id}/edit', [AdminController::class, 'editHero'])->name('heroes.edit');
+    Route::put('/heroes/{id}', [AdminController::class, 'updateHero'])->name('heroes.update');
+    
+    // Layanan routes
+    Route::get('/layanans/create', [AdminController::class, 'createLayanan'])->name('layanans.create');
+    Route::post('/layanans', [AdminController::class, 'storeLayanan'])->name('layanans.store');
+    Route::get('/layanans/{id}/edit', [AdminController::class, 'editLayanan'])->name('layanans.edit');
+    Route::put('/layanans/{id}', [AdminController::class, 'updateLayanan'])->name('layanans.update');
+    
+    // Berita routes
+    Route::get('/beritas/create', [AdminController::class, 'createBerita'])->name('beritas.create');
+    Route::post('/beritas', [AdminController::class, 'storeBerita'])->name('beritas.store');
+    Route::get('/beritas/{id}/edit', [AdminController::class, 'editBerita'])->name('beritas.edit');
+    Route::put('/beritas/{id}', [AdminController::class, 'updateBerita'])->name('beritas.update');
+    
+    // Sejarah routes
+    Route::get('/sejarahs/create', [AdminController::class, 'createSejarah'])->name('sejarahs.create');
+    Route::post('/sejarahs', [AdminController::class, 'storeSejarah'])->name('sejarahs.store');
+    Route::get('/sejarahs/{id}/edit', [AdminController::class, 'editSejarah'])->name('sejarahs.edit');
+    Route::put('/sejarahs/{id}', [AdminController::class, 'updateSejarah'])->name('sejarahs.update');
+    
+    // Sekila routes
+    Route::get('/sekilas/create', [AdminController::class, 'createSekila'])->name('sekilas.create');
+    Route::post('/sekilas', [AdminController::class, 'storeSekila'])->name('sekilas.store');
+    Route::get('/sekilas/{id}/edit', [AdminController::class, 'editSekila'])->name('sekilas.edit');
+    Route::put('/sekilas/{id}', [AdminController::class, 'updateSekila'])->name('sekilas.update');
+    
+    // Struktur routes
+    Route::get('/strukturs/create', [AdminController::class, 'createStruktur'])->name('strukturs.create');
+    Route::post('/strukturs', [AdminController::class, 'storeStruktur'])->name('strukturs.store');
+    Route::get('/strukturs/{id}/edit', [AdminController::class, 'editStruktur'])->name('strukturs.edit');
+    Route::put('/strukturs/{id}', [AdminController::class, 'updateStruktur'])->name('strukturs.update');
+    
+    // Kontak routes
+    Route::get('/kontaks/create', [AdminController::class, 'createKontak'])->name('kontaks.create');
+    Route::post('/kontaks', [AdminController::class, 'storeKontak'])->name('kontaks.store');
+    Route::get('/kontaks/{id}/edit', [AdminController::class, 'editKontak'])->name('kontaks.edit');
+    Route::put('/kontaks/{id}', [AdminController::class, 'updateKontak'])->name('kontaks.update');
+    
+    // Event routes
+    Route::get('/events/create', [AdminController::class, 'createEvent'])->name('events.create');
+    Route::post('/events', [AdminController::class, 'storeEvent'])->name('events.store');
+    Route::get('/events/{id}/edit', [AdminController::class, 'editEvent'])->name('events.edit');
+    Route::put('/events/{id}', [AdminController::class, 'updateEvent'])->name('events.update');
+    
+    // Artikel routes
+    Route::get('/artikels/create', [AdminController::class, 'createArtikel'])->name('artikels.create');
+    Route::post('/artikels', [AdminController::class, 'storeArtikel'])->name('artikels.store');
+    Route::get('/artikels/{id}/edit', [AdminController::class, 'editArtikel'])->name('artikels.edit');
+    Route::put('/artikels/{id}', [AdminController::class, 'updateArtikel'])->name('artikels.update');
+    
+    // Gallery routes
+    Route::get('/galleries/create', [AdminController::class, 'createGallery'])->name('galleries.create');
+    Route::post('/galleries', [AdminController::class, 'storeGallery'])->name('galleries.store');
+    Route::get('/galleries/{id}/edit', [AdminController::class, 'editGallery'])->name('galleries.edit');
+    Route::put('/galleries/{id}', [AdminController::class, 'updateGallery'])->name('galleries.update');
+    
+    // Kemitraan routes
+    Route::get('/kemitraans/create', [AdminController::class, 'createKemitraan'])->name('kemitraans.create');
+    Route::post('/kemitraans', [AdminController::class, 'storeKemitraan'])->name('kemitraans.store');
+    Route::get('/kemitraans/{id}/edit', [AdminController::class, 'editKemitraan'])->name('kemitraans.edit');
+    Route::put('/kemitraans/{id}', [AdminController::class, 'updateKemitraan'])->name('kemitraans.update');
+    
+    // KetuaUmum routes
+    Route::post('/ketua-umums', [AdminController::class, 'storeKetuaUmum'])->name('ketuaUmums.store');
+    Route::put('/ketua-umums/{id}', [AdminController::class, 'updateKetuaUmum'])->name('ketuaUmums.update');
+    Route::delete('/ketua-umums/{id}', [AdminController::class, 'deleteKetuaUmum'])->name('ketuaUmums.delete');
+
+    // User management routes
+    Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
+    Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('users.update');
+
+    // Generic item API for AJAX
+    Route::get('/items/{type}/{id}', [AdminController::class, 'getItem'])->name('items.get');
+});

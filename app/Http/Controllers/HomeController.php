@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Hero;
+use App\Models\Layanan;
+use App\Models\Berita;
+use App\Models\Gallery;
+
+class HomeController extends Controller
+{
+    public function index()
+    {
+        $heroes = Hero::orderBy('id')->get();
+        $layanans = Layanan::where('is_active', true)->orderBy('order')->take(4)->get();
+        $beritas = Berita::where('is_active', true)->orderBy('published_at', 'desc')->take(5)->get();
+        $galleries = \App\Models\Gallery::where('is_active', true)->orderBy('created_at', 'desc')->take(4)->get();
+
+        return view('home', compact('heroes', 'layanans', 'beritas', 'galleries'));
+    }
+}
