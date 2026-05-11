@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard — PII</title>
+    @if (isset($site_settings['site_favicon']))
+        <link rel="icon" type="image/x-icon" href="{{ $site_settings['site_favicon'] }}">
+    @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -1200,6 +1203,7 @@
                                                     class="edit-btn" data-title="{{ $berita->title }}"
                                                     data-category="{{ $berita->category }}"
                                                     data-sub_category="{{ $berita->sub_category }}"
+                                                    data-current-image="{{ $berita->image ?? '' }}"
                                                     data-is_active="{{ $berita->is_active ? 'true' : 'false' }}">Edit</button>
                                                 <form action="{{ route('admin.beritas.delete', $berita->id) }}"
                                                     method="POST" style="display:inline;">
@@ -1266,7 +1270,18 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Gambar</label>
-                                    <input type="file" name="image" accept="image/*" class="form-input">
+                                    <input type="file" name="image" accept="image/*" class="form-input"
+                                        onchange="previewBeritaImage(event)">
+                                    <div id="berita-image-preview-wrap" style="margin-top:10px;display:none;">
+                                        <img id="berita-image-preview" src="" alt="Preview"
+                                            style="max-width:200px;max-height:140px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;padding:4px;object-fit:cover;">
+                                        <p id="berita-image-preview-label"
+                                            style="font-size:12px;color:#6b7280;margin-top:4px;">Preview gambar</p>
+                                    </div>
+                                    <div id="berita-image-empty"
+                                        style="margin-top:10px;display:none;font-size:12px;color:#9ca3af;">
+                                        Belum ada gambar
+                                    </div>
                                 </div>
                                 <div style="display:flex;align-items:center;gap:8px;">
                                     <input type="hidden" name="is_active" value="0">
@@ -2280,10 +2295,11 @@
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">Favicon (Icon Tab Browser)</label>
-                                        <input type="file" name="site_favicon"
-                                            accept="image/png,image/x-icon,image/svg+xml" class="form-input">
-                                        <p style="font-size:12px;color:#9ca3af;margin-top:4px;">Format: PNG, ICO, SVG.
-                                            Ukuran ideal: 32x32px atau 64x64px</p>
+                                        <input type="file" name="site_favicon" accept="image/*,.ico"
+                                            class="form-input">
+                                        <p style="font-size:12px;color:#9ca3af;margin-top:4px;">Format: PNG, JPG,
+                                            WEBP, ICO, SVG.
+                                            Gambar besar akan otomatis dikompres ke 64x64px.</p>
                                         @if (isset($site_settings['site_favicon']))
                                             <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
                                                 <img src="{{ $site_settings['site_favicon'] }}"
@@ -2500,6 +2516,41 @@
             return str.charAt(0).toUpperCase() + str.slice(1);
         }
 
+        function previewBeritaImage(event) {
+            const file = event.target.files && event.target.files[0];
+            const wrap = document.getElementById('berita-image-preview-wrap');
+            const img = document.getElementById('berita-image-preview');
+            const label = document.getElementById('berita-image-preview-label');
+            const empty = document.getElementById('berita-image-empty');
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result;
+                wrap.style.display = 'block';
+                if (label) label.textContent = 'Preview gambar baru';
+                if (empty) empty.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function setBeritaImagePreview(url) {
+            const wrap = document.getElementById('berita-image-preview-wrap');
+            const img = document.getElementById('berita-image-preview');
+            const label = document.getElementById('berita-image-preview-label');
+            const empty = document.getElementById('berita-image-empty');
+            if (!wrap || !img) return;
+            if (url) {
+                img.src = url;
+                wrap.style.display = 'block';
+                if (label) label.textContent = 'Gambar saat ini';
+                if (empty) empty.style.display = 'none';
+            } else {
+                img.src = '';
+                wrap.style.display = 'none';
+                if (empty) empty.style.display = 'block';
+            }
+        }
+
         async function showForm(event, type, id = null) {
             const panel = document.getElementById('form-panel-' + type);
             if (!panel) return;
@@ -2520,6 +2571,13 @@
                 form.querySelectorAll('input[type="file"]').forEach(input => {
                     input.required = false;
                 });
+
+                // Set image preview from data-current-image (berita)
+                if (type === 'berita') {
+                    const btnEl = event && event.currentTarget ? event.currentTarget : null;
+                    const currentImage = btnEl ? btnEl.getAttribute('data-current-image') : '';
+                    setBeritaImagePreview(currentImage || '');
+                }
 
                 // Primary: populate from clicked button's data-* attributes
                 const btn = event && event.currentTarget ? event.currentTarget : null;
@@ -2584,6 +2642,7 @@
                 if (methodInput) methodInput.value = 'POST';
                 form.action = '/admin/' + pluralType;
                 form.reset();
+                if (type === 'berita') setBeritaImagePreview('');
                 // Reset TinyMCE editors in this form
                 form.querySelectorAll('.tinymce-editor').forEach(textarea => {
                     if (typeof tinymce !== 'undefined') {

@@ -25,7 +25,7 @@ class AdminController extends Controller
     /**
      * Columns to select for admin list views
      */
-    private const ADMIN_LIST_COLUMNS = ['id', 'title', 'category', 'author', 'is_active', 'published_at', 'created_at'];
+    private const ADMIN_LIST_COLUMNS = ['id', 'title', 'category', 'sub_category', 'author', 'excerpt', 'image', 'is_active', 'published_at', 'created_at'];
 
     public function index()
     {
@@ -883,7 +883,7 @@ class AdminController extends Controller
             'footer_instagram' => 'nullable|string|max:255',
             'footer_linkedin' => 'nullable|string|max:255',
             'site_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-            'site_favicon' => 'nullable|image|mimes:png,ico,svg|max:512',
+            'site_favicon' => 'nullable|image|mimes:png,ico,svg,jpeg,jpg,webp|max:2048',
         ]);
 
         if ($request->hasFile('site_logo')) {
@@ -897,9 +897,62 @@ class AdminController extends Controller
 
         if ($request->hasFile('site_favicon')) {
             $favicon = $request->file('site_favicon');
-            $faviconName = time() . '_favicon.' . $favicon->getClientOriginalExtension();
-            $favicon->move(public_path('uploads/settings'), $faviconName);
-            $validated['site_favicon'] = asset('uploads/settings/' . $faviconName);
+            $ext = strtolower($favicon->getClientOriginalExtension());
+            $uploadPath = public_path('uploads/settings');
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+
+            // SVG and ICO: save as-is (cannot resize with GD)
+            if (in_array($ext, ['svg', 'ico'])) {
+                $faviconName = time() . '_favicon.' . $ext;
+                $favicon->move($uploadPath, $faviconName);
+                $validated['site_favicon'] = asset('uploads/settings/' . $faviconName);
+            } else {
+                // Auto-resize raster images to 64x64 PNG using GD
+                $faviconName = time() . '_favicon.png';
+                $targetPath = $uploadPath . DIRECTORY_SEPARATOR . $faviconName;
+                $sourcePath = $favicon->getRealPath();
+
+                $sourceImage = null;
+                switch ($ext) {
+                    case 'jpeg':
+                    case 'jpg':
+                        $sourceImage = @imagecreatefromjpeg($sourcePath);
+                        break;
+                    case 'png':
+                        $sourceImage = @imagecreatefrompng($sourcePath);
+                        break;
+                    case 'webp':
+                        $sourceImage = function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($sourcePath) : null;
+                        break;
+                    case 'gif':
+                        $sourceImage = @imagecreatefromgif($sourcePath);
+                        break;
+                }
+
+                if ($sourceImage) {
+                    $size = 64;
+                    $srcW = imagesx($sourceImage);
+                    $srcH = imagesy($sourceImage);
+                    $resized = imagecreatetruecolor($size, $size);
+                    // Preserve transparency
+                    imagealphablending($resized, false);
+                    imagesavealpha($resized, true);
+                    $transparent = imagecolorallocatealpha($resized, 0, 0, 0, 127);
+                    imagefilledrectangle($resized, 0, 0, $size, $size, $transparent);
+                    imagecopyresampled($resized, $sourceImage, 0, 0, 0, 0, $size, $size, $srcW, $srcH);
+                    imagepng($resized, $targetPath, 9);
+                    imagedestroy($resized);
+                    imagedestroy($sourceImage);
+                    $validated['site_favicon'] = asset('uploads/settings/' . $faviconName);
+                } else {
+                    // Fallback: save original if GD fails
+                    $faviconName = time() . '_favicon.' . $ext;
+                    $favicon->move($uploadPath, $faviconName);
+                    $validated['site_favicon'] = asset('uploads/settings/' . $faviconName);
+                }
+            }
         } else {
             unset($validated['site_favicon']);
         }
