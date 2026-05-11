@@ -340,6 +340,17 @@ class BeritaSeeder extends Seeder
                 'published_at' => now()->subDays(31),
                 'is_active' => true,
             ],
+            [
+                'title' => 'Sertifikasi Profesi Insinyur Indonesia 2024',
+                'category' => 'regulasi',
+                'sub_category' => 'Sertifikasi',
+                'author' => 'Divisi Sertifikasi PII',
+                'excerpt' => 'Program sertifikasi profesi insinyur kini mengadopsi standar internasional untuk meningkatkan kompetensi.',
+                'content' => '<p>PII meluncurkan program sertifikasi profesi insinyur yang diselaraskan dengan standar internasional seperti Washington Accord dan Sydney Accord.</p><p>Program ini mencakup berbagai spesialisasi teknik: sipil, mesin, elektro, industri, dan lainnya. Sertifikasi ini diakui di berbagai negara.</p><p>"Sertifikasi internasional membuka peluang karir global bagi insinyur Indonesia," jelas Direktur Sertifikasi PII.</p>',
+                'image' => 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80',
+                'published_at' => now()->subDays(32),
+                'is_active' => true,
+            ],
         ];
 
         foreach ($beritas as $berita) {
