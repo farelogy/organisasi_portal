@@ -24,7 +24,7 @@
             color: #334155;
         }
 
-        /* ---- SIDEBAR ---- */
+        /* ---- SIDEBAR ----- */
         .sidebar {
             width: 260px;
             height: 100vh;
