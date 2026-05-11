@@ -8,6 +8,8 @@ class Berita extends Model
 {
     protected $fillable = [
         'title',
+        'category',
+        'sub_category',
         'author',
         'excerpt',
         'content',

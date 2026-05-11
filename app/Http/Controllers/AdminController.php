@@ -16,15 +16,26 @@ use App\Models\Gallery;
 use App\Models\Kemitraan;
 use App\Models\KetuaUmum;
 use App\Models\User;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
 
 class AdminController extends Controller
 {
+    /**
+     * Columns to select for admin list views
+     */
+    private const ADMIN_LIST_COLUMNS = ['id', 'title', 'category', 'author', 'is_active', 'published_at', 'created_at'];
+
     public function index()
     {
+        // Query fresh data for admin panel - no caching to avoid serialization issues
         $heroes = Hero::all();
         $layanans = Layanan::orderBy('order')->get();
-        $beritas = Berita::orderBy('created_at', 'desc')->paginate(10);
+        // Don't cache paginator - query fresh each time
+        $beritas = Berita::select(self::ADMIN_LIST_COLUMNS)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
         $sejarah = Sejarah::first();
         $sekilas = Sekila::all();
         $strukturs = StrukturOrganisasi::orderBy('order')->get();
@@ -194,6 +205,8 @@ class AdminController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
+            'category' => 'nullable|string|max:50',
+            'sub_category' => 'nullable|string|max:255',
             'content' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'boolean',
@@ -225,7 +238,10 @@ class AdminController extends Controller
 
         Berita::create($validated);
 
-        return $this->ajaxResponse($request, 'Berita berhasil ditambahkan.');
+        // Clear all article caches
+        $this->clearArticleCache();
+
+        return response()->json(['success' => true, 'message' => 'Berita berhasil ditambahkan.']);
     }
 
     public function editBerita($id)
@@ -239,6 +255,8 @@ class AdminController extends Controller
         $berita = Berita::findOrFail($id);
         $validated = $request->validate([
             'title' => 'required|string|max:255',
+            'category' => 'nullable|string|max:50',
+            'sub_category' => 'nullable|string|max:255',
             'content' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'boolean',
@@ -264,7 +282,67 @@ class AdminController extends Controller
 
         $berita->update($validated);
 
+        // Clear all article caches
+        $this->clearArticleCache();
+
         return $this->ajaxResponse($request, 'Berita berhasil diperbarui.');
+    }
+
+    public function deleteBerita($id)
+    {
+        $berita = Berita::findOrFail($id);
+        
+        // Optionally delete the image file here if needed
+        // if ($berita->image && file_exists(public_path(parse_url($berita->image, PHP_URL_PATH)))) {
+        //     unlink(public_path(parse_url($berita->image, PHP_URL_PATH)));
+        // }
+
+        $berita->delete();
+
+        // Clear all article caches
+        $this->clearArticleCache();
+
+        // Clear all article caches
+        $this->clearArticleCache();
+
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Berita berhasil dihapus.']);
+        }
+
+        // Get current page from request
+        $currentPage = request()->get('page', 1);
+        
+        // Check if current page is still valid after deletion
+        $totalItems = Berita::count();
+        $perPage = 10;
+        $lastPage = max(1, ceil($totalItems / $perPage));
+        
+        // If current page exceeds last page, redirect to last page, otherwise stay on current page
+        $redirectPage = min($currentPage, $lastPage);
+        $redirectUrl = url('/admin?page=' . $redirectPage . '#tab=beritas');
+        return redirect($redirectUrl)->with('success', 'Berita berhasil dihapus.');
+    }
+
+    /**
+     * Clear all article-related cache keys
+     */
+    private function clearArticleCache(): void
+    {
+        // Clear HTML output cache for all article pages
+        $cachePrefixes = [
+            'artikel_index_html_page_',
+            'artikel_teknik_html_page_',
+            'artikel_regulasi_html_page_',
+            'artikel_inovasi_html_page_',
+            'artikel_opini_html_page_',
+        ];
+
+        // Clear cache for first 20 pages of each type
+        foreach ($cachePrefixes as $prefix) {
+            for ($i = 1; $i <= 20; $i++) {
+                Cache::forget($prefix . $i);
+            }
+        }
     }
 
     // Sejarah methods
@@ -791,5 +869,59 @@ class AdminController extends Controller
         $user->update($validated);
 
         return $this->ajaxResponse($request, 'User berhasil diperbarui.');
+    }
+
+    // Settings methods
+    public function updateSettings(Request $request)
+    {
+        $validated = $request->validate([
+            'site_title' => 'nullable|string|max:255',
+            'footer_description' => 'nullable|string',
+            'footer_copyright' => 'nullable|string',
+            'footer_facebook' => 'nullable|string|max:255',
+            'footer_twitter' => 'nullable|string|max:255',
+            'footer_instagram' => 'nullable|string|max:255',
+            'footer_linkedin' => 'nullable|string|max:255',
+            'site_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'site_favicon' => 'nullable|image|mimes:png,ico,svg|max:512',
+        ]);
+
+        if ($request->hasFile('site_logo')) {
+            $image = $request->file('site_logo');
+            $imageName = time() . '_logo.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/settings'), $imageName);
+            $validated['site_logo'] = asset('uploads/settings/' . $imageName);
+        } else {
+            unset($validated['site_logo']);
+        }
+
+        if ($request->hasFile('site_favicon')) {
+            $favicon = $request->file('site_favicon');
+            $faviconName = time() . '_favicon.' . $favicon->getClientOriginalExtension();
+            $favicon->move(public_path('uploads/settings'), $faviconName);
+            $validated['site_favicon'] = asset('uploads/settings/' . $faviconName);
+        } else {
+            unset($validated['site_favicon']);
+        }
+
+        // Handle quick links (5 inputs)
+        $quickLinks = [];
+        for ($i = 1; $i <= 5; $i++) {
+            $label = $request->input("quick_link_label_$i");
+            $url = $request->input("quick_link_url_$i");
+            if (!empty($label) && !empty($url)) {
+                $quickLinks[] = ['label' => $label, 'url' => $url];
+            }
+        }
+        $validated['footer_quick_links'] = json_encode($quickLinks);
+
+        foreach ($validated as $key => $value) {
+            Setting::updateOrCreate(
+                ['key' => $key],
+                ['value' => $value]
+            );
+        }
+
+        return redirect()->back()->with('success', 'Pengaturan situs berhasil diperbarui.');
     }
 }

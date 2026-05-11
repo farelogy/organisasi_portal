@@ -77,6 +77,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/beritas', [AdminController::class, 'storeBerita'])->name('beritas.store');
     Route::get('/beritas/{id}/edit', [AdminController::class, 'editBerita'])->name('beritas.edit');
     Route::put('/beritas/{id}', [AdminController::class, 'updateBerita'])->name('beritas.update');
+    Route::delete('/beritas/{id}', [AdminController::class, 'deleteBerita'])->name('beritas.delete');
     
     // Sejarah routes
     Route::get('/sejarahs/create', [AdminController::class, 'createSejarah'])->name('sejarahs.create');
@@ -134,6 +135,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // User management routes
     Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
     Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('users.update');
+
+    // Settings route
+    Route::post('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
 
     // Generic item API for AJAX
     Route::get('/items/{type}/{id}', [AdminController::class, 'getItem'])->name('items.get');
