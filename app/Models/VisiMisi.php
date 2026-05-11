@@ -4,24 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Event extends Model
+class VisiMisi extends Model
 {
     protected $fillable = [
         'title',
-        'type',
-        'category',
-        'sub_category',
-        'description',
         'content',
-        'image',
-        'event_date',
-        'location',
-        'link',
         'is_active',
     ];
 
     protected $casts = [
-        'event_date' => 'datetime',
         'is_active' => 'boolean',
     ];
 }

@@ -16,6 +16,7 @@ use App\Models\Gallery;
 use App\Models\Kemitraan;
 use App\Models\KetuaUmum;
 use App\Models\User;
+use App\Models\VisiMisi;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
@@ -37,19 +38,21 @@ class AdminController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
         $sejarah = Sejarah::first();
-        $sekilas = Sekila::all();
+        $sekilas = Sekila::first();
         $strukturs = StrukturOrganisasi::orderBy('order')->get();
         $kontaks = Kontak::all();
-        $events = Event::all();
+        $events = Event::orderBy('event_date', 'desc')
+            ->paginate(10, ['*'], 'events_page');
         $artikels = Artikel::all();
         $galleries = Gallery::orderBy('order')->get();
         $kemitraans = Kemitraan::orderBy('order')->get();
         $ketuaUmums = KetuaUmum::orderBy('order')->get();
         $users = User::all();
+        $visiMisis = VisiMisi::first();
 
         return view('admin.index', compact(
             'heroes', 'layanans', 'beritas', 'sejarah', 'sekilas',
-            'strukturs', 'kontaks', 'events', 'artikels', 'galleries', 'kemitraans', 'ketuaUmums', 'users'
+            'strukturs', 'kontaks', 'events', 'artikels', 'galleries', 'kemitraans', 'ketuaUmums', 'users', 'visiMisis'
         ));
     }
 
@@ -67,6 +70,7 @@ class AdminController extends Controller
         'kemitraans' => \App\Models\Kemitraan::class,
         'ketuaUmums' => \App\Models\KetuaUmum::class,
         'users' => \App\Models\User::class,
+        'visi-misis' => \App\Models\VisiMisi::class,
     ];
 
     private function ajaxResponse(Request $request, $message, $route = 'admin.index')
@@ -493,14 +497,31 @@ class AdminController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'image' => 'nullable|string',
+            'content' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'boolean',
         ]);
 
-        Sekila::create($validated);
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/sekilas'), $imageName);
+            $validated['image'] = asset('uploads/sekilas/' . $imageName);
+        } else {
+            $validated['image'] = null;
+        }
 
-        return $this->ajaxResponse($request, 'Sekilas berhasil ditambahkan.');
+        $validated['is_active'] = $request->boolean('is_active', true);
+
+        // Single record: update existing or create new
+        $existing = Sekila::first();
+        if ($existing) {
+            $existing->update($validated);
+        } else {
+            Sekila::create($validated);
+        }
+
+        return $this->ajaxResponse($request, 'Sekilas berhasil disimpan.');
     }
 
     public function editSekila($id)
@@ -514,14 +535,61 @@ class AdminController extends Controller
         $sekila = Sekila::findOrFail($id);
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'image' => 'nullable|string',
+            'content' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'boolean',
         ]);
 
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/sekilas'), $imageName);
+            $validated['image'] = asset('uploads/sekilas/' . $imageName);
+        } else {
+            unset($validated['image']);
+        }
+
+        $validated['is_active'] = $request->boolean('is_active', true);
         $sekila->update($validated);
 
         return $this->ajaxResponse($request, 'Sekilas berhasil diperbarui.');
+    }
+
+    // Visi Misi methods
+    public function storeVisiMisi(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'nullable|string',
+            'is_active' => 'boolean',
+        ]);
+
+        $validated['is_active'] = $request->boolean('is_active', true);
+
+        // Single record: update existing or create new
+        $existing = VisiMisi::first();
+        if ($existing) {
+            $existing->update($validated);
+        } else {
+            VisiMisi::create($validated);
+        }
+
+        return $this->ajaxResponse($request, 'Visi & Misi berhasil disimpan.');
+    }
+
+    public function updateVisiMisi(Request $request, $id)
+    {
+        $visiMisi = VisiMisi::findOrFail($id);
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'nullable|string',
+            'is_active' => 'boolean',
+        ]);
+
+        $validated['is_active'] = $request->boolean('is_active', true);
+        $visiMisi->update($validated);
+
+        return $this->ajaxResponse($request, 'Visi & Misi berhasil diperbarui.');
     }
 
     // Struktur Organisasi methods
@@ -633,14 +701,33 @@ class AdminController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'type' => 'required|string|max:255',
-            'description' => 'required|string',
+            'category' => 'nullable|string|max:255',
+            'sub_category' => 'nullable|string|max:255',
             'content' => 'nullable|string',
-            'image' => 'nullable|string',
-            'event_date' => 'required|date',
-            'location' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'event_date' => 'nullable|date',
+            'location' => 'nullable|string|max:255',
             'link' => 'nullable|string|max:255',
             'is_active' => 'boolean',
         ]);
+
+        // Auto-generate description from content
+        if (!empty($validated['content'])) {
+            $validated['description'] = substr(strip_tags($validated['content']), 0, 200) . (strlen(strip_tags($validated['content'])) > 200 ? '...' : '');
+        } else {
+            $validated['description'] = '';
+        }
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/events'), $imageName);
+            $validated['image'] = asset('uploads/events/' . $imageName);
+        } else {
+            $validated['image'] = null;
+        }
+
+        $validated['is_active'] = $request->boolean('is_active', true);
 
         Event::create($validated);
 
@@ -659,18 +746,52 @@ class AdminController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'type' => 'required|string|max:255',
-            'description' => 'required|string',
+            'category' => 'nullable|string|max:255',
+            'sub_category' => 'nullable|string|max:255',
             'content' => 'nullable|string',
-            'image' => 'nullable|string',
-            'event_date' => 'required|date',
-            'location' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'event_date' => 'nullable|date',
+            'location' => 'nullable|string|max:255',
             'link' => 'nullable|string|max:255',
             'is_active' => 'boolean',
         ]);
 
+        if (!empty($validated['content'])) {
+            $validated['description'] = substr(strip_tags($validated['content']), 0, 200) . (strlen(strip_tags($validated['content'])) > 200 ? '...' : '');
+        }
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/events'), $imageName);
+            $validated['image'] = asset('uploads/events/' . $imageName);
+        } else {
+            unset($validated['image']);
+        }
+
+        $validated['is_active'] = $request->boolean('is_active', true);
         $event->update($validated);
 
         return $this->ajaxResponse($request, 'Event berhasil diperbarui.');
+    }
+
+    public function deleteEvent(Request $request, $id)
+    {
+        $event = Event::findOrFail($id);
+        $event->delete();
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Event berhasil dihapus.']);
+        }
+        $currentPage = (int) $request->input('events_page', 1);
+
+        // Pastikan page saat ini masih valid setelah penghapusan
+        $totalItems = Event::count();
+        $perPage = 10;
+        $lastPage = max(1, (int) ceil($totalItems / $perPage));
+        $redirectPage = min(max(1, $currentPage), $lastPage);
+
+        $redirectUrl = url('/admin?events_page=' . $redirectPage . '#tab=events');
+        return redirect($redirectUrl)->with('success', 'Event berhasil dihapus.');
     }
 
     // Artikel methods

@@ -292,139 +292,113 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Event 1 -->
-                <div class="group bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 hover:bg-white/15 transition-all duration-500 transform hover:-translate-y-2"
-                    data-aos="fade-up" data-aos-delay="100">
-                    <div class="flex items-center justify-between mb-6">
-                        <div
-                            class="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl flex items-center justify-center">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                </path>
-                            </svg>
+                @forelse($events as $event)
+                    @php
+                        $typeColors = ['seminar' => 'from-orange-400 to-orange-600', 'pelatihan' => 'from-blue-400 to-blue-600', 'konvensi' => 'from-green-400 to-green-600'];
+                        $typeColor = $typeColors[$event->type] ?? 'from-purple-400 to-purple-600';
+                        $textColor = ['seminar' => 'text-orange-400', 'pelatihan' => 'text-blue-400', 'konvensi' => 'text-green-400'];
+                        $textColorClass = $textColor[$event->type] ?? 'text-purple-400';
+                        $hoverColor = ['seminar' => 'hover:text-orange-300', 'pelatihan' => 'hover:text-blue-300', 'konvensi' => 'hover:text-green-300'];
+                        $hoverColorClass = $hoverColor[$event->type] ?? 'hover:text-purple-300';
+                        $badgeColor = ['seminar' => 'bg-orange-500/20 text-orange-300 border-orange-400/30', 'pelatihan' => 'bg-blue-500/20 text-blue-300 border-blue-400/30', 'konvensi' => 'bg-green-500/20 text-green-300 border-green-400/30'];
+                        $badgeColorClass = $badgeColor[$event->type] ?? 'bg-purple-500/20 text-purple-300 border-purple-400/30';
+                    @endphp
+                    <div class="group bg-white/10 backdrop-blur-md rounded-3xl border border-white/20 hover:bg-white/15 transition-all duration-500 transform hover:-translate-y-2 overflow-hidden flex flex-col"
+                        data-aos="fade-up" data-aos-delay="{{ ($loop->index + 1) * 100 }}">
+                        <!-- Image / Date Header -->
+                        <div class="relative h-48 overflow-hidden event-image-container">
+                            @if($event->image)
+                                <img src="{{ $event->image }}" alt="{{ $event->title }}"
+                                    crossorigin="anonymous"
+                                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 event-image"
+                                    onload="adjustTextColor(this)"
+                                    onerror="this.removeAttribute('crossorigin'); this.src=this.src;">
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent"></div>
+                            @else
+                                <div class="w-full h-full bg-gradient-to-br {{ $typeColor }} flex items-center justify-center">
+                                    <svg class="w-16 h-16 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                </div>
+                            @endif
+                            <!-- Date Badge (default: light bg + dark text; JS swaps for light images) -->
+                            @if($event->event_date)
+                                <div class="date-badge absolute top-4 left-4 rounded-2xl px-4 py-2 text-center shadow-xl ring-1 ring-black/10 bg-white">
+                                    <div class="date-day font-bold text-2xl leading-none text-slate-900">{{ $event->event_date->format('d') }}</div>
+                                    <div class="date-month text-xs font-semibold uppercase mt-0.5 text-slate-600">{{ $event->event_date->format('M Y') }}</div>
+                                </div>
+                            @endif
+                            <!-- Type Badge -->
+                            <div class="absolute top-4 right-4">
+                                <span class="type-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold capitalize shadow-lg ring-1 ring-black/10 bg-white text-slate-900">
+                                    {{ $event->type }}
+                                </span>
+                            </div>
                         </div>
-                        <div class="text-right">
-                            <div class="text-orange-400 font-bold text-2xl">15</div>
-                            <div class="text-gray-400 text-sm">NOV</div>
+                        <!-- Content -->
+                        <div class="p-6 flex-1 flex flex-col">
+                            @if($event->category || $event->sub_category)
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    @if($event->category)
+                                        <span class="text-xs text-gray-400 capitalize">{{ $event->category }}</span>
+                                    @endif
+                                    @if($event->sub_category)
+                                        <span class="text-xs text-gray-500">• {{ $event->sub_category }}</span>
+                                    @endif
+                                </div>
+                            @endif
+                            <h3 class="text-xl font-bold text-white mb-3 {{ $hoverColorClass }} transition-colors line-clamp-2">{{ $event->title }}</h3>
+                            <p class="text-gray-300 text-sm mb-4 leading-relaxed line-clamp-2 flex-1">
+                                {{ Str::limit($event->description, 100) }}
+                            </p>
+                            <div class="space-y-2 mb-4 text-sm text-gray-400">
+                                @if($event->location)
+                                    <div class="flex items-start gap-2">
+                                        <svg class="w-4 h-4 mt-0.5 flex-shrink-0 {{ $textColorClass }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                        <span class="line-clamp-1">{{ $event->location }}</span>
+                                    </div>
+                                @endif
+                                @if($event->event_date)
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 flex-shrink-0 {{ $textColorClass }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <span>{{ $event->event_date->format('H:i') }} WIB</span>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="flex items-center pt-4 border-t border-white/10">
+                                <a href="{{ route('event.show', $event->id) }}"
+                                    class="inline-flex items-center {{ $textColorClass }} font-semibold text-sm {{ $hoverColorClass }} transition-colors">
+                                    <span>Detail</span>
+                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </a>
+                            </div>
                         </div>
                     </div>
-                    <h3 class="text-2xl font-bold text-white mb-4 group-hover:text-orange-300 transition-colors">Seminar
-                        Teknologi AI</h3>
-                    <p class="text-gray-300 mb-6 leading-relaxed">
-                        Pelajari penerapan kecerdasan buatan dalam industri keinsinyuran modern dan peluang karir di era
-                        digital
-                    </p>
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center text-gray-400 text-sm">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
-                                </path>
-                            </svg>
-                            Jakarta
-                        </div>
-                        <a href="#"
-                            class="inline-flex items-center text-orange-400 font-semibold hover:text-orange-300 transition-colors group">
-                            <span>Daftar</span>
-                            <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                                </path>
+                @empty
+                    <div class="col-span-full text-center py-12">
+                        <div class="text-gray-400 text-lg mb-4">Belum ada event mendatang</div>
+                        <a href="{{ route('event.index') }}" class="inline-flex items-center text-orange-400 font-semibold hover:text-orange-300 transition-colors">
+                            <span>Lihat Semua Event</span>
+                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                             </svg>
                         </a>
                     </div>
-                </div>
-
-                <!-- Event 2 -->
-                <div class="group bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 hover:bg-white/15 transition-all duration-500 transform hover:-translate-y-2"
-                    data-aos="fade-up" data-aos-delay="200">
-                    <div class="flex items-center justify-between mb-6">
-                        <div
-                            class="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
-                                </path>
-                            </svg>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-blue-400 font-bold text-2xl">22</div>
-                            <div class="text-gray-400 text-sm">NOV</div>
-                        </div>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white mb-4 group-hover:text-blue-300 transition-colors">Workshop BIM
-                    </h3>
-                    <p class="text-gray-300 mb-6 leading-relaxed">
-                        Pelatihan praktis Building Information Modeling untuk proyek konstruksi efisien dan berkelanjutan
-                    </p>
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center text-gray-400 text-sm">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
-                                </path>
-                            </svg>
-                            Surabaya
-                        </div>
-                        <a href="#"
-                            class="inline-flex items-center text-blue-400 font-semibold hover:text-blue-300 transition-colors group">
-                            <span>Daftar</span>
-                            <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                                </path>
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Event 3 -->
-                <div class="group bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 hover:bg-white/15 transition-all duration-500 transform hover:-translate-y-2"
-                    data-aos="fade-up" data-aos-delay="300">
-                    <div class="flex items-center justify-between mb-6">
-                        <div
-                            class="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
-                                </path>
-                            </svg>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-green-400 font-bold text-2xl">05</div>
-                            <div class="text-gray-400 text-sm">DEC</div>
-                        </div>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white mb-4 group-hover:text-green-300 transition-colors">Konvensi
-                        Insinyur</h3>
-                    <p class="text-gray-300 mb-6 leading-relaxed">
-                        Konferensi tahunan PII dengan tema "Insinyur 4.0: Menghadapi Tantangan Industri Digital"
-                    </p>
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center text-gray-400 text-sm">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
-                                </path>
-                            </svg>
-                            Bali
-                        </div>
-                        <a href="#"
-                            class="inline-flex items-center text-green-400 font-semibold hover:text-green-300 transition-colors group">
-                            <span>Daftar</span>
-                            <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                                </path>
-                            </svg>
-                        </a>
-                    </div>
-                </div>
+                @endforelse
             </div>
 
             <div class="text-center mt-12" data-aos="fade-up" data-aos-delay="400">
-                <a href="#"
+                <a href="{{ route('event.index') }}"
                     class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl font-semibold text-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-orange-500/25">
                     <span>Lihat Semua Event</span>
                     <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -679,5 +653,77 @@
             </div>
         </div>
     </section>
+
+    <script>
+        function getImageBrightness(imgElement) {
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                // Use a small canvas for sampling — faster & avoids large memory
+                const sampleSize = 40;
+                canvas.width = sampleSize;
+                canvas.height = sampleSize;
+                // Sample only the top-left quadrant where badges sit
+                const sx = 0;
+                const sy = 0;
+                const sw = Math.floor(imgElement.naturalWidth * 0.4) || imgElement.naturalWidth;
+                const sh = Math.floor(imgElement.naturalHeight * 0.4) || imgElement.naturalHeight;
+                ctx.drawImage(imgElement, sx, sy, sw, sh, 0, 0, sampleSize, sampleSize);
+
+                const imageData = ctx.getImageData(0, 0, sampleSize, sampleSize);
+                const data = imageData.data;
+
+                let colorSum = 0;
+                let count = 0;
+                for (let i = 0; i < data.length; i += 4) {
+                    // Perceived luminance (Rec. 709)
+                    const lum = 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
+                    colorSum += lum;
+                    count++;
+                }
+                return colorSum / count;
+            } catch (e) {
+                // CORS or other canvas error — return null to skip swap
+                return null;
+            }
+        }
+
+        function adjustTextColor(imgElement) {
+            const container = imgElement.closest('.event-image-container');
+            if (!container) return;
+
+            const dateBadge = container.querySelector('.date-badge');
+            const typeBadge = container.querySelector('.type-badge');
+            if (!dateBadge && !typeBadge) return;
+
+            const brightness = getImageBrightness(imgElement);
+            if (brightness === null) return; // keep default (white bg + dark text)
+
+            // > 140 = bright image → switch badges to dark bg + white text
+            if (brightness > 140) {
+                if (dateBadge) {
+                    dateBadge.classList.remove('bg-white', 'ring-black/10');
+                    dateBadge.classList.add('bg-slate-900', 'ring-white/20');
+                    const day = dateBadge.querySelector('.date-day');
+                    const month = dateBadge.querySelector('.date-month');
+                    if (day) { day.classList.remove('text-slate-900'); day.classList.add('text-white'); }
+                    if (month) { month.classList.remove('text-slate-600'); month.classList.add('text-gray-300'); }
+                }
+                if (typeBadge) {
+                    typeBadge.classList.remove('bg-white', 'text-slate-900', 'ring-black/10');
+                    typeBadge.classList.add('bg-slate-900', 'text-white', 'ring-white/20');
+                }
+            }
+        }
+
+        // Handle images already cached / loaded before listener attached
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.event-image').forEach(function (img) {
+                if (img.complete && img.naturalWidth > 0) {
+                    adjustTextColor(img);
+                }
+            });
+        });
+    </script>
 
 @endsection

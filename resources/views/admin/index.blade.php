@@ -817,7 +817,7 @@
             </button>
             <button onclick="showTab('sekilas')" id="nav-sekilas" class="nav-item">
                 <span class="nav-icon">👁️</span> Sekilas
-                <span class="nav-count">{{ $sekilas->count() }}</span>
+                @if($sekilas)<span class="nav-count">1</span>@endif
             </button>
             <button onclick="showTab('strukturs')" id="nav-strukturs" class="nav-item">
                 <span class="nav-icon">👥</span> Struktur Org.
@@ -831,11 +831,7 @@
             <div class="nav-label">Kegiatan & Media</div>
             <button onclick="showTab('events')" id="nav-events" class="nav-item">
                 <span class="nav-icon">📅</span> Event
-                <span class="nav-count">{{ $events->count() }}</span>
-            </button>
-            <button onclick="showTab('artikels')" id="nav-artikels" class="nav-item">
-                <span class="nav-icon">📝</span> Artikel
-                <span class="nav-count">{{ $artikels->count() }}</span>
+                <span class="nav-count">{{ $events->total() }}</span>
             </button>
             <button onclick="showTab('galleries')" id="nav-galleries" class="nav-item">
                 <span class="nav-icon">🖼️</span> Gallery
@@ -934,16 +930,9 @@
                 <div class="stat-card">
                     <div class="stat-icon" style="background:#f0fdf4;">📅</div>
                     <div class="stat-num">
-                        {{ $events->count() }}
+                        {{ $events->total() }}
                     </div>
                     <div class="stat-label">Total Event</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background:#eff6ff;">📝</div>
-                    <div class="stat-num">
-                        {{ $artikels->count() }}
-                    </div>
-                    <div class="stat-label">Total Artikel</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon" style="background:#fdf4ff;">🖼️</div>
@@ -1329,16 +1318,15 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Upload Gambar</label>
-                                    <input type="file" name="image" accept="image/*" class="form-input">
-                                    @if ($sejarah && ($sejarah->image ?? false))
-                                        <p style="font-size:12px;color:#9ca3af;margin-top:6px;">
-                                            Saat ini: <a href="{{ $sejarah->image }}" target="_blank"
-                                                style="color:#f97316;font-weight:600;">Lihat
-                                                Gambar</a>
-                                        </p>
-                                    @endif
-                                    <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF — Maks.
-                                        2MB</p>
+                                    <div style="margin-bottom:8px;">
+                                        @if($sejarah && ($sejarah->image ?? false))
+                                        <img id="preview-sejarah" src="{{ $sejarah->image }}" alt="Preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
+                                        @else
+                                        <img id="preview-sejarah" src="" alt="Preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
+                                        @endif
+                                    </div>
+                                    <input type="file" name="image" accept="image/*" class="form-input" onchange="previewImage(this, 'preview-sejarah')">
+                                    <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF — Maks. 2MB</p>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Konten</label>
@@ -1476,87 +1464,88 @@
 
             {{-- ==================== SEKILAS ==================== --}}
             <div id="tab-sekilas" class="tab-panel">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- List Panel -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+
+                    {{-- Panel Konten Sekilas --}}
                     <div class="card">
                         <div class="card-header">
-                            <h3>Daftar Sekilas PII</h3>
-                            <button onclick="showForm(event, 'sekilas')" class="btn-orange">
-                                <svg width="16" height="16" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 4v16m8-8H4" />
-                                </svg>
-                                Tambah Sekilas
-                            </button>
-                        </div>
-                        <div class="card-body">
-                            @if ($sekilas->count() > 0)
-                                <div class="space-y-4">
-                                    @foreach ($sekilas as $s)
-                                        <div class="item-row">
-                                            @if ($s->image)
-                                                <img src="{{ $s->image }}" class="item-thumb"
-                                                    alt="{{ $s->title }}">
-                                            @else
-                                                <div class="item-thumb-placeholder">👁️</div>
-                                            @endif
-                                            <div class="item-info">
-                                                <div class="item-title">{{ $s->title }}</div>
-                                                <div class="item-meta">{{ Str::limit($s->content, 70) }}</div>
-                                                <div style="margin-top:6px;"><span
-                                                        class="{{ $s->is_active ? 'badge-active' : 'badge-inactive' }}">{{ $s->is_active ? 'Aktif' : 'Non-Aktif' }}</span>
-                                                </div>
-                                            </div>
-                                            <button onclick="showForm(event, 'sekilas', {{ $s->id }})"
-                                                class="edit-btn">Edit</button>
-                                        </div>
-                                    @endforeach
-                                </div>
+                            <h3>👁️ Konten Sekilas PII</h3>
+                            @if($sekilas)
+                                <span class="badge-active">Tersimpan</span>
                             @else
-                                <div class="empty-state">
-                                    <div class="empty-icon">👁️</div>
-                                    <div class="empty-title">Belum ada data</div>
-                                    <div class="empty-desc">Tambahkan informasi sekilas PII</div>
-                                </div>
+                                <span class="badge-inactive">Belum ada</span>
                             @endif
                         </div>
-                    </div>
-
-                    <!-- Form Panel -->
-                    <div id="form-panel-sekilas" class="card" style="display:none;">
-                        <div class="card-header">
-                            <h3 id="form-title-sekilas">Tambah Sekilas</h3>
-                            <button onclick="hideForm('sekilas')" class="btn-cancel">Batal</button>
-                        </div>
                         <div class="card-body">
-                            <form action="{{ route('admin.sekilas.store') }}" method="POST"
-                                enctype="multipart/form-data" id="form-sekilas">
+                            <form action="{{ route('admin.sekilas.store') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
-                                <input type="hidden" name="_method" value="POST" id="sekilas-method">
                                 <div class="form-group">
-                                    <label class="form-label">Title</label>
-                                    <input type="text" name="title" class="form-input" required>
+                                    <label class="form-label">Judul</label>
+                                    <input type="text" name="title" value="{{ $sekilas->title ?? '' }}" class="form-input" required placeholder="Judul konten sekilas">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Content</label>
-                                    <textarea name="content" class="form-input form-textarea" required></textarea>
+                                    <label class="form-label">Upload Gambar</label>
+                                    <div style="margin-bottom:8px;">
+                                        @if($sekilas && ($sekilas->image ?? false))
+                                        <img id="preview-sekilas" src="{{ $sekilas->image }}" alt="Preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
+                                        @else
+                                        <img id="preview-sekilas" src="" alt="Preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
+                                        @endif
+                                    </div>
+                                    <input type="file" name="image" accept="image/*" class="form-input" onchange="previewImage(this, 'preview-sekilas')">
+                                    <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF — Maks. 2MB</p>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Gambar</label>
-                                    <input type="file" name="image" accept="image/*" class="form-input">
+                                    <label class="form-label">Konten</label>
+                                    <textarea name="content" id="sekilas-editor" class="form-input form-textarea tinymce-editor" placeholder="Tuliskan konten sekilas PII di sini...">{{ $sekilas->content ?? '' }}</textarea>
                                 </div>
-                                <div style="display:flex;align-items:center;gap:8px;">
+                                <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
                                     <input type="hidden" name="is_active" value="0">
-                                    <input type="checkbox" name="is_active" value="1" id="sekilas-active"
-                                        style="width:16px;height:16px;accent-color:#f97316;" checked>
-                                    <label for="sekilas-active" class="form-label" style="margin:0;">Aktif</label>
+                                    <input type="checkbox" name="is_active" value="1" id="is_active_sekilas" style="width:16px;height:16px;accent-color:#f97316;" {{ ($sekilas->is_active ?? true) ? 'checked' : '' }}>
+                                    <label for="is_active_sekilas" class="form-label" style="margin:0;">Tampilkan di website</label>
                                 </div>
-                                <button type="submit" class="btn-orange"
-                                    style="width:100%;justify-content:center;margin-top:16px;">Simpan</button>
+                                <button type="submit" class="btn-orange" style="width:100%;justify-content:center;">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    Simpan Sekilas
+                                </button>
                             </form>
                         </div>
                     </div>
+
+                    {{-- Panel Visi & Misi --}}
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>🎯 Visi &amp; Misi</h3>
+                            @if(isset($visiMisis) && $visiMisis)
+                                <span class="badge-active">Tersimpan</span>
+                            @else
+                                <span class="badge-inactive">Belum ada</span>
+                            @endif
+                        </div>
+                        <div class="card-body">
+                            <form action="{{ route('admin.visiMisis.store') }}" method="POST" id="form-visi-misi">
+                                @csrf
+                                <div class="form-group">
+                                    <label class="form-label">Judul</label>
+                                    <input type="text" name="title" value="{{ $visiMisis->title ?? '' }}" class="form-input" required placeholder="contoh: Visi &amp; Misi PII">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Isi Konten</label>
+                                    <textarea name="content" id="visi-misi-editor" class="form-input form-textarea tinymce-editor" placeholder="Tuliskan visi dan misi di sini...">{{ $visiMisis->content ?? '' }}</textarea>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+                                    <input type="hidden" name="is_active" value="0">
+                                    <input type="checkbox" name="is_active" value="1" id="is_active_visi_misi" style="width:16px;height:16px;accent-color:#f97316;" {{ ($visiMisis->is_active ?? true) ? 'checked' : '' }}>
+                                    <label for="is_active_visi_misi" class="form-label" style="margin:0;">Tampilkan di website</label>
+                                </div>
+                                <button type="submit" class="btn-orange" style="width:100%;justify-content:center;">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    Simpan Visi &amp; Misi
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -1746,42 +1735,66 @@
                     <!-- List Panel -->
                     <div class="card">
                         <div class="card-header">
-                            <h3>Event & Pelatihan</h3>
+                            <h3>Daftar Event & Pelatihan</h3>
                             <button onclick="showForm(event, 'event')" class="btn-orange">
-                                <svg width="16" height="16" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 4v16m8-8H4" />
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                 </svg>
                                 Tambah Event
                             </button>
                         </div>
                         <div class="card-body">
-                            @if ($events->count() > 0)
+                            @if ($events->total() > 0)
                                 <div class="space-y-4">
                                     @foreach ($events as $e)
                                         <div class="item-row">
                                             @if ($e->image)
-                                                <img src="{{ $e->image }}" class="item-thumb"
-                                                    alt="{{ $e->title }}">
+                                                <img src="{{ $e->image }}" class="item-thumb" alt="{{ $e->title }}">
                                             @else
                                                 <div class="item-thumb-placeholder">📅</div>
                                             @endif
                                             <div class="item-info">
                                                 <div class="item-title">{{ $e->title }}</div>
                                                 <div class="item-meta" style="color:#f97316;font-weight:500;">
-                                                    {{ $e->type }} · {{ $e->event_date->format('d M Y') }}
+                                                    {{ ucfirst($e->type) }}
+                                                    @if($e->category) · {{ str_replace('_', ' ', ucwords($e->category, '_')) }} @endif
+                                                    @if($e->sub_category) · {{ $e->sub_category }} @endif
                                                 </div>
-                                                <div class="item-meta">📍 {{ $e->location }}</div>
-                                                <div style="margin-top:6px;"><span
-                                                        class="{{ $e->is_active ? 'badge-active' : 'badge-inactive' }}">{{ $e->is_active ? 'Aktif' : 'Non-Aktif' }}</span>
+                                                @if($e->event_date)
+                                                <div class="item-meta">📅 {{ $e->event_date->format('d M Y') }} @if($e->location) · 📍 {{ $e->location }} @endif</div>
+                                                @endif
+                                                <div style="margin-top:6px;">
+                                                    <span class="{{ $e->is_active ? 'badge-active' : 'badge-inactive' }}">{{ $e->is_active ? 'Aktif' : 'Non-Aktif' }}</span>
                                                 </div>
                                             </div>
-                                            <button onclick="showForm(event, 'event', {{ $e->id }})"
-                                                class="edit-btn">Edit</button>
+                                            <div style="display:flex;gap:6px;align-items:center;">
+                                                <button type="button" onclick="showForm(event, 'event', {{ $e->id }})"
+                                                    class="edit-btn"
+                                                    data-title="{{ $e->title }}"
+                                                    data-type="{{ $e->type }}"
+                                                    data-category="{{ $e->category }}"
+                                                    data-sub_category="{{ $e->sub_category }}"
+                                                    data-event_date="{{ $e->event_date ? $e->event_date->format('Y-m-d') : '' }}"
+                                                    data-location="{{ $e->location }}"
+                                                    data-link="{{ $e->link }}"
+                                                    data-current-image="{{ $e->image ?? '' }}"
+                                                    data-is_active="{{ $e->is_active ? 'true' : 'false' }}">Edit</button>
+                                                <form action="{{ route('admin.events.delete', $e->id) }}" method="POST" style="display:inline;">
+                                                    @method('DELETE')
+                                                    @csrf
+                                                    <input type="hidden" name="events_page" value="{{ $events->currentPage() }}">
+                                                    <button type="submit" style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:16px;" onclick="return confirm('Hapus event ini?')">🗑️</button>
+                                                </form>
+                                            </div>
                                         </div>
                                     @endforeach
                                 </div>
+                                {{-- Pagination --}}
+                                @if ($events->hasPages())
+                                    <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+                                        {{ $events->fragment('tab=events')->links() }}
+                                    </div>
+                                @endif
                             @else
                                 <div class="empty-state">
                                     <div class="empty-icon">📅</div>
@@ -1804,155 +1817,67 @@
                                 @csrf
                                 <input type="hidden" name="_method" value="POST" id="event-method">
                                 <div class="form-group">
-                                    <label class="form-label">Title</label>
+                                    <label class="form-label">Judul</label>
                                     <input type="text" name="title" class="form-input" required>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Type</label>
-                                    <select name="type" class="form-input">
-                                        <option value="event">Event</option>
+                                    <label class="form-label">Tipe</label>
+                                    <select name="type" class="form-input" required>
+                                        <option value="seminar">Seminar</option>
                                         <option value="pelatihan">Pelatihan</option>
+                                        <option value="konvensi">Konvensi</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Event Date</label>
-                                    <input type="date" name="event_date" class="form-input" required>
+                                    <label class="form-label">Kategori</label>
+                                    <select name="category" class="form-input">
+                                        <option value="">-- Pilih Kategori --</option>
+                                        <option value="nasional">Nasional</option>
+                                        <option value="internasional">Internasional</option>
+                                        <option value="regional">Regional</option>
+                                        <option value="online">Online</option>
+                                    </select>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Location</label>
-                                    <input type="text" name="location" class="form-input" required>
+                                    <label class="form-label">Sub Kategori (Opsional)</label>
+                                    <input type="text" name="sub_category" class="form-input" placeholder="Tuliskan sub kategori bebas...">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Description</label>
-                                    <textarea name="description" class="form-input form-textarea" required></textarea>
+                                    <label class="form-label">Tanggal Event</label>
+                                    <input type="date" name="event_date" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Lokasi</label>
+                                    <input type="text" name="location" class="form-input" placeholder="Kota / Online">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Link Pendaftaran (Opsional)</label>
+                                    <input type="text" name="link" class="form-input" placeholder="https://...">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Konten</label>
+                                    <textarea name="content" id="event-content" class="form-input form-textarea tinymce-editor" rows="10"></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Gambar</label>
-                                    <input type="file" name="image" accept="image/*" class="form-input">
+                                    <input type="file" name="image" accept="image/*" class="form-input" onchange="previewEventImage(event)">
+                                    <div id="event-image-preview-wrap" style="margin-top:10px;display:none;">
+                                        <img id="event-image-preview" src="" alt="Preview" style="max-width:200px;max-height:140px;border-radius:8px;border:1px solid #e2e8f0;object-fit:cover;">
+                                    </div>
                                 </div>
-                                <div style="display:flex;align-items:center;gap:8px;">
+                                <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
                                     <input type="hidden" name="is_active" value="0">
                                     <input type="checkbox" name="is_active" value="1" id="event-active"
                                         style="width:16px;height:16px;accent-color:#f97316;" checked>
                                     <label for="event-active" class="form-label" style="margin:0;">Aktif</label>
                                 </div>
-                                <button type="submit" class="btn-orange"
-                                    style="width:100%;justify-content:center;margin-top:16px;">Simpan</button>
+                                <button type="submit" class="btn-orange" style="width:100%;justify-content:center;">Simpan Event</button>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- ==================== ARTIKEL ==================== --}}
-            <div id="tab-artikels" class="tab-panel">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- List Panel -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Artikel</h3>
-                            <button onclick="showForm(event, 'artikel')" class="btn-orange">
-                                <svg width="16" height="16" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 4v16m8-8H4" />
-                                </svg>
-                                Tambah Artikel
-                            </button>
-                        </div>
-                        <div class="card-body">
-                            @if ($artikels->count() > 0)
-                                <div class="space-y-4">
-                                    @foreach ($artikels as $a)
-                                        <div class="item-row">
-                                            @if ($a->image)
-                                                <img src="{{ $a->image }}" class="item-thumb"
-                                                    alt="{{ $a->title }}">
-                                            @else
-                                                <div class="item-thumb-placeholder">📝</div>
-                                            @endif
-                                            <div class="item-info">
-                                                <div class="item-title">{{ $a->title }}</div>
-                                                <div class="item-meta" style="color:#f97316;font-weight:500;">
-                                                    {{ str_replace('_', ' ', $a->category) }} · {{ $a->author }}
-                                                </div>
-                                                <div class="item-meta">{{ Str::limit($a->excerpt, 60) }}</div>
-                                                <div style="margin-top:6px;display:flex;gap:8px;align-items:center;">
-                                                    <span
-                                                        class="{{ $a->is_active ? 'badge-active' : 'badge-inactive' }}">{{ $a->is_active ? 'Aktif' : 'Non-Aktif' }}</span>
-                                                    @if ($a->published_at)
-                                                        <span
-                                                            style="font-size:11px;color:#d1d5db;">{{ $a->published_at->format('d M Y') }}</span>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                            <button onclick="showForm(event, 'artikel', {{ $a->id }})"
-                                                class="edit-btn">Edit</button>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @else
-                                <div class="empty-state">
-                                    <div class="empty-icon">📝</div>
-                                    <div class="empty-title">Belum ada Artikel</div>
-                                    <div class="empty-desc">Tulis artikel informatif untuk anggota PII</div>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-
-                    <!-- Form Panel -->
-                    <div id="form-panel-artikel" class="card" style="display:none;">
-                        <div class="card-header">
-                            <h3 id="form-title-artikel">Tambah Artikel</h3>
-                            <button onclick="hideForm('artikel')" class="btn-cancel">Batal</button>
-                        </div>
-                        <div class="card-body">
-                            <form action="{{ route('admin.artikels.store') }}" method="POST"
-                                enctype="multipart/form-data" id="form-artikel">
-                                @csrf
-                                <input type="hidden" name="_method" value="POST" id="artikel-method">
-                                <div class="form-group">
-                                    <label class="form-label">Title</label>
-                                    <input type="text" name="title" class="form-input" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Category</label>
-                                    <select name="category" class="form-input">
-                                        <option value="teknik">Teknik</option>
-                                        <option value="non_teknik">Non Teknik</option>
-                                        <option value="umum">Umum</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Author</label>
-                                    <input type="text" name="author" class="form-input" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Excerpt</label>
-                                    <textarea name="excerpt" class="form-input form-textarea" rows="3" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Content</label>
-                                    <textarea name="content" class="form-input form-textarea" rows="6" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Gambar</label>
-                                    <input type="file" name="image" accept="image/*" class="form-input">
-                                </div>
-                                <div style="display:flex;align-items:center;gap:8px;">
-                                    <input type="hidden" name="is_active" value="0">
-                                    <input type="checkbox" name="is_active" value="1" id="artikel-active"
-                                        style="width:16px;height:16px;accent-color:#f97316;" checked>
-                                    <label for="artikel-active" class="form-label" style="margin:0;">Aktif</label>
-                                </div>
-                                <button type="submit" class="btn-orange"
-                                    style="width:100%;justify-content:center;margin-top:16px;">Simpan</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             {{-- ==================== GALLERY ==================== --}}
             <div id="tab-galleries" class="tab-panel">
@@ -2439,7 +2364,6 @@
             strukturs: 'Struktur Organisasi',
             kontaks: 'Kontak',
             events: 'Event & Pelatihan',
-            artikels: 'Artikel',
             galleries: 'Gallery',
             kemitraans: 'Kemitraan',
             users: 'Manajemen User',
@@ -2455,7 +2379,6 @@
             struktur: 'strukturs',
             kontak: 'kontaks',
             event: 'events',
-            artikel: 'artikels',
             gallery: 'galleries',
             kemitraan: 'kemitraans',
             user: 'users',
@@ -2511,6 +2434,30 @@
                 }
             }
         })();
+
+        function previewEventImage(e) {
+            const file = e.target.files && e.target.files[0];
+            const wrap = document.getElementById('event-image-preview-wrap');
+            const img = document.getElementById('event-image-preview');
+            if (file && wrap && img) {
+                const reader = new FileReader();
+                reader.onload = (ev) => { img.src = ev.target.result; wrap.style.display = 'block'; };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function previewImage(input, previewId) {
+            const preview = document.getElementById(previewId);
+            if (!preview) return;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
 
         function capitalize(str) {
             return str.charAt(0).toUpperCase() + str.slice(1);
@@ -2572,11 +2519,23 @@
                     input.required = false;
                 });
 
-                // Set image preview from data-current-image (berita)
+                // Set image preview from data-current-image (berita / event)
                 if (type === 'berita') {
                     const btnEl = event && event.currentTarget ? event.currentTarget : null;
                     const currentImage = btnEl ? btnEl.getAttribute('data-current-image') : '';
                     setBeritaImagePreview(currentImage || '');
+                }
+                if (type === 'event') {
+                    const btnEl = event && event.currentTarget ? event.currentTarget : null;
+                    const currentImage = btnEl ? btnEl.getAttribute('data-current-image') : '';
+                    const wrap = document.getElementById('event-image-preview-wrap');
+                    const img = document.getElementById('event-image-preview');
+                    if (wrap && img && currentImage) {
+                        img.src = currentImage;
+                        wrap.style.display = 'block';
+                    } else if (wrap) {
+                        wrap.style.display = 'none';
+                    }
                 }
 
                 // Primary: populate from clicked button's data-* attributes
@@ -2643,6 +2602,10 @@
                 form.action = '/admin/' + pluralType;
                 form.reset();
                 if (type === 'berita') setBeritaImagePreview('');
+                if (type === 'event') {
+                    const wrap = document.getElementById('event-image-preview-wrap');
+                    if (wrap) wrap.style.display = 'none';
+                }
                 // Reset TinyMCE editors in this form
                 form.querySelectorAll('.tinymce-editor').forEach(textarea => {
                     if (typeof tinymce !== 'undefined') {
@@ -2715,6 +2678,58 @@
 
             // Hide cancel button
             const cancelBtn = document.getElementById('ketua-umum-cancel');
+            if (cancelBtn) cancelBtn.style.display = 'none';
+        }
+
+        // ---- VISI MISI EDIT FUNCTIONS ----
+        function editVisiMisi(event, id) {
+            const btn = event.currentTarget;
+            if (!btn) return;
+
+            const form = document.getElementById('form-visi-misi');
+            if (!form) return;
+
+            document.getElementById('form-title-visi-misi').textContent = 'Edit Visi & Misi';
+            document.getElementById('visi-misi-method').value = 'PUT';
+            document.getElementById('visi-misi-id').value = id;
+            form.action = '/admin/visi-misis/' + id;
+
+            // Populate title
+            const title = btn.getAttribute('data-title') || '';
+            document.getElementById('visi-misi-title').value = title;
+
+            // Populate is_active
+            const isActive = btn.getAttribute('data-is_active');
+            document.getElementById('is_active_visi_misi').checked = isActive === 'true' || isActive === '1';
+
+            // Populate TinyMCE content
+            const content = btn.getAttribute('data-content') || '';
+            const editor = typeof tinymce !== 'undefined' ? tinymce.get('visi-misi-editor') : null;
+            if (editor) {
+                editor.setContent(content);
+            } else {
+                document.getElementById('visi-misi-editor').value = content;
+            }
+
+            // Show cancel button
+            const cancelBtn = document.getElementById('visi-misi-cancel-btn');
+            if (cancelBtn) cancelBtn.style.display = '';
+        }
+
+        function cancelVisiMisi() {
+            const form = document.getElementById('form-visi-misi');
+            if (!form) return;
+
+            document.getElementById('form-title-visi-misi').textContent = 'Tambah Visi & Misi';
+            document.getElementById('visi-misi-method').value = 'POST';
+            document.getElementById('visi-misi-id').value = '';
+            form.action = '{{ route("admin.visiMisis.store") }}';
+            form.reset();
+
+            const editor = typeof tinymce !== 'undefined' ? tinymce.get('visi-misi-editor') : null;
+            if (editor) editor.setContent('');
+
+            const cancelBtn = document.getElementById('visi-misi-cancel-btn');
             if (cancelBtn) cancelBtn.style.display = 'none';
         }
 
@@ -2938,10 +2953,8 @@
                 contentArea.style.opacity = '0.5';
                 contentArea.style.pointerEvents = 'none';
 
-                // Get current page from URL
-                const urlParams = new URLSearchParams(window.location.search);
-                const currentPage = urlParams.get('page') || '1';
-                const fetchUrl = '/admin?page=' + currentPage;
+                // Preserve all pagination query params (page, events_page, etc.)
+                const fetchUrl = '/admin' + (window.location.search || '');
 
                 const response = await fetch(fetchUrl, {
                     headers: {

@@ -8,6 +8,7 @@ use App\Models\Sekila;
 use App\Models\StrukturOrganisasi;
 use App\Models\Kontak;
 use App\Models\KetuaUmum;
+use App\Models\VisiMisi;
 
 class TentangPiiController extends Controller
 {
@@ -21,7 +22,8 @@ class TentangPiiController extends Controller
     public function sekilas()
     {
         $sekilas = Sekila::where('is_active', true)->first();
-        return view('tentang.sekilas', compact('sekilas'));
+        $visiMisi = VisiMisi::where('is_active', true)->first();
+        return view('tentang.sekilas', compact('sekilas', 'visiMisi'));
     }
 
     public function struktur()

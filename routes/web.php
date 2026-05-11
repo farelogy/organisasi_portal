@@ -90,6 +90,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/sekilas', [AdminController::class, 'storeSekila'])->name('sekilas.store');
     Route::get('/sekilas/{id}/edit', [AdminController::class, 'editSekila'])->name('sekilas.edit');
     Route::put('/sekilas/{id}', [AdminController::class, 'updateSekila'])->name('sekilas.update');
+
+    // Visi Misi routes
+    Route::post('/visi-misis', [AdminController::class, 'storeVisiMisi'])->name('visiMisis.store');
+    Route::put('/visi-misis/{id}', [AdminController::class, 'updateVisiMisi'])->name('visiMisis.update');
     
     // Struktur routes
     Route::get('/strukturs/create', [AdminController::class, 'createStruktur'])->name('strukturs.create');
@@ -108,6 +112,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/events', [AdminController::class, 'storeEvent'])->name('events.store');
     Route::get('/events/{id}/edit', [AdminController::class, 'editEvent'])->name('events.edit');
     Route::put('/events/{id}', [AdminController::class, 'updateEvent'])->name('events.update');
+    Route::delete('/events/{id}', [AdminController::class, 'deleteEvent'])->name('events.delete');
     
     // Artikel routes
     Route::get('/artikels/create', [AdminController::class, 'createArtikel'])->name('artikels.create');

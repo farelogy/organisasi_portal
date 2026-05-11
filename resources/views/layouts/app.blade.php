@@ -9,6 +9,7 @@
         <link rel="icon" type="image/x-icon" href="{{ $site_settings['site_favicon'] }}">
     @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('styles')
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init({
