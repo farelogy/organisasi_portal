@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -20,7 +22,17 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
+        $throttleKey = 'login.' . Str::lower($request->input('email')) . '|' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            return back()->withErrors([
+                'email' => "Terlalu banyak percobaan login. Coba lagi dalam {$seconds} detik.",
+            ])->withInput($request->only('email'));
+        }
+
         if (Auth::attempt($credentials)) {
+            RateLimiter::clear($throttleKey);
             $request->session()->regenerate();
             
             // Check if user is admin
@@ -31,9 +43,14 @@ class AuthController extends Controller
             return redirect()->intended(route('home'));
         }
 
+        RateLimiter::hit($throttleKey, 60);
+
+        $remaining = RateLimiter::remaining($throttleKey, 5);
+        $attemptsLeft = $remaining > 0 ? " ({$remaining} percobaan tersisa)" : '';
+
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
+            'email' => 'Email atau password yang dimasukkan salah.' . $attemptsLeft,
+        ])->withInput($request->only('email'));
     }
 
     public function logout(Request $request)

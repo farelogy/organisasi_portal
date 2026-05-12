@@ -28,7 +28,7 @@ class TentangPiiController extends Controller
 
     public function struktur()
     {
-        $struktur = StrukturOrganisasi::where('is_active', true)->orderBy('order')->get();
+        $struktur = StrukturOrganisasi::where('is_active', true)->first();
         return view('tentang.struktur', compact('struktur'));
     }
 

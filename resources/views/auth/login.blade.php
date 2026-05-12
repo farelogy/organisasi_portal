@@ -11,9 +11,13 @@
         <div class="max-w-md w-full space-y-8">
             <div>
                 <div class="flex justify-center">
-                    <div class="w-20 h-20 bg-orange-500 rounded-full flex items-center justify-center">
-                        <span class="text-white font-bold text-3xl">PII</span>
-                    </div>
+                    @if(!empty($site_settings['site_logo']))
+                        <img src="{{ $site_settings['site_logo'] }}" alt="Logo" class="h-20 w-auto object-contain">
+                    @else
+                        <div class="w-20 h-20 bg-orange-500 rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold text-3xl">PII</span>
+                        </div>
+                    @endif
                 </div>
                 <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
                     Login Admin
@@ -24,8 +28,14 @@
             </div>
 
             @if($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                <ul class="list-disc list-inside">
+            @php
+                $isLockout = str_contains($errors->first('email') ?? '', 'Coba lagi dalam');
+            @endphp
+            <div class="{{ $isLockout ? 'bg-orange-50 border border-orange-400 text-orange-700' : 'bg-red-100 border border-red-400 text-red-700' }} px-4 py-3 rounded">
+                @if($isLockout)
+                    <p class="font-semibold text-sm">&#128274; Akses sementara diblokir</p>
+                @endif
+                <ul class="list-disc list-inside text-sm mt-1">
                     @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
                     @endforeach

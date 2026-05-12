@@ -821,7 +821,7 @@
             </button>
             <button onclick="showTab('strukturs')" id="nav-strukturs" class="nav-item">
                 <span class="nav-icon">👥</span> Struktur Org.
-                <span class="nav-count">{{ $strukturs->count() }}</span>
+                @if($strukturs)<span class="nav-count">1</span>@endif
             </button>
             <button onclick="showTab('kontaks')" id="nav-kontaks" class="nav-item">
                 <span class="nav-icon">📞</span> Kontak
@@ -839,13 +839,13 @@
             </button>
             <button onclick="showTab('kemitraans')" id="nav-kemitraans" class="nav-item">
                 <span class="nav-icon">🤝</span> Kemitraan
-                <span class="nav-count">{{ $kemitraans->count() }}</span>
+                <span class="nav-count">{{ $kemitraans->total() }}</span>
             </button>
 
             <div class="nav-label">Manajemen</div>
             <button onclick="showTab('users')" id="nav-users" class="nav-item">
                 <span class="nav-icon">👤</span> Users
-                <span class="nav-count">{{ $users->count() }}</span>
+                <span class="nav-count">{{ $users->total() }}</span>
             </button>
             <button onclick="showTab('settings')" id="nav-settings" class="nav-item">
                 <span class="nav-icon">⚙️</span> Pengaturan Situs
@@ -1565,97 +1565,66 @@
 
             {{-- ==================== STRUKTUR ==================== --}}
             <div id="tab-strukturs" class="tab-panel">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- List Panel -->
+                <div style="max-width:700px;">
                     <div class="card">
                         <div class="card-header">
-                            <h3>Struktur Organisasi</h3>
-                            <button onclick="showForm(event, 'struktur')" class="btn-orange">
-                                <svg width="16" height="16" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 4v16m8-8H4" />
-                                </svg>
-                                Tambah Anggota
-                            </button>
-                        </div>
-                        <div class="card-body">
-                            @if ($strukturs->count() > 0)
-                                <div class="space-y-4">
-                                    @foreach ($strukturs as $s)
-                                        <div class="item-row">
-                                            @if ($s->photo)
-                                                <img src="{{ $s->photo }}" class="item-thumb"
-                                                    alt="{{ $s->name }}" style="border-radius:50%;">
-                                            @else
-                                                <div class="item-thumb-placeholder" style="border-radius:50%;">👤
-                                                </div>
-                                            @endif
-                                            <div class="item-info">
-                                                <div class="item-title">{{ $s->name }}</div>
-                                                <div class="item-meta" style="color:#f97316;font-weight:500;">
-                                                    {{ $s->position }}</div>
-                                                <div style="margin-top:6px;display:flex;gap:8px;align-items:center;">
-                                                    <span
-                                                        class="{{ $s->is_active ? 'badge-active' : 'badge-inactive' }}">{{ $s->is_active ? 'Aktif' : 'Non-Aktif' }}</span>
-                                                    <span style="font-size:11px;color:#d1d5db;">Order:
-                                                        {{ $s->order }}</span>
-                                                </div>
-                                            </div>
-                                            <button onclick="showForm(event, 'struktur', {{ $s->id }})"
-                                                class="edit-btn">Edit</button>
-                                        </div>
-                                    @endforeach
-                                </div>
+                            <h3>👥 Konten Struktur Organisasi</h3>
+                            @if ($strukturs)
+                                <span class="badge-active">Tersimpan</span>
                             @else
-                                <div class="empty-state">
-                                    <div class="empty-icon">👥</div>
-                                    <div class="empty-title">Belum ada data</div>
-                                    <div class="empty-desc">Tambahkan anggota struktur organisasi PII</div>
-                                </div>
+                                <span class="badge-inactive">Belum ada</span>
                             @endif
-                        </div>
-                    </div>
-
-                    <!-- Form Panel -->
-                    <div id="form-panel-struktur" class="card" style="display:none;">
-                        <div class="card-header">
-                            <h3 id="form-title-struktur">Tambah Anggota</h3>
-                            <button onclick="hideForm('struktur')" class="btn-cancel">Batal</button>
                         </div>
                         <div class="card-body">
                             <form action="{{ route('admin.strukturs.store') }}" method="POST"
-                                enctype="multipart/form-data" id="form-struktur">
+                                enctype="multipart/form-data">
                                 @csrf
-                                <input type="hidden" name="_method" value="POST" id="struktur-method">
+                                @if ($errors->any())
+                                    <div
+                                        style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#b91c1c;">
+                                        @foreach ($errors->all() as $e)
+                                            <div>• {{ $e }}</div>
+                                        @endforeach
+                                    </div>
+                                @endif
                                 <div class="form-group">
-                                    <label class="form-label">Nama</label>
-                                    <input type="text" name="name" class="form-input" required>
+                                    <label class="form-label">Judul</label>
+                                    <input type="text" name="title" value="{{ $strukturs->title ?? '' }}"
+                                        class="form-input" required placeholder="Judul konten struktur organisasi">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Position</label>
-                                    <input type="text" name="position" class="form-input" required>
+                                    <label class="form-label">Upload Gambar</label>
+                                    <div style="margin-bottom:8px;">
+                                        @if($strukturs && ($strukturs->image ?? false))
+                                        <img id="preview-struktur" src="{{ Str::startsWith($strukturs->image, ['http://', 'https://']) ? $strukturs->image : asset($strukturs->image) }}" alt="Preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
+                                        @else
+                                        <img id="preview-struktur" src="" alt="Preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
+                                        @endif
+                                    </div>
+                                    <input type="file" name="image" accept="image/*" class="form-input" onchange="previewImage(this, 'preview-struktur')">
+                                    <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF — Maks. 2MB</p>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Description</label>
-                                    <textarea name="description" class="form-input form-textarea"></textarea>
+                                    <label class="form-label">Konten</label>
+                                    <textarea name="content" id="struktur-editor" class="form-input form-textarea tinymce-editor"
+                                        placeholder="Tuliskan konten struktur organisasi PII di sini...">{{ $strukturs->content ?? '' }}</textarea>
                                 </div>
-                                <div class="form-group">
-                                    <label class="form-label">Foto</label>
-                                    <input type="file" name="photo" accept="image/*" class="form-input">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Urutan</label>
-                                    <input type="number" name="order" value="0" class="form-input">
-                                </div>
-                                <div style="display:flex;align-items:center;gap:8px;">
+                                <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
                                     <input type="hidden" name="is_active" value="0">
-                                    <input type="checkbox" name="is_active" value="1" id="struktur-active"
-                                        style="width:16px;height:16px;accent-color:#f97316;" checked>
-                                    <label for="struktur-active" class="form-label" style="margin:0;">Aktif</label>
+                                    <input type="checkbox" name="is_active" value="1" id="is_active_struktur"
+                                        style="width:16px;height:16px;accent-color:#f97316;"
+                                        {{ $strukturs->is_active ?? true ? 'checked' : '' }}>
+                                    <label for="is_active_struktur" class="form-label" style="margin:0;">Tampilkan di
+                                        website</label>
                                 </div>
-                                <button type="submit" class="btn-orange"
-                                    style="width:100%;justify-content:center;margin-top:16px;">Simpan</button>
+                                <button type="submit" class="btn-orange" style="width:100%;justify-content:center;">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Simpan Struktur Organisasi
+                                </button>
                             </form>
                         </div>
                     </div>
@@ -2063,11 +2032,38 @@
                                                         {{ $km->order }}</span>
                                                 </div>
                                             </div>
-                                            <button onclick="showForm(event, 'kemitraan', {{ $km->id }})"
-                                                class="edit-btn">Edit</button>
+                                            <div style="display:flex;gap:6px;align-items:center;">
+                                                <button type="button"
+                                                    onclick="showForm(event, 'kemitraan', {{ $km->id }})"
+                                                    class="edit-btn"
+                                                    data-name="{{ $km->name }}"
+                                                    data-type="{{ $km->type }}"
+                                                    data-description="{{ $km->description }}"
+                                                    data-logo="{{ $km->logo }}"
+                                                    data-link="{{ $km->link }}"
+                                                    data-order="{{ $km->order }}"
+                                                    data-is_active="{{ $km->is_active ? 'true' : 'false' }}"
+                                                    data-current-image="{{ $km->logo }}">Edit</button>
+                                                <form action="{{ route('admin.kemitraans.delete', $km->id) }}"
+                                                    method="POST" style="display:inline;">
+                                                    @method('DELETE')
+                                                    @csrf
+                                                    <input type="hidden" name="kemitraans_page"
+                                                        value="{{ request()->get('kemitraans_page', 1) }}">
+                                                    <button type="submit"
+                                                        style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:16px;"
+                                                        onclick="return confirm('Hapus kemitraan ini?')">🗑️</button>
+                                                </form>
+                                            </div>
                                         </div>
                                     @endforeach
                                 </div>
+                                <!-- Pagination -->
+                                @if ($kemitraans->hasPages())
+                                    <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+                                        {{ $kemitraans->fragment('tab=kemitraans')->links() }}
+                                    </div>
+                                @endif
                             @else
                                 <div class="empty-state">
                                     <div class="empty-icon">🤝</div>
@@ -2095,19 +2091,30 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Type</label>
-                                    <select name="type" class="form-input">
-                                        <option value="mitra">Mitra</option>
-                                        <option value="rekanan">Rekanan</option>
-                                        <option value="sponsor">Sponsor</option>
+                                    <select name="type" id="kemitraan-type" class="form-input">
+                                        <option value="kerjasama_kampus">Kerjasama Kampus</option>
+                                        <option value="kerjasama_industri">Kerjasama Industri</option>
+                                        <option value="program_pemerintah">Program Pemerintah</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Description</label>
-                                    <textarea name="description" class="form-input form-textarea"></textarea>
+                                    <textarea name="description" id="kemitraan-description" class="form-input form-textarea"></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Logo</label>
-                                    <input type="file" name="logo" accept="image/*" class="form-input">
+                                    <input type="file" name="logo" accept="image/*" class="form-input"
+                                        onchange="previewKemitraanImage(this)">
+                                    <div id="kemitraan-image-preview-wrap" style="margin-top:8px;display:none;">
+                                        <p id="kemitraan-image-preview-label" style="font-size:11px;color:#6b7280;margin-bottom:4px;">Preview</p>
+                                        <img id="kemitraan-image-preview" src=""
+                                            style="max-height:100px;border-radius:6px;border:1px solid #e5e7eb;background:#f9fafb;padding:4px;">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Link</label>
+                                    <input type="text" name="link" id="kemitraan-link" class="form-input"
+                                        placeholder="https://...">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Urutan</label>
@@ -2168,6 +2175,12 @@
                                         </div>
                                     @endforeach
                                 </div>
+                                <!-- Pagination -->
+                                @if ($users->hasPages())
+                                    <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+                                        {{ $users->fragment('tab=users')->links() }}
+                                    </div>
+                                @endif
                             @else
                                 <div class="empty-state">
                                     <div class="empty-icon">👤</div>
@@ -2202,7 +2215,21 @@
                                 <div class="form-group">
                                     <label class="form-label">Password</label>
                                     <input type="password" name="password" id="user-password" class="form-input"
-                                        placeholder="Kosongkan untuk tetap menggunakan password saat ini (mode edit)">
+                                        placeholder="Kosongkan untuk tetap menggunakan password saat ini (mode edit)"
+                                        oninput="checkPasswordStrength(this.value)">
+                                    <div id="password-strength-bar" style="height:4px;border-radius:4px;margin-top:6px;background:#e5e7eb;overflow:hidden;">
+                                        <div id="password-strength-fill" style="height:100%;width:0%;transition:width 0.3s,background 0.3s;border-radius:4px;"></div>
+                                    </div>
+                                    <p id="password-strength-text" style="font-size:11px;margin-top:4px;color:#9ca3af;"></p>
+                                    <p style="font-size:11px;color:#6b7280;margin-top:4px;">
+                                        Min. 8 karakter &bull; Huruf besar &amp; kecil &bull; Angka
+                                    </p>
+                                </div>
+                                <div class="form-group" id="password-confirm-group">
+                                    <label class="form-label">Konfirmasi Password</label>
+                                    <input type="password" name="password_confirmation" id="user-password-confirm" class="form-input"
+                                        placeholder="Ulangi password" oninput="checkPasswordMatch()">
+                                    <p id="password-match-text" style="font-size:11px;margin-top:4px;"></p>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Role</label>
@@ -2582,6 +2609,13 @@
                     }
                 }
 
+                // Set image preview for kemitraan
+                if (type === 'kemitraan') {
+                    const btnEl = event && event.currentTarget ? event.currentTarget : null;
+                    const currentImage = btnEl ? btnEl.getAttribute('data-current-image') : '';
+                    setKemitraanImagePreview(currentImage || '');
+                }
+
                 // Set image preview for hero
                 if (type === 'hero') {
                     const btnEl = event && event.currentTarget ? event.currentTarget : null;
@@ -2667,6 +2701,8 @@
                     const wrap = document.getElementById('event-image-preview-wrap');
                     if (wrap) wrap.style.display = 'none';
                 }
+                if (type === 'kemitraan') setKemitraanImagePreview('');
+                if (type === 'user') resetPasswordUI();
                 // Reset TinyMCE editors in this form
                 form.querySelectorAll('.tinymce-editor').forEach(textarea => {
                     if (typeof tinymce !== 'undefined') {
@@ -2685,6 +2721,7 @@
                 panel.classList.remove('active');
                 panel.style.display = 'none';
             }
+            if (type === 'user') resetPasswordUI();
         }
 
         // ---- KETUA UMUM EDIT FUNCTIONS ----
@@ -3098,6 +3135,97 @@
                     }
                 });
             });
+        }
+
+        // ---- KEMITRAAN IMAGE PREVIEW ----
+        function previewKemitraanImage(input) {
+            const wrap = document.getElementById('kemitraan-image-preview-wrap');
+            const img = document.getElementById('kemitraan-image-preview');
+            const label = document.getElementById('kemitraan-image-preview-label');
+            if (!wrap || !img || !input.files || !input.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result;
+                wrap.style.display = 'block';
+                if (label) label.textContent = 'Preview gambar baru';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+
+        function setKemitraanImagePreview(url) {
+            const wrap = document.getElementById('kemitraan-image-preview-wrap');
+            const img = document.getElementById('kemitraan-image-preview');
+            const label = document.getElementById('kemitraan-image-preview-label');
+            if (!wrap || !img) return;
+            if (url) {
+                img.src = url;
+                wrap.style.display = 'block';
+                if (label) label.textContent = 'Logo saat ini';
+            } else {
+                img.src = '';
+                wrap.style.display = 'none';
+            }
+        }
+
+        // ---- PASSWORD STRENGTH ----
+        function checkPasswordStrength(value) {
+            const fill = document.getElementById('password-strength-fill');
+            const text = document.getElementById('password-strength-text');
+            if (!fill || !text) return;
+
+            if (!value) {
+                fill.style.width = '0%';
+                text.textContent = '';
+                checkPasswordMatch();
+                return;
+            }
+
+            let score = 0;
+            if (value.length >= 8)  score++;
+            if (value.length >= 12) score++;
+            if (/[a-z]/.test(value) && /[A-Z]/.test(value)) score++;
+            if (/[0-9]/.test(value)) score++;
+            if (/[^a-zA-Z0-9]/.test(value)) score++;
+
+            const levels = [
+                { label: 'Sangat Lemah', color: '#ef4444', width: '20%' },
+                { label: 'Lemah',        color: '#f97316', width: '40%' },
+                { label: 'Cukup',        color: '#eab308', width: '60%' },
+                { label: 'Kuat',         color: '#22c55e', width: '80%' },
+                { label: 'Sangat Kuat',  color: '#16a34a', width: '100%' },
+            ];
+            const level = levels[Math.min(score - 1, 4)] || levels[0];
+            fill.style.width  = level.width;
+            fill.style.background = level.color;
+            text.style.color  = level.color;
+            text.textContent  = level.label;
+            checkPasswordMatch();
+        }
+
+        function checkPasswordMatch() {
+            const pw  = document.getElementById('user-password');
+            const cfg = document.getElementById('user-password-confirm');
+            const msg = document.getElementById('password-match-text');
+            if (!pw || !cfg || !msg) return;
+            if (!cfg.value) { msg.textContent = ''; return; }
+            if (pw.value === cfg.value) {
+                msg.style.color = '#22c55e';
+                msg.textContent = '✓ Password cocok';
+            } else {
+                msg.style.color = '#ef4444';
+                msg.textContent = '✕ Password tidak cocok';
+            }
+        }
+
+        function resetPasswordUI() {
+            const fill = document.getElementById('password-strength-fill');
+            const text = document.getElementById('password-strength-text');
+            const match = document.getElementById('password-match-text');
+            const cfg = document.getElementById('user-password-confirm');
+            if (fill)  { fill.style.width = '0%'; fill.style.background = ''; }
+            if (text)  text.textContent = '';
+            if (match) match.textContent = '';
+            if (cfg)   cfg.value = '';
         }
 
         // Initialize

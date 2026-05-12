@@ -20,6 +20,7 @@ use App\Models\VisiMisi;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rules\Password;
 
 class AdminController extends Controller
 {
@@ -39,16 +40,16 @@ class AdminController extends Controller
             ->paginate(10);
         $sejarah = Sejarah::first();
         $sekilas = Sekila::first();
-        $strukturs = StrukturOrganisasi::orderBy('order')->get();
+        $strukturs = StrukturOrganisasi::first();
         $kontaks = Kontak::all();
         $events = Event::orderBy('event_date', 'desc')
             ->paginate(10, ['*'], 'events_page');
         $artikels = Artikel::all();
         $galleries = Gallery::orderBy('order')
             ->paginate(10, ['*'], 'galleries_page');
-        $kemitraans = Kemitraan::orderBy('order')->get();
+        $kemitraans = Kemitraan::orderBy('order')->paginate(10, ['*'], 'kemitraans_page');
         $ketuaUmums = KetuaUmum::orderBy('order')->get();
-        $users = User::all();
+        $users = User::orderBy('name')->paginate(10, ['*'], 'users_page');
         $visiMisis = VisiMisi::first();
 
         return view('admin.index', compact(
@@ -607,49 +608,32 @@ class AdminController extends Controller
         return $this->ajaxResponse($request, 'Visi & Misi berhasil diperbarui.');
     }
 
-    // Struktur Organisasi methods
-    public function createStruktur()
-    {
-        return view('admin.strukturs.create');
-    }
-
+    // Struktur Organisasi methods (single record, like sejarah)
     public function storeStruktur(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'position' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'photo' => 'nullable|string',
-            'order' => 'integer',
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'boolean',
         ]);
 
-        StrukturOrganisasi::create($validated);
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/struktur'), $imageName);
+            $validated['image'] = 'uploads/struktur/' . $imageName;
+        }
 
-        return $this->ajaxResponse($request, 'Struktur berhasil ditambahkan.');
-    }
+        // Single record: update if exists, otherwise create
+        $struktur = StrukturOrganisasi::first();
+        if ($struktur) {
+            $struktur->update($validated);
+        } else {
+            StrukturOrganisasi::create($validated);
+        }
 
-    public function editStruktur($id)
-    {
-        $struktur = StrukturOrganisasi::findOrFail($id);
-        return view('admin.strukturs.edit', compact('struktur'));
-    }
-
-    public function updateStruktur(Request $request, $id)
-    {
-        $struktur = StrukturOrganisasi::findOrFail($id);
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'position' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'photo' => 'nullable|string',
-            'order' => 'integer',
-            'is_active' => 'boolean',
-        ]);
-
-        $struktur->update($validated);
-
-        return $this->ajaxResponse($request, 'Struktur berhasil diperbarui.');
+        return $this->ajaxResponse($request, 'Struktur Organisasi berhasil disimpan.');
     }
 
     // Kontak methods
@@ -951,11 +935,20 @@ class AdminController extends Controller
             'type' => 'required|string|max:255',
             'description' => 'required|string',
             'content' => 'nullable|string',
-            'logo' => 'nullable|string',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'link' => 'nullable|string|max:255',
             'order' => 'integer',
             'is_active' => 'boolean',
         ]);
+
+        if ($request->hasFile('logo')) {
+            $image = $request->file('logo');
+            $imageName = time() . '_kemitraan.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/kemitraans'), $imageName);
+            $validated['logo'] = 'uploads/kemitraans/' . $imageName;
+        } else {
+            unset($validated['logo']);
+        }
 
         Kemitraan::create($validated);
 
@@ -976,15 +969,43 @@ class AdminController extends Controller
             'type' => 'required|string|max:255',
             'description' => 'required|string',
             'content' => 'nullable|string',
-            'logo' => 'nullable|string',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'link' => 'nullable|string|max:255',
             'order' => 'integer',
             'is_active' => 'boolean',
         ]);
 
+        if ($request->hasFile('logo')) {
+            $image = $request->file('logo');
+            $imageName = time() . '_kemitraan.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/kemitraans'), $imageName);
+            $validated['logo'] = 'uploads/kemitraans/' . $imageName;
+        } else {
+            unset($validated['logo']);
+        }
+
         $kemitraan->update($validated);
 
         return $this->ajaxResponse($request, 'Kemitraan berhasil diperbarui.');
+    }
+
+    public function deleteKemitraan(Request $request, $id)
+    {
+        $kemitraan = Kemitraan::findOrFail($id);
+        $kemitraan->delete();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Kemitraan berhasil dihapus.']);
+        }
+
+        $currentPage = (int) $request->input('kemitraans_page', 1);
+        $totalItems = Kemitraan::count();
+        $perPage = 10;
+        $lastPage = max(1, (int) ceil($totalItems / $perPage));
+        $redirectPage = min(max(1, $currentPage), $lastPage);
+
+        $redirectUrl = url('/admin?kemitraans_page=' . $redirectPage . '#tab=kemitraans');
+        return redirect($redirectUrl)->with('success', 'Kemitraan berhasil dihapus.');
     }
 
     // User management methods
@@ -993,7 +1014,8 @@ class AdminController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
+            'password' => ['required', Password::min(8)->mixedCase()->numbers()],
+            'password_confirmation' => 'required|same:password',
             'role' => 'required|string|in:admin,user',
         ]);
 
@@ -1011,7 +1033,8 @@ class AdminController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
-            'password' => 'nullable|string|min:6',
+            'password' => ['nullable', Password::min(8)->mixedCase()->numbers()],
+            'password_confirmation' => 'nullable|same:password',
             'role' => 'required|string|in:admin,user',
         ]);
 

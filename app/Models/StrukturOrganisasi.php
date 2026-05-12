@@ -7,11 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class StrukturOrganisasi extends Model
 {
     protected $fillable = [
-        'name',
-        'position',
-        'description',
-        'photo',
-        'order',
+        'title',
+        'content',
+        'image',
         'is_active',
     ];
 

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 
 // Authentication routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1')->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Clear cache
@@ -21,7 +21,7 @@ Route::get('/clear-cache', function () {
     Artisan::call('view:clear');
 
     return 'Cache & view cleared!';
-});
+})->middleware('auth');
 
 // Frontend routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -104,11 +104,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/visi-misis', [AdminController::class, 'storeVisiMisi'])->name('visiMisis.store');
     Route::put('/visi-misis/{id}', [AdminController::class, 'updateVisiMisi'])->name('visiMisis.update');
 
-    // Struktur routes
-    Route::get('/strukturs/create', [AdminController::class, 'createStruktur'])->name('strukturs.create');
+    // Struktur routes (single record)
     Route::post('/strukturs', [AdminController::class, 'storeStruktur'])->name('strukturs.store');
-    Route::get('/strukturs/{id}/edit', [AdminController::class, 'editStruktur'])->name('strukturs.edit');
-    Route::put('/strukturs/{id}', [AdminController::class, 'updateStruktur'])->name('strukturs.update');
 
     // Kontak routes
     Route::get('/kontaks/create', [AdminController::class, 'createKontak'])->name('kontaks.create');
@@ -141,6 +138,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/kemitraans', [AdminController::class, 'storeKemitraan'])->name('kemitraans.store');
     Route::get('/kemitraans/{id}/edit', [AdminController::class, 'editKemitraan'])->name('kemitraans.edit');
     Route::put('/kemitraans/{id}', [AdminController::class, 'updateKemitraan'])->name('kemitraans.update');
+    Route::delete('/kemitraans/{id}', [AdminController::class, 'deleteKemitraan'])->name('kemitraans.delete');
 
     // KetuaUmum routes
     Route::post('/ketua-umums', [AdminController::class, 'storeKetuaUmum'])->name('ketuaUmums.store');
