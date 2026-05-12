@@ -2,6 +2,17 @@
 
 @section('title', 'Kontak - PII')
 
+@push('styles')
+<style>
+    .map-embed iframe {
+        width: 100% !important;
+        height: 400px !important;
+        display: block !important;
+        border: 0 !important;
+    }
+</style>
+@endpush
+
 @section('content')
 <!-- Hero Section -->
 <section class="relative min-h-[60vh] flex items-center bg-gradient-to-br from-slate-900 via-orange-900 to-slate-800 overflow-hidden">
@@ -123,8 +134,8 @@
 
                 <!-- Map container -->
                 <div class="relative bg-white rounded-3xl overflow-hidden shadow-2xl border border-gray-100 p-3">
-                    <!-- Map (aspect-ratio 16:9, iframe fills container) -->
-                    <div class="relative aspect-video rounded-2xl overflow-hidden [&>iframe]:w-full [&>iframe]:!h-full [&>iframe]:border-0 [&>iframe]:block">
+                    <!-- Map -->
+                    <div class="relative rounded-2xl overflow-hidden map-embed">
                         {!! $kontak->map_url !!}
 
                         <!-- Overlay card -->
