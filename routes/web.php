@@ -107,11 +107,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Struktur routes (single record)
     Route::post('/strukturs', [AdminController::class, 'storeStruktur'])->name('strukturs.store');
 
-    // Kontak routes
-    Route::get('/kontaks/create', [AdminController::class, 'createKontak'])->name('kontaks.create');
+    // Kontak routes (single record)
     Route::post('/kontaks', [AdminController::class, 'storeKontak'])->name('kontaks.store');
-    Route::get('/kontaks/{id}/edit', [AdminController::class, 'editKontak'])->name('kontaks.edit');
-    Route::put('/kontaks/{id}', [AdminController::class, 'updateKontak'])->name('kontaks.update');
 
     // Event routes
     Route::get('/events/create', [AdminController::class, 'createEvent'])->name('events.create');

@@ -41,7 +41,7 @@ class AdminController extends Controller
         $sejarah = Sejarah::first();
         $sekilas = Sekila::first();
         $strukturs = StrukturOrganisasi::first();
-        $kontaks = Kontak::all();
+        $kontaks = Kontak::first();
         $events = Event::orderBy('event_date', 'desc')
             ->paginate(10, ['*'], 'events_page');
         $artikels = Artikel::all();
@@ -636,12 +636,7 @@ class AdminController extends Controller
         return $this->ajaxResponse($request, 'Struktur Organisasi berhasil disimpan.');
     }
 
-    // Kontak methods
-    public function createKontak()
-    {
-        return view('admin.kontaks.create');
-    }
-
+    // Kontak methods (single record)
     public function storeKontak(Request $request)
     {
         $validated = $request->validate([
@@ -657,36 +652,14 @@ class AdminController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        Kontak::create($validated);
+        $kontak = Kontak::first();
+        if ($kontak) {
+            $kontak->update($validated);
+        } else {
+            Kontak::create($validated);
+        }
 
-        return $this->ajaxResponse($request, 'Kontak berhasil ditambahkan.');
-    }
-
-    public function editKontak($id)
-    {
-        $kontak = Kontak::findOrFail($id);
-        return view('admin.kontaks.edit', compact('kontak'));
-    }
-
-    public function updateKontak(Request $request, $id)
-    {
-        $kontak = Kontak::findOrFail($id);
-        $validated = $request->validate([
-            'address' => 'required|string',
-            'phone' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'facebook' => 'nullable|string|max:255',
-            'twitter' => 'nullable|string|max:255',
-            'instagram' => 'nullable|string|max:255',
-            'linkedin' => 'nullable|string|max:255',
-            'youtube' => 'nullable|string|max:255',
-            'map_url' => 'nullable|string',
-            'is_active' => 'boolean',
-        ]);
-
-        $kontak->update($validated);
-
-        return $this->ajaxResponse($request, 'Kontak berhasil diperbarui.');
+        return $this->ajaxResponse($request, 'Kontak berhasil disimpan.');
     }
 
     // Event methods

@@ -825,7 +825,7 @@
             </button>
             <button onclick="showTab('kontaks')" id="nav-kontaks" class="nav-item">
                 <span class="nav-icon">📞</span> Kontak
-                <span class="nav-count">{{ $kontaks->count() }}</span>
+                @if($kontaks)<span class="nav-count">1</span>@endif
             </button>
 
             <div class="nav-label">Kegiatan & Media</div>
@@ -1633,79 +1633,91 @@
 
             {{-- ==================== KONTAK ==================== --}}
             <div id="tab-kontaks" class="tab-panel">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- List Panel -->
+                <div style="max-width:700px;">
                     <div class="card">
                         <div class="card-header">
-                            <h3>Kontak</h3>
-                            <button onclick="showForm(event, 'kontak')" class="btn-orange">
-                                <svg width="16" height="16" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 4v16m8-8H4" />
-                                </svg>
-                                Tambah Kontak
-                            </button>
-                        </div>
-                        <div class="card-body">
-                            @if ($kontaks->count() > 0)
-                                <div class="space-y-4">
-                                    @foreach ($kontaks as $k)
-                                        <div class="item-row">
-                                            <div class="item-thumb-placeholder">📞</div>
-                                            <div class="item-info">
-                                                <div class="item-title">{{ $k->address }}</div>
-                                                <div class="item-meta">{{ $k->phone }} · {{ $k->email }}
-                                                </div>
-                                                <div style="margin-top:6px;"><span
-                                                        class="{{ $k->is_active ? 'badge-active' : 'badge-inactive' }}">{{ $k->is_active ? 'Aktif' : 'Non-Aktif' }}</span>
-                                                </div>
-                                            </div>
-                                            <button onclick="showForm(event, 'kontak', {{ $k->id }})"
-                                                class="edit-btn">Edit</button>
-                                        </div>
-                                    @endforeach
-                                </div>
+                            <h3>📞 Informasi Kontak</h3>
+                            @if ($kontaks)
+                                <span class="badge-active">Tersimpan</span>
                             @else
-                                <div class="empty-state">
-                                    <div class="empty-icon">📞</div>
-                                    <div class="empty-title">Belum ada data</div>
-                                    <div class="empty-desc">Tambahkan informasi kontak PII</div>
-                                </div>
+                                <span class="badge-inactive">Belum ada</span>
                             @endif
                         </div>
-                    </div>
-
-                    <!-- Form Panel -->
-                    <div id="form-panel-kontak" class="card" style="display:none;">
-                        <div class="card-header">
-                            <h3 id="form-title-kontak">Tambah Kontak</h3>
-                            <button onclick="hideForm('kontak')" class="btn-cancel">Batal</button>
-                        </div>
                         <div class="card-body">
-                            <form action="{{ route('admin.kontaks.store') }}" method="POST" id="form-kontak">
+                            <form action="{{ route('admin.kontaks.store') }}" method="POST">
                                 @csrf
-                                <input type="hidden" name="_method" value="POST" id="kontak-method">
+                                @if ($errors->any())
+                                    <div
+                                        style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#b91c1c;">
+                                        @foreach ($errors->all() as $e)
+                                            <div>• {{ $e }}</div>
+                                        @endforeach
+                                    </div>
+                                @endif
                                 <div class="form-group">
-                                    <label class="form-label">Address</label>
-                                    <textarea name="address" class="form-input form-textarea" required></textarea>
+                                    <label class="form-label">Alamat</label>
+                                    <textarea name="address" class="form-input form-textarea" required
+                                        placeholder="Alamat lengkap kantor PII">{{ $kontaks->address ?? '' }}</textarea>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Phone</label>
-                                    <input type="text" name="phone" class="form-input" required>
+                                    <label class="form-label">Telepon</label>
+                                    <input type="text" name="phone" value="{{ $kontaks->phone ?? '' }}"
+                                        class="form-input" required placeholder="Nomor telepon">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Email</label>
-                                    <input type="email" name="email" class="form-input" required>
+                                    <input type="email" name="email" value="{{ $kontaks->email ?? '' }}"
+                                        class="form-input" required placeholder="Email resmi">
                                 </div>
-                                <div style="display:flex;align-items:center;gap:8px;">
+                                <div style="border-top:1px solid #e5e7eb;margin:16px 0;padding-top:16px;">
+                                    <p style="font-size:13px;font-weight:600;color:#6b7280;margin-bottom:12px;">Media Sosial (opsional)</p>
+                                    <div class="form-group">
+                                        <label class="form-label">Facebook</label>
+                                        <input type="text" name="facebook" value="{{ $kontaks->facebook ?? '' }}"
+                                            class="form-input" placeholder="URL Facebook">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Twitter / X</label>
+                                        <input type="text" name="twitter" value="{{ $kontaks->twitter ?? '' }}"
+                                            class="form-input" placeholder="URL Twitter / X">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Instagram</label>
+                                        <input type="text" name="instagram" value="{{ $kontaks->instagram ?? '' }}"
+                                            class="form-input" placeholder="URL Instagram">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">LinkedIn</label>
+                                        <input type="text" name="linkedin" value="{{ $kontaks->linkedin ?? '' }}"
+                                            class="form-input" placeholder="URL LinkedIn">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">YouTube</label>
+                                        <input type="text" name="youtube" value="{{ $kontaks->youtube ?? '' }}"
+                                            class="form-input" placeholder="URL YouTube">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Google Maps Embed URL</label>
+                                    <input type="text" name="map_url" value="{{ $kontaks->map_url ?? '' }}"
+                                        class="form-input" placeholder="https://www.google.com/maps/embed?...">
+                                </div>
+                                <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
                                     <input type="hidden" name="is_active" value="0">
-                                    <input type="checkbox" name="is_active" value="1" id="kontak-active"
-                                        style="width:16px;height:16px;accent-color:#f97316;" checked>
-                                    <label for="kontak-active" class="form-label" style="margin:0;">Aktif</label>
+                                    <input type="checkbox" name="is_active" value="1" id="is_active_kontak"
+                                        style="width:16px;height:16px;accent-color:#f97316;"
+                                        {{ $kontaks->is_active ?? true ? 'checked' : '' }}>
+                                    <label for="is_active_kontak" class="form-label" style="margin:0;">Tampilkan di
+                                        website</label>
                                 </div>
-                                <button type="submit" class="btn-orange"
-                                    style="width:100%;justify-content:center;margin-top:16px;">Simpan</button>
+                                <button type="submit" class="btn-orange" style="width:100%;justify-content:center;">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Simpan Kontak
+                                </button>
                             </form>
                         </div>
                     </div>
