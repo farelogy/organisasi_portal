@@ -10,7 +10,7 @@
                 @foreach ($heroes as $hero)
                     <div class="hero-slide absolute inset-0 {{ $loop->first ? 'active' : '' }}"
                         data-slide-index="{{ $loop->index }}">
-                        <img src="{{ $hero->image ?? 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1400&q=80' }}"
+                        <img src="{{ $hero->image ? (Str::startsWith($hero->image, ['http://', 'https://']) ? $hero->image : asset($hero->image)) : 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1400&q=80' }}"
                             alt="{{ $hero->title }}" class="absolute inset-0 w-full h-full object-cover object-center">
                         <div class="absolute inset-0 bg-orange-500/30"></div>
                         <div class="absolute inset-0 bg-slate-950/50"></div>
@@ -233,7 +233,7 @@
                     <div class="group bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100"
                         data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 + 100 }}">
                         <div class="h-56 overflow-hidden">
-                            <img src="{{ $berita->image ?? 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=1400&q=80' }}"
+                            <img src="{{ $berita->image ? (Str::startsWith($berita->image, ['http://', 'https://']) ? $berita->image : asset($berita->image)) : 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=1400&q=80' }}"
                                 alt="{{ $berita->title }}"
                                 class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500">
                         </div>
@@ -308,7 +308,7 @@
                         <!-- Image / Date Header -->
                         <div class="relative h-48 overflow-hidden event-image-container">
                             @if($event->image)
-                                <img src="{{ $event->image }}" alt="{{ $event->title }}"
+                                <img src="{{ Str::startsWith($event->image, ['http://', 'https://']) ? $event->image : asset($event->image) }}" alt="{{ $event->title }}"
                                     crossorigin="anonymous"
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 event-image"
                                     onload="adjustTextColor(this)"

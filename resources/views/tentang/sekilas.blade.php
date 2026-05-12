@@ -42,8 +42,9 @@
                 <div class="float-left mr-8 mb-4 md:mr-10 md:mb-6 w-full md:w-80 lg:w-96">
                     <div class="relative group">
                         <div class="absolute -inset-1 bg-gradient-to-br from-orange-300 to-orange-500 rounded-xl blur opacity-30"></div>
-                        <div class="relative rounded-xl overflow-hidden shadow-lg">
-                            <img src="{{ $sekilas->image }}" alt="{{ $sekilas->title }}" class="w-full h-auto object-cover">
+                        @if($sekilas && $sekilas->image)
+                        <div class="mb-8 rounded-2xl overflow-hidden shadow-lg">
+                            <img src="{{ Str::startsWith($sekilas->image, ['http://', 'https://']) ? $sekilas->image : asset($sekilas->image) }}" alt="{{ $sekilas->title }}" class="w-full h-auto object-cover">
                         </div>
                         <div class="mt-2 text-center">
                             <span class="text-xs text-gray-500 font-medium">Dokumentasi PII</span>

@@ -50,7 +50,7 @@
 
                     <div class="mb-4">
                         <label class="block text-gray-700 font-medium mb-2">URL Gambar</label>
-                        <input type="text" name="image" value="{{ old('image', $hero->image) }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" required placeholder="https://example.com/image.jpg">
+                        <input type="text" name="image" value="{{ old('image', $hero->image) }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" required placeholder="uploads/heroes/image.jpg">
                     </div>
 
                     <div class="mb-4">

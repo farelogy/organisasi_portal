@@ -37,9 +37,8 @@
                     <div class="relative group">
                         <!-- Decorative shadow -->
                         <div class="absolute -inset-1 bg-gradient-to-br from-orange-300 to-orange-500 rounded-xl blur opacity-30"></div>
-                        <!-- Image container -->
-                        <div class="relative rounded-xl overflow-hidden shadow-lg">
-                            <img src="{{ $sejarah->image }}" alt="{{ $sejarah->title }}" class="w-full h-auto object-cover">
+                        <div class="mb-8 rounded-2xl overflow-hidden shadow-lg">
+                            <img src="{{ Str::startsWith($sejarah->image, ['http://', 'https://']) ? $sejarah->image : asset($sejarah->image) }}" alt="{{ $sejarah->title }}" class="w-full h-auto object-cover">
                         </div>
                         <!-- Caption -->
                         <div class="mt-2 text-center">
@@ -91,7 +90,7 @@
                 <div class="text-center">
                     @if($ketuaUmum->image)
                     <div class="relative mb-6">
-                        <img src="{{ $ketuaUmum->image }}" alt="{{ $ketuaUmum->name }}" class="w-32 h-32 object-cover rounded-2xl mx-auto shadow-lg border-4 border-orange-400/30 group-hover:scale-110 transition-transform duration-300">
+                        <img src="{{ Str::startsWith($ketuaUmum->image, ['http://', 'https://']) ? $ketuaUmum->image : asset($ketuaUmum->image) }}" alt="{{ $ketuaUmum->name }}" class="w-32 h-32 object-cover rounded-2xl mx-auto shadow-lg border-4 border-orange-400/30 group-hover:scale-110 transition-transform duration-300">
                         <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
                             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>

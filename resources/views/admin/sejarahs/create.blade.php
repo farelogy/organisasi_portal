@@ -47,7 +47,7 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">Upload Image</label>
                             <input type="file" name="image" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
                             @if($sejarah->image ?? false)
-                            <p class="text-xs text-gray-500 mt-1">Current: <a href="{{ $sejarah->image }}" target="_blank" class="text-orange-500 hover:underline">View Image</a></p>
+                            <p class="text-xs text-gray-500 mt-1">Current: <a href="{{ Str::startsWith($sejarah->image, ['http://', 'https://']) ? $sejarah->image : asset($sejarah->image) }}" target="_blank" class="text-orange-500 hover:underline">View Image</a></p>
                             @endif
                             <p class="text-xs text-gray-500 mt-1">Format: JPEG, PNG, JPG, GIF (Max: 2MB)</p>
                         </div>
@@ -114,7 +114,7 @@
                         <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                             <div class="flex items-center space-x-3">
                                 @if($ketuaUmum->image)
-                                <img src="{{ $ketuaUmum->image }}" alt="{{ $ketuaUmum->name }}" class="w-12 h-12 object-cover rounded-full">
+                                <img src="{{ Str::startsWith($ketuaUmum->image, ['http://', 'https://']) ? $ketuaUmum->image : asset($ketuaUmum->image) }}" alt="{{ $ketuaUmum->name }}" class="w-12 h-12 object-cover rounded-full">
                                 @else
                                 <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-xl">👤</div>
                                 @endif

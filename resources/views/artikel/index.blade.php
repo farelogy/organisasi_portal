@@ -97,7 +97,7 @@
                         <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
                             <div class="grid grid-cols-1 lg:grid-cols-2">
                                 <div class="relative h-64 lg:h-auto">
-                                    <img src="{{ $featured->image }}" alt="{{ $featured->title }}"
+                                    <img src="{{ Str::startsWith($featured->image, ['http://', 'https://']) ? $featured->image : asset($featured->image) }}" alt="{{ $featured->title }}"
                                         class="w-full h-full object-cover">
                                     <div class="absolute top-6 left-6">
                                         <span

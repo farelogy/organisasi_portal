@@ -79,7 +79,7 @@
             <div class="bg-white rounded-xl shadow-lg p-6">
                 <h2 class="text-xl font-bold text-gray-900 mb-4">Preview</h2>
                 <div id="preview" class="border-2 border-dashed border-gray-300 rounded-lg p-4 min-h-[400px]">
-                    <img src="{{ $artikel->image }}" alt="{{ $artikel->title }}" class="w-full h-48 object-cover rounded-lg mb-4">
+                    <img src="{{ Str::startsWith($artikel->image, ['http://', 'https://']) ? $artikel->image : asset($artikel->image) }}" alt="{{ $artikel->title }}" class="w-full h-48 object-cover rounded-lg mb-4">
                     <div class="flex items-center justify-between mb-3">
                         <span class="inline-block bg-orange-100 text-orange-800 text-xs px-3 py-1 rounded-full font-semibold capitalize">{{ str_replace('_', ' ', $artikel->category) }}</span>
                         @if($artikel->published_at)

@@ -65,7 +65,7 @@
             <div class="bg-white rounded-xl shadow-lg p-6">
                 <h2 class="text-xl font-bold text-gray-900 mb-4">Preview</h2>
                 <div id="preview" class="border-2 border-dashed border-gray-300 rounded-lg p-4 min-h-[400px]">
-                    <img src="{{ $gallery->image }}" alt="{{ $gallery->title }}" class="w-full h-64 object-cover rounded-lg mb-4">
+                    <img src="{{ Str::startsWith($gallery->image, ['http://', 'https://']) ? $gallery->image : asset($gallery->image) }}" alt="{{ $gallery->title }}" class="w-full h-64 object-cover rounded-lg mb-4">
                     @if($gallery->category)
                     <span class="inline-block bg-orange-500 text-white text-xs px-3 py-1 rounded-full font-semibold mb-2 capitalize">{{ $gallery->category }}</span>
                     @endif

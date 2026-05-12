@@ -16,7 +16,7 @@
             class="group bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100"
             data-aos="fade-up" data-aos-delay="{{ (($loop->index - ($skipFirst ? 1 : 0)) % 3) * 100 }}">
             <div class="relative h-56 overflow-hidden">
-                <img src="{{ $artikel->image }}" alt="{{ $artikel->title }}"
+                <img src="{{ Str::startsWith($artikel->image, ['http://', 'https://']) ? $artikel->image : asset($artikel->image) }}" alt="{{ $artikel->title }}"
                     class="w-full h-full object-cover group-hover:scale-110 transition duration-500" loading="lazy">
                 <div class="absolute top-4 left-4">
                     <span

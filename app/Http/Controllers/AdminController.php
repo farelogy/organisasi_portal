@@ -113,7 +113,7 @@ class AdminController extends Controller
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/heroes'), $imageName);
-            $validated['image'] = asset('uploads/heroes/' . $imageName);
+            $validated['image'] = 'uploads/heroes/' . $imageName;
         }
 
         Hero::create($validated);
@@ -144,7 +144,7 @@ class AdminController extends Controller
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/heroes'), $imageName);
-            $validated['image'] = asset('uploads/heroes/' . $imageName);
+            $validated['image'] = 'uploads/heroes/' . $imageName;
         }
 
         $hero->update($validated);
@@ -232,7 +232,7 @@ class AdminController extends Controller
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/beritas'), $imageName);
-            $validated['image'] = asset('uploads/beritas/' . $imageName);
+            $validated['image'] = 'uploads/beritas/' . $imageName;
         } else {
             $validated['image'] = null;
         }
@@ -277,7 +277,7 @@ class AdminController extends Controller
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/beritas'), $imageName);
-            $validated['image'] = asset('uploads/beritas/' . $imageName);
+            $validated['image'] = 'uploads/beritas/' . $imageName;
         } else {
             unset($validated['image']); // Keep existing image
         }
@@ -371,7 +371,7 @@ class AdminController extends Controller
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/sejarah'), $imageName);
             $validated['image_path'] = 'uploads/sejarah/' . $imageName;
-            $validated['image'] = asset('uploads/sejarah/' . $imageName);
+            $validated['image'] = 'uploads/sejarah/' . $imageName;
         }
 
         // If sejarah exists, update it, otherwise create new
@@ -407,12 +407,12 @@ class AdminController extends Controller
             if ($sejarah->image_path && file_exists(public_path($sejarah->image_path))) {
                 unlink(public_path($sejarah->image_path));
             }
-            
+
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/sejarah'), $imageName);
             $validated['image_path'] = 'uploads/sejarah/' . $imageName;
-            $validated['image'] = asset('uploads/sejarah/' . $imageName);
+            $validated['image'] = 'uploads/sejarah/' . $imageName;
         }
 
         $sejarah->update($validated);
@@ -436,7 +436,7 @@ class AdminController extends Controller
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/ketua-umum'), $imageName);
             $validated['image_path'] = 'uploads/ketua-umum/' . $imageName;
-            $validated['image'] = asset('uploads/ketua-umum/' . $imageName);
+            $validated['image'] = 'uploads/ketua-umum/' . $imageName;
         }
 
         KetuaUmum::create($validated);
@@ -460,12 +460,12 @@ class AdminController extends Controller
             if ($ketuaUmum->image_path && file_exists(public_path($ketuaUmum->image_path))) {
                 unlink(public_path($ketuaUmum->image_path));
             }
-            
+
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/ketua-umum'), $imageName);
             $validated['image_path'] = 'uploads/ketua-umum/' . $imageName;
-            $validated['image'] = asset('uploads/ketua-umum/' . $imageName);
+            $validated['image'] = 'uploads/ketua-umum/' . $imageName;
         }
 
         $ketuaUmum->update($validated);
@@ -506,7 +506,7 @@ class AdminController extends Controller
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/sekilas'), $imageName);
-            $validated['image'] = asset('uploads/sekilas/' . $imageName);
+            $validated['image'] = 'uploads/sekilas/' . $imageName;
         } else {
             $validated['image'] = null;
         }
@@ -544,7 +544,7 @@ class AdminController extends Controller
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/sekilas'), $imageName);
-            $validated['image'] = asset('uploads/sekilas/' . $imageName);
+            $validated['image'] = 'uploads/sekilas/' . $imageName;
         } else {
             unset($validated['image']);
         }
@@ -722,7 +722,7 @@ class AdminController extends Controller
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/events'), $imageName);
-            $validated['image'] = asset('uploads/events/' . $imageName);
+            $validated['image'] = 'uploads/events/' . $imageName;
         } else {
             $validated['image'] = null;
         }
@@ -764,7 +764,7 @@ class AdminController extends Controller
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/events'), $imageName);
-            $validated['image'] = asset('uploads/events/' . $imageName);
+            $validated['image'] = 'uploads/events/' . $imageName;
         } else {
             unset($validated['image']);
         }
@@ -1011,7 +1011,7 @@ class AdminController extends Controller
             $image = $request->file('site_logo');
             $imageName = time() . '_logo.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/settings'), $imageName);
-            $validated['site_logo'] = asset('uploads/settings/' . $imageName);
+            $validated['site_logo'] = 'uploads/settings/' . $imageName;
         } else {
             unset($validated['site_logo']);
         }
@@ -1028,7 +1028,7 @@ class AdminController extends Controller
             if (in_array($ext, ['svg', 'ico'])) {
                 $faviconName = time() . '_favicon.' . $ext;
                 $favicon->move($uploadPath, $faviconName);
-                $validated['site_favicon'] = asset('uploads/settings/' . $faviconName);
+                $validated['site_favicon'] = 'uploads/settings/' . $faviconName;
             } else {
                 // Auto-resize raster images to 64x64 PNG using GD
                 $faviconName = time() . '_favicon.png';
@@ -1066,12 +1066,12 @@ class AdminController extends Controller
                     imagepng($resized, $targetPath, 9);
                     imagedestroy($resized);
                     imagedestroy($sourceImage);
-                    $validated['site_favicon'] = asset('uploads/settings/' . $faviconName);
+                    $validated['site_favicon'] = 'uploads/settings/' . $faviconName;
                 } else {
                     // Fallback: save original if GD fails
                     $faviconName = time() . '_favicon.' . $ext;
                     $favicon->move($uploadPath, $faviconName);
-                    $validated['site_favicon'] = asset('uploads/settings/' . $faviconName);
+                    $validated['site_favicon'] = 'uploads/settings/' . $faviconName;
                 }
             }
         } else {

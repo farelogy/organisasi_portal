@@ -55,7 +55,7 @@
                 <h2 class="text-xl font-bold text-gray-900 mb-4">Preview</h2>
                 <div id="preview" class="border-2 border-dashed border-gray-300 rounded-lg p-4 min-h-[400px]">
                     @if($sekila->image)
-                    <img src="{{ $sekila->image }}" alt="{{ $sekila->title }}" class="w-full h-48 object-cover rounded-lg mb-4">
+                    <img src="{{ Str::startsWith($sekila->image, ['http://', 'https://']) ? $sekila->image : asset($sekila->image) }}" alt="{{ $sekila->title }}" class="w-full h-48 object-cover rounded-lg mb-4">
                     @endif
                     <h2 class="text-2xl font-bold text-gray-900 mb-4">{{ $sekila->title }}</h2>
                     <div class="text-gray-700 leading-relaxed">{{ $sekila->content }}</div>

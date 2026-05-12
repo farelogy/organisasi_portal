@@ -7,7 +7,9 @@
     <section class="relative min-h-[70vh] flex items-end overflow-hidden">
         <!-- Background Image with Overlay -->
         <div class="absolute inset-0">
-            <img src="{{ $artikel->image }}" alt="{{ $artikel->title }}" class="w-full h-full object-cover">
+            @if($artikel->image)
+                <img src="{{ Str::startsWith($artikel->image, ['http://', 'https://']) ? $artikel->image : asset($artikel->image) }}" alt="{{ $artikel->title }}" class="w-full h-full object-cover">
+            @endif
             <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/70 to-transparent"></div>
             <div class="absolute inset-0 bg-gradient-to-r from-slate-900/50 to-transparent"></div>
         </div>
@@ -228,7 +230,7 @@
                             class="group bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100"
                             data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
                             <div class="relative h-48 overflow-hidden">
-                                <img src="{{ $related->image }}" alt="{{ $related->title }}"
+                                <img src="{{ Str::startsWith($related->image, ['http://', 'https://']) ? $related->image : asset($related->image) }}" alt="{{ $related->title }}"
                                     class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                             </div>

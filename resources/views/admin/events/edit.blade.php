@@ -84,7 +84,7 @@
                 <h2 class="text-xl font-bold text-gray-900 mb-4">Preview</h2>
                 <div id="preview" class="border-2 border-dashed border-gray-300 rounded-lg p-4 min-h-[400px]">
                     @if($event->image)
-                    <img src="{{ $event->image }}" alt="{{ $event->title }}" class="w-full h-48 object-cover rounded-lg mb-4">
+                    <img src="{{ Str::startsWith($event->image, ['http://', 'https://']) ? $event->image : asset($event->image) }}" alt="{{ $event->title }}" class="w-full h-48 object-cover rounded-lg mb-4">
                     @else
                     <div class="w-full h-48 bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center rounded-lg mb-4">
                         <span class="text-6xl">📅</span>

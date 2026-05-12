@@ -68,7 +68,7 @@
             <div class="lg:col-span-2">
                 @if($event->image)
                 <div class="mb-8 rounded-2xl overflow-hidden shadow-lg">
-                    <img src="{{ $event->image }}" alt="{{ $event->title }}" class="w-full h-auto object-cover">
+                    <img src="{{ Str::startsWith($event->image, ['http://', 'https://']) ? $event->image : asset($event->image) }}" alt="{{ $event->title }}" class="w-full h-auto object-cover">
                 </div>
                 @endif
 

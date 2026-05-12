@@ -41,7 +41,7 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">Upload Image</label>
                             <input type="file" name="image" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
                             @if($sejarah->image)
-                            <p class="text-xs text-gray-500 mt-1">Current: <a href="{{ $sejarah->image }}" target="_blank" class="text-orange-500 hover:underline">View Image</a></p>
+                            <p class="text-xs text-gray-500 mt-1">Current: <a href="{{ Str::startsWith($sejarah->image, ['http://', 'https://']) ? $sejarah->image : asset($sejarah->image) }}" target="_blank" class="text-orange-500 hover:underline">View Image</a></p>
                             @endif
                             <p class="text-xs text-gray-500 mt-1">Format: JPEG, PNG, JPG, GIF (Max: 2MB)</p>
                         </div>
@@ -66,7 +66,7 @@
                 <h2 class="text-xl font-bold text-gray-900 mb-4">Preview</h2>
                 <div id="preview" class="border-2 border-dashed border-gray-300 rounded-lg p-4 min-h-[400px]">
                     @if($sejarah->image)
-                    <img src="{{ $sejarah->image }}" alt="{{ $sejarah->title }}" class="w-full h-48 object-cover rounded-lg mb-4">
+                    <img src="{{ Str::startsWith($sejarah->image, ['http://', 'https://']) ? $sejarah->image : asset($sejarah->image) }}" alt="{{ $sejarah->title }}" class="w-full h-48 object-cover rounded-lg mb-4">
                     @endif
                     @if($sejarah->period)
                     <div class="bg-orange-100 text-orange-800 px-4 py-2 rounded-lg inline-block mb-4 font-semibold">{{ $sejarah->period }}</div>
@@ -114,7 +114,7 @@ function updatePreview() {
         reader.readAsDataURL(imageInput.files[0]);
     } else {
         @if($sejarah->image)
-        previewHTML = `<img src="{{ $sejarah->image }}" alt="{{ $sejarah->title }}" class="w-full h-48 object-cover rounded-lg mb-4">`;
+        previewHTML = `<img src="{{ Str::startsWith($sejarah->image, ['http://', 'https://']) ? $sejarah->image : asset($sejarah->image) }}" alt="{{ $sejarah->title }}" class="w-full h-48 object-cover rounded-lg mb-4">`;
         @endif
         
         if (period) {

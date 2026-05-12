@@ -965,7 +965,7 @@
                                     @foreach ($heroes as $hero)
                                         <div class="item-row">
                                             @if ($hero->image)
-                                                <img src="{{ $hero->image }}" class="item-thumb"
+                                                <img src="{{ Str::startsWith($hero->image, ['http://', 'https://']) ? $hero->image : asset($hero->image) }}" class="item-thumb"
                                                     alt="{{ $hero->title }}">
                                             @else
                                                 <div class="item-thumb-placeholder">🎯</div>
@@ -1159,7 +1159,7 @@
                                     @foreach ($beritas as $berita)
                                         <div class="item-row">
                                             @if ($berita->image)
-                                                <img src="{{ $berita->image }}" class="item-thumb"
+                                                <img src="{{ Str::startsWith($berita->image, ['http://', 'https://']) ? $berita->image : asset($berita->image) }}" class="item-thumb"
                                                     alt="{{ $berita->title }}">
                                             @else
                                                 <div class="item-thumb-placeholder">📰</div>
@@ -1320,7 +1320,7 @@
                                     <label class="form-label">Upload Gambar</label>
                                     <div style="margin-bottom:8px;">
                                         @if($sejarah && ($sejarah->image ?? false))
-                                        <img id="preview-sejarah" src="{{ $sejarah->image }}" alt="Preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
+                                        <img id="preview-sejarah" src="{{ Str::startsWith($sejarah->image, ['http://', 'https://']) ? $sejarah->image : asset($sejarah->image) }}" alt="Preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
                                         @else
                                         <img id="preview-sejarah" src="" alt="Preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
                                         @endif
@@ -1418,7 +1418,7 @@
                                     @foreach ($ketuaUmums->sortBy('order') as $k)
                                         <div class="item-row">
                                             @if ($k->image)
-                                                <img src="{{ $k->image }}" class="item-thumb"
+                                                <img src="{{ Str::startsWith($k->image, ['http://', 'https://']) ? $k->image : asset($k->image) }}" class="item-thumb"
                                                     alt="{{ $k->name }}"
                                                     style="width:44px;height:44px;border-radius:50%;">
                                             @else
@@ -1487,7 +1487,7 @@
                                     <label class="form-label">Upload Gambar</label>
                                     <div style="margin-bottom:8px;">
                                         @if($sekilas && ($sekilas->image ?? false))
-                                        <img id="preview-sekilas" src="{{ $sekilas->image }}" alt="Preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
+                                        <img id="preview-sekilas" src="{{ Str::startsWith($sekilas->image, ['http://', 'https://']) ? $sekilas->image : asset($sekilas->image) }}" alt="Preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
                                         @else
                                         <img id="preview-sekilas" src="" alt="Preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
                                         @endif
@@ -1749,7 +1749,7 @@
                                     @foreach ($events as $e)
                                         <div class="item-row">
                                             @if ($e->image)
-                                                <img src="{{ $e->image }}" class="item-thumb" alt="{{ $e->title }}">
+                                                <img src="{{ Str::startsWith($e->image, ['http://', 'https://']) ? $e->image : asset($e->image) }}" class="item-thumb" alt="{{ $e->title }}">
                                             @else
                                                 <div class="item-thumb-placeholder">📅</div>
                                             @endif
@@ -1901,7 +1901,7 @@
                                     @foreach ($galleries as $g)
                                         <div class="item-row">
                                             @if ($g->image)
-                                                <img src="{{ $g->image }}" class="item-thumb"
+                                                <img src="{{ Str::startsWith($g->image, ['http://', 'https://']) ? $g->image : asset($g->image) }}" class="item-thumb"
                                                     alt="{{ $g->title }}">
                                             @else
                                                 <div class="item-thumb-placeholder">🖼️</div>

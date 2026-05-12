@@ -22,7 +22,7 @@
 
         @if($event->image)
         <div class="flex-shrink-0 w-full md:w-32 h-32 overflow-hidden">
-            <img src="{{ $event->image }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            <img src="{{ Str::startsWith($event->image, ['http://', 'https://']) ? $event->image : asset($event->image) }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
         </div>
         @endif
 
