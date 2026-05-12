@@ -835,7 +835,7 @@
             </button>
             <button onclick="showTab('galleries')" id="nav-galleries" class="nav-item">
                 <span class="nav-icon">🖼️</span> Gallery
-                <span class="nav-count">{{ $galleries->count() }}</span>
+                <span class="nav-count">{{ $galleries->total() }}</span>
             </button>
             <button onclick="showTab('kemitraans')" id="nav-kemitraans" class="nav-item">
                 <span class="nav-icon">🤝</span> Kemitraan
@@ -937,7 +937,7 @@
                 <div class="stat-card">
                     <div class="stat-icon" style="background:#fdf4ff;">🖼️</div>
                     <div class="stat-num">
-                        {{ $galleries->count() }}
+                        {{ $galleries->total() }}
                     </div>
                     <div class="stat-label">Total Gallery</div>
                 </div>
@@ -1934,15 +1934,33 @@
                                                         {{ $g->order }}</span>
                                                 </div>
                                             </div>
-                                            <button onclick="showForm(event, 'gallery', {{ $g->id }})"
-                                                class="edit-btn" data-title="{{ $g->title }}"
-                                                data-category="{{ $g->category }}"
-                                                data-description="{{ $g->description }}"
-                                                data-order="{{ $g->order }}"
-                                                data-is_active="{{ $g->is_active ? 'true' : 'false' }}">Edit</button>
+                                            <div style="display:flex;gap:6px;align-items:center;">
+                                                <button onclick="showForm(event, 'gallery', {{ $g->id }})"
+                                                    class="edit-btn" data-title="{{ $g->title }}"
+                                                    data-category="{{ $g->category }}"
+                                                    data-description="{{ $g->description }}"
+                                                    data-order="{{ $g->order }}"
+                                                    data-is_active="{{ $g->is_active ? 'true' : 'false' }}">Edit</button>
+                                                <form action="{{ route('admin.galleries.delete', $g->id) }}"
+                                                    method="POST" style="display:inline;">
+                                                    @method('DELETE')
+                                                    @csrf
+                                                    <input type="hidden" name="galleries_page"
+                                                        value="{{ $galleries->currentPage() }}">
+                                                    <button type="submit"
+                                                        style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:16px;"
+                                                        onclick="return confirm('Hapus foto ini?')">🗑️</button>
+                                                </form>
+                                            </div>
                                         </div>
                                     @endforeach
                                 </div>
+                                <!-- Pagination -->
+                                @if ($galleries->hasPages())
+                                    <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+                                        {{ $galleries->fragment('tab=galleries')->links() }}
+                                    </div>
+                                @endif
                             @else
                                 <div class="empty-state">
                                     <div class="empty-icon">🖼️</div>

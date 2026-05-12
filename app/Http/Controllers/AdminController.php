@@ -44,7 +44,8 @@ class AdminController extends Controller
         $events = Event::orderBy('event_date', 'desc')
             ->paginate(10, ['*'], 'events_page');
         $artikels = Artikel::all();
-        $galleries = Gallery::orderBy('order')->get();
+        $galleries = Gallery::orderBy('order')
+            ->paginate(10, ['*'], 'galleries_page');
         $kemitraans = Kemitraan::orderBy('order')->get();
         $ketuaUmums = KetuaUmum::orderBy('order')->get();
         $users = User::all();
@@ -916,6 +917,25 @@ class AdminController extends Controller
         $gallery->update($validated);
 
         return $this->ajaxResponse($request, 'Gallery berhasil diperbarui.');
+    }
+
+    public function deleteGallery(Request $request, $id)
+    {
+        $gallery = Gallery::findOrFail($id);
+        $gallery->delete();
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Gallery berhasil dihapus.']);
+        }
+        $currentPage = (int) $request->input('galleries_page', 1);
+
+        // Pastikan page saat ini masih valid setelah penghapusan
+        $totalItems = Gallery::count();
+        $perPage = 10;
+        $lastPage = max(1, (int) ceil($totalItems / $perPage));
+        $redirectPage = min(max(1, $currentPage), $lastPage);
+
+        $redirectUrl = url('/admin?galleries_page=' . $redirectPage . '#tab=galleries');
+        return redirect($redirectUrl)->with('success', 'Gallery berhasil dihapus.');
     }
 
     // Kemitraan methods

@@ -134,6 +134,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/galleries', [AdminController::class, 'storeGallery'])->name('galleries.store');
     Route::get('/galleries/{id}/edit', [AdminController::class, 'editGallery'])->name('galleries.edit');
     Route::put('/galleries/{id}', [AdminController::class, 'updateGallery'])->name('galleries.update');
+    Route::delete('/galleries/{id}', [AdminController::class, 'deleteGallery'])->name('galleries.delete');
 
     // Kemitraan routes
     Route::get('/kemitraans/create', [AdminController::class, 'createKemitraan'])->name('kemitraans.create');
