@@ -1,19 +1,27 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\TentangPiiController;
-use App\Http\Controllers\EventController;
 use App\Http\Controllers\ArtikelController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KemitraanController;
+use App\Http\Controllers\TentangPiiController;
+use Illuminate\Support\Facades\Route;
 
 // Authentication routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Clear cache
+Route::get('/clear-cache', function () {
+    Artisan::call('cache:clear');
+    Artisan::call('view:clear');
+
+    return 'Cache & view cleared!';
+});
 
 // Frontend routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -65,26 +73,26 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/heroes', [AdminController::class, 'storeHero'])->name('heroes.store');
     Route::get('/heroes/{id}/edit', [AdminController::class, 'editHero'])->name('heroes.edit');
     Route::put('/heroes/{id}', [AdminController::class, 'updateHero'])->name('heroes.update');
-    
+
     // Layanan routes
     Route::get('/layanans/create', [AdminController::class, 'createLayanan'])->name('layanans.create');
     Route::post('/layanans', [AdminController::class, 'storeLayanan'])->name('layanans.store');
     Route::get('/layanans/{id}/edit', [AdminController::class, 'editLayanan'])->name('layanans.edit');
     Route::put('/layanans/{id}', [AdminController::class, 'updateLayanan'])->name('layanans.update');
-    
+
     // Berita routes
     Route::get('/beritas/create', [AdminController::class, 'createBerita'])->name('beritas.create');
     Route::post('/beritas', [AdminController::class, 'storeBerita'])->name('beritas.store');
     Route::get('/beritas/{id}/edit', [AdminController::class, 'editBerita'])->name('beritas.edit');
     Route::put('/beritas/{id}', [AdminController::class, 'updateBerita'])->name('beritas.update');
     Route::delete('/beritas/{id}', [AdminController::class, 'deleteBerita'])->name('beritas.delete');
-    
+
     // Sejarah routes
     Route::get('/sejarahs/create', [AdminController::class, 'createSejarah'])->name('sejarahs.create');
     Route::post('/sejarahs', [AdminController::class, 'storeSejarah'])->name('sejarahs.store');
     Route::get('/sejarahs/{id}/edit', [AdminController::class, 'editSejarah'])->name('sejarahs.edit');
     Route::put('/sejarahs/{id}', [AdminController::class, 'updateSejarah'])->name('sejarahs.update');
-    
+
     // Sekila routes
     Route::get('/sekilas/create', [AdminController::class, 'createSekila'])->name('sekilas.create');
     Route::post('/sekilas', [AdminController::class, 'storeSekila'])->name('sekilas.store');
@@ -94,44 +102,44 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Visi Misi routes
     Route::post('/visi-misis', [AdminController::class, 'storeVisiMisi'])->name('visiMisis.store');
     Route::put('/visi-misis/{id}', [AdminController::class, 'updateVisiMisi'])->name('visiMisis.update');
-    
+
     // Struktur routes
     Route::get('/strukturs/create', [AdminController::class, 'createStruktur'])->name('strukturs.create');
     Route::post('/strukturs', [AdminController::class, 'storeStruktur'])->name('strukturs.store');
     Route::get('/strukturs/{id}/edit', [AdminController::class, 'editStruktur'])->name('strukturs.edit');
     Route::put('/strukturs/{id}', [AdminController::class, 'updateStruktur'])->name('strukturs.update');
-    
+
     // Kontak routes
     Route::get('/kontaks/create', [AdminController::class, 'createKontak'])->name('kontaks.create');
     Route::post('/kontaks', [AdminController::class, 'storeKontak'])->name('kontaks.store');
     Route::get('/kontaks/{id}/edit', [AdminController::class, 'editKontak'])->name('kontaks.edit');
     Route::put('/kontaks/{id}', [AdminController::class, 'updateKontak'])->name('kontaks.update');
-    
+
     // Event routes
     Route::get('/events/create', [AdminController::class, 'createEvent'])->name('events.create');
     Route::post('/events', [AdminController::class, 'storeEvent'])->name('events.store');
     Route::get('/events/{id}/edit', [AdminController::class, 'editEvent'])->name('events.edit');
     Route::put('/events/{id}', [AdminController::class, 'updateEvent'])->name('events.update');
     Route::delete('/events/{id}', [AdminController::class, 'deleteEvent'])->name('events.delete');
-    
+
     // Artikel routes
     Route::get('/artikels/create', [AdminController::class, 'createArtikel'])->name('artikels.create');
     Route::post('/artikels', [AdminController::class, 'storeArtikel'])->name('artikels.store');
     Route::get('/artikels/{id}/edit', [AdminController::class, 'editArtikel'])->name('artikels.edit');
     Route::put('/artikels/{id}', [AdminController::class, 'updateArtikel'])->name('artikels.update');
-    
+
     // Gallery routes
     Route::get('/galleries/create', [AdminController::class, 'createGallery'])->name('galleries.create');
     Route::post('/galleries', [AdminController::class, 'storeGallery'])->name('galleries.store');
     Route::get('/galleries/{id}/edit', [AdminController::class, 'editGallery'])->name('galleries.edit');
     Route::put('/galleries/{id}', [AdminController::class, 'updateGallery'])->name('galleries.update');
-    
+
     // Kemitraan routes
     Route::get('/kemitraans/create', [AdminController::class, 'createKemitraan'])->name('kemitraans.create');
     Route::post('/kemitraans', [AdminController::class, 'storeKemitraan'])->name('kemitraans.store');
     Route::get('/kemitraans/{id}/edit', [AdminController::class, 'editKemitraan'])->name('kemitraans.edit');
     Route::put('/kemitraans/{id}', [AdminController::class, 'updateKemitraan'])->name('kemitraans.update');
-    
+
     // KetuaUmum routes
     Route::post('/ketua-umums', [AdminController::class, 'storeKetuaUmum'])->name('ketuaUmums.store');
     Route::put('/ketua-umums/{id}', [AdminController::class, 'updateKetuaUmum'])->name('ketuaUmums.update');

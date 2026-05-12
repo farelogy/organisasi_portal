@@ -46,7 +46,6 @@
                         <div class="mb-8 rounded-2xl overflow-hidden shadow-lg">
                             <img src="{{ Str::startsWith($sekilas->image, ['http://', 'https://']) ? $sekilas->image : asset($sekilas->image) }}" alt="{{ $sekilas->title }}" class="w-full h-auto object-cover">
                         </div>
-                        @endif
                         <div class="mt-2 text-center">
                             <span class="text-xs text-gray-500 font-medium">Dokumentasi PII</span>
                         </div>
