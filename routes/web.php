@@ -73,6 +73,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/heroes', [AdminController::class, 'storeHero'])->name('heroes.store');
     Route::get('/heroes/{id}/edit', [AdminController::class, 'editHero'])->name('heroes.edit');
     Route::put('/heroes/{id}', [AdminController::class, 'updateHero'])->name('heroes.update');
+    Route::delete('/heroes/{id}', [AdminController::class, 'deleteHero'])->name('heroes.delete');
 
     // Layanan routes
     Route::get('/layanans/create', [AdminController::class, 'createLayanan'])->name('layanans.create');

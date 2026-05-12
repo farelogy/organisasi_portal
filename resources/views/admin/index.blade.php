@@ -965,10 +965,11 @@
                                     @foreach ($heroes as $hero)
                                         <div class="item-row">
                                             @if ($hero->image)
-                                                <img src="{{ Str::startsWith($hero->image, ['http://', 'https://']) ? $hero->image : asset($hero->image) }}" class="item-thumb"
+                                                <img src="{{ Str::startsWith($hero->image, ['http://', 'https://']) ? $hero->image : asset($hero->image) }}"
+                                                    style="width:160px;height:90px;object-fit:cover;border-radius:10px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,0.08);"
                                                     alt="{{ $hero->title }}">
                                             @else
-                                                <div class="item-thumb-placeholder">🎯</div>
+                                                <div style="width:160px;height:90px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#94a3b8;font-size:24px;">🎯</div>
                                             @endif
                                             <div class="item-info">
                                                 <div class="item-title">{{ $hero->title }}</div>
@@ -980,13 +981,23 @@
                                                     </span>
                                                 </div>
                                             </div>
-                                            <button onclick="showForm(event, 'hero', {{ $hero->id }})"
-                                                class="edit-btn" data-title="{{ $hero->title }}"
-                                                data-subtitle="{{ $hero->subtitle }}"
-                                                data-button-text="{{ $hero->button_text }}"
-                                                data-button-link="{{ $hero->button_link }}"
-                                                data-is-active="{{ $hero->is_active ? 'true' : 'false' }}"
-                                                data-image="{{ $hero->image }}">Edit</button>
+                                            <div style="display:flex;gap:6px;align-items:center;">
+                                                <button onclick="showForm(event, 'hero', {{ $hero->id }})"
+                                                    class="edit-btn" data-title="{{ $hero->title }}"
+                                                    data-subtitle="{{ $hero->subtitle }}"
+                                                    data-button_text="{{ $hero->button_text }}"
+                                                    data-button_link="{{ $hero->button_link }}"
+                                                    data-is_active="{{ $hero->is_active ? 'true' : 'false' }}"
+                                                    data-image="{{ $hero->image }}">Edit</button>
+                                                <form action="{{ route('admin.heroes.delete', $hero->id) }}"
+                                                    method="POST" style="display:inline;">
+                                                    @method('DELETE')
+                                                    @csrf
+                                                    <button type="submit"
+                                                        style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:16px;"
+                                                        onclick="return confirm('Hapus hero ini?')">🗑️</button>
+                                                </form>
+                                            </div>
                                         </div>
                                     @endforeach
                                 </div>
@@ -1023,7 +1034,10 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Gambar</label>
-                                    <input type="file" name="image" accept="image/*" class="form-input">
+                                    <input type="file" name="image" accept="image/*" class="form-input" onchange="previewHeroImage(this)">
+                                    <div id="hero-image-preview-wrap" style="margin-top:10px;display:none;">
+                                        <img id="hero-image-preview" src="" alt="Preview" style="width:120px;height:68px;object-fit:cover;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Button Text</label>
@@ -2268,9 +2282,9 @@
                                             value="{{ $site_settings['footer_instagram'] ?? '' }}">
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">LinkedIn URL</label>
-                                        <input type="url" name="footer_linkedin" class="form-input"
-                                            value="{{ $site_settings['footer_linkedin'] ?? '' }}">
+                                        <label class="form-label">YouTube URL</label>
+                                        <input type="url" name="footer_youtube" class="form-input"
+                                            value="{{ $site_settings['footer_youtube'] ?? '' }}">
                                     </div>
                                 </div>
                             </div>
@@ -2463,6 +2477,18 @@
             return str.charAt(0).toUpperCase() + str.slice(1);
         }
 
+        function previewHeroImage(input) {
+            const wrap = document.getElementById('hero-image-preview-wrap');
+            const img = document.getElementById('hero-image-preview');
+            if (!wrap || !img || !input.files || !input.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result;
+                wrap.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+
         function previewBeritaImage(event) {
             const file = event.target.files && event.target.files[0];
             const wrap = document.getElementById('berita-image-preview-wrap');
@@ -2538,13 +2564,28 @@
                     }
                 }
 
+                // Set image preview for hero
+                if (type === 'hero') {
+                    const btnEl = event && event.currentTarget ? event.currentTarget : null;
+                    const currentImage = btnEl ? btnEl.getAttribute('data-image') : '';
+                    const wrap = document.getElementById('hero-image-preview-wrap');
+                    const img = document.getElementById('hero-image-preview');
+                    if (wrap && img && currentImage) {
+                        img.src = currentImage;
+                        wrap.style.display = 'block';
+                    } else if (wrap) {
+                        wrap.style.display = 'none';
+                    }
+                }
+
                 // Primary: populate from clicked button's data-* attributes
                 const btn = event && event.currentTarget ? event.currentTarget : null;
                 if (btn) {
                     for (let attr of btn.attributes) {
                         if (!attr.name.startsWith('data-')) continue;
                         const key = attr.name.slice(5); // remove 'data-' prefix
-                        const input = form.querySelector(`[name="${key}"]`);
+                        // Find checkbox first if exists, otherwise fall back to generic name match
+                        let input = form.querySelector(`input[type="checkbox"][name="${key}"]`) || form.querySelector(`[name="${key}"]`);
                         if (!input) continue;
                         const val = attr.value;
                         if (input.type === 'checkbox') {
@@ -2574,8 +2615,10 @@
                     if (res.ok) {
                         const data = await res.json();
                         for (let key in data) {
-                            const input = form.querySelector(`[name="${key}"]`);
-                            if (!input || input.value) continue; // skip if already filled by dataset
+                            let input = form.querySelector(`input[type="checkbox"][name="${key}"]`) || form.querySelector(`[name="${key}"]`);
+                            if (!input) continue;
+                            // Skip non-checkbox inputs if already filled by dataset; always update checkboxes
+                            if (input.type !== 'checkbox' && input.value) continue;
                             const val = data[key];
                             if (input.type === 'checkbox') {
                                 input.checked = !!val;

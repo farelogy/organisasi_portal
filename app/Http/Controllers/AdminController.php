@@ -152,6 +152,20 @@ class AdminController extends Controller
         return $this->ajaxResponse($request, 'Hero berhasil diperbarui.');
     }
 
+    public function deleteHero(Request $request, $id)
+    {
+        $hero = Hero::findOrFail($id);
+
+        // Delete image file if exists
+        if ($hero->image && file_exists(public_path($hero->image))) {
+            unlink(public_path($hero->image));
+        }
+
+        $hero->delete();
+
+        return $this->ajaxResponse($request, 'Hero berhasil dihapus.');
+    }
+
     // Layanan methods
     public function createLayanan()
     {

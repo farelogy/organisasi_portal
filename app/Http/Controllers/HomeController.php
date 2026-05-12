@@ -13,7 +13,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $heroes = Hero::orderBy('id')->get();
+        $heroes = Hero::where('is_active', true)->orderBy('id')->get();
         $layanans = Layanan::where('is_active', true)->orderBy('order')->take(4)->get();
         $beritas = Berita::where('is_active', true)->orderBy('published_at', 'desc')->take(5)->get();
         $galleries = \App\Models\Gallery::where('is_active', true)->orderBy('created_at', 'desc')->take(4)->get();

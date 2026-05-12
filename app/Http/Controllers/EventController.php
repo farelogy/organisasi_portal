@@ -10,7 +10,7 @@ class EventController extends Controller
     /**
      * Items per page for paginated event lists
      */
-    private const PER_PAGE = 10;
+    private const PER_PAGE = 6;
 
     public function index(Request $request)
     {
