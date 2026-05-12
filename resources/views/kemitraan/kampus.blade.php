@@ -4,44 +4,59 @@
 
 @section('content')
 <!-- Hero Section -->
-<section class="bg-gradient-to-r from-orange-500 to-orange-600 py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center">
-            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Kerjasama Kampus</h1>
-            <p class="text-xl text-orange-100">Kerjasama dengan Universitas</p>
+<section class="relative min-h-[50vh] flex items-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 overflow-hidden pb-16">
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute inset-0" style="background-image: radial-gradient(circle at 25% 25%, rgba(59,130,246,0.3) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(59,130,246,0.3) 0%, transparent 50%);"></div>
+    </div>
+    <div class="absolute top-20 left-10 w-20 h-20 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
+    <div class="absolute top-40 right-20 w-32 h-32 bg-blue-400/10 rounded-full blur-2xl animate-pulse delay-1000"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full">
+        <div class="text-center text-white space-y-6" data-aos="fade-up">
+            <div class="inline-flex items-center px-4 py-2 bg-blue-500/20 backdrop-blur-sm rounded-full border border-blue-400/30">
+                <span class="w-2 h-2 bg-blue-400 rounded-full mr-2 animate-pulse"></span>
+                <span class="text-blue-300 text-sm font-medium">Kerjasama Akademik</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold leading-tight">
+                <span class="block">Kerjasama</span>
+                <span class="block bg-gradient-to-r from-blue-400 to-blue-200 bg-clip-text text-transparent">Kampus & Universitas</span>
+            </h1>
+            <p class="text-lg text-gray-300 max-w-2xl mx-auto">Kolaborasi dengan institusi pendidikan terkemuka untuk pengembangan SDM dan riset</p>
         </div>
     </div>
 </section>
 
-<!-- Kemitraan Section -->
+<!-- Category Filter - Floating Glass Card -->
+<section class="relative z-10">
+    <div class="flex justify-center px-4 -mt-8">
+        <div class="backdrop-blur-xl bg-white/90 rounded-3xl shadow-2xl border border-white/20 p-1.5 inline-flex flex-wrap justify-center gap-1.5" style="background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(239,246,255,0.95) 100%);">
+            <a href="{{ route('kemitraan.index') }}" class="flex items-center gap-2 px-5 sm:px-6 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 text-gray-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:text-blue-700 hover:shadow-md hover:scale-105 whitespace-nowrap">🌐 Semua</a>
+            <a href="{{ route('kemitraan.kampus') }}" class="flex items-center gap-2 px-5 sm:px-6 py-3 rounded-2xl text-sm font-bold transition-all duration-300 bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-300/50 ring-2 ring-blue-400/30 whitespace-nowrap hover:shadow-blue-400/60 hover:scale-105">🎓 Kampus</a>
+            <a href="{{ route('kemitraan.industri') }}" class="flex items-center gap-2 px-5 sm:px-6 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 text-gray-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:text-blue-700 hover:shadow-md hover:scale-105 whitespace-nowrap">🏭 Industri</a>
+            <a href="{{ route('kemitraan.pemerintah') }}" class="flex items-center gap-2 px-5 sm:px-6 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 text-gray-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:text-blue-700 hover:shadow-md hover:scale-105 whitespace-nowrap">🏛️ Pemerintah</a>
+        </div>
+    </div>
+</section>
+
+<!-- Kemitraan Grid -->
 <section class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         @if($kemitraans->count() > 0)
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             @foreach($kemitraans as $kemitraan)
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:-translate-y-2">
-                <div class="h-48 bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+            <a href="{{ $kemitraan->link ?? '#' }}" target="_blank" class="group">
+                <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-2 transition-all duration-300 aspect-square flex items-center justify-center p-6"
+                    data-aos="fade-up" data-aos-delay="{{ ($loop->index % 4) * 100 }}">
                     @if($kemitraan->logo)
-                    <img src="{{ $kemitraan->logo }}" alt="{{ $kemitraan->name }}" class="w-32 h-32 object-contain bg-white rounded-xl p-4">
+                    <img src="{{ $kemitraan->logo }}" alt="{{ $kemitraan->name }}"
+                         class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
+                         title="{{ $kemitraan->name }}">
                     @else
-                    <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg">
-                        <span class="text-4xl">🎓</span>
-                    </div>
+                    <div class="text-6xl">🎓</div>
                     @endif
                 </div>
-                <div class="p-6">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $kemitraan->name }}</h3>
-                    <p class="text-gray-600 mb-4 line-clamp-3">{{ $kemitraan->description }}</p>
-                    @if($kemitraan->link)
-                    <a href="{{ $kemitraan->link }}" target="_blank" class="inline-flex items-center text-orange-500 font-semibold hover:text-orange-600 transition">
-                        Kunjungi Website
-                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </a>
-                    @endif
-                </div>
-            </div>
+                <p class="mt-3 text-center text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors truncate">{{ $kemitraan->name }}</p>
+            </a>
             @endforeach
         </div>
         @else
