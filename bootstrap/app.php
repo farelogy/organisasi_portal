@@ -17,9 +17,10 @@ $app = Application::configure(basePath: dirname(__DIR__))
         //
     })->create();
 
-// Override public path for cPanel hosting (public_html is separate from project)
-if (! file_exists($app->publicPath('index.php'))) {
-    $app->usePublicPath(base_path('../testing.farelogy.my.id'));
+// Override public path for cPanel hosting (subdomain folder is separate from project)
+// DOCUMENT_ROOT is set by the web server to the subdomain's folder
+if (isset($_SERVER['DOCUMENT_ROOT']) && $_SERVER['DOCUMENT_ROOT'] !== $app->publicPath()) {
+    $app->usePublicPath($_SERVER['DOCUMENT_ROOT']);
 }
 
 return $app;
