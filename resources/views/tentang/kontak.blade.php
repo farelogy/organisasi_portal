@@ -117,14 +117,14 @@
                 <p class="text-lg text-gray-600 max-w-2xl mx-auto">Kunjungi kantor Persatuan Insinyur Indonesia untuk berdiskusi langsung dengan tim kami</p>
             </div>
 
-            <div class="relative group">
+            <div class="relative group max-w-5xl mx-auto">
                 <!-- Decorative glow -->
                 <div class="absolute -inset-1 bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 rounded-[2rem] blur-lg opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
 
                 <!-- Map container -->
-                <div class="relative bg-white rounded-3xl overflow-hidden shadow-2xl border border-gray-100">
-                    <!-- Map -->
-                    <div class="relative [&>iframe]:w-full [&>iframe]:h-[500px] [&>iframe]:border-0">
+                <div class="relative bg-white rounded-3xl overflow-hidden shadow-2xl border border-gray-100 p-3">
+                    <!-- Map (aspect-ratio 16:9, iframe fills container) -->
+                    <div class="relative aspect-video rounded-2xl overflow-hidden [&>iframe]:w-full [&>iframe]:!h-full [&>iframe]:border-0 [&>iframe]:block">
                         {!! $kontak->map_url !!}
 
                         <!-- Overlay card -->
