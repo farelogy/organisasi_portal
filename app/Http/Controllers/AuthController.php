@@ -12,6 +12,12 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
+        if (Auth::check()) {
+            return Auth::user()->role === 'admin'
+                ? redirect()->route('admin.index')
+                : redirect()->route('home');
+        }
+
         return view('auth.login');
     }
 
