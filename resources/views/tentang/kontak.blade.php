@@ -105,18 +105,50 @@
             </div>
         </div>
 
-        <!-- Map -->
+        <!-- Map Section -->
         @if($kontak->map_url)
-        <div class="mt-16" data-aos="fade-up" data-aos-delay="300">
-            <div class="text-center mb-8">
+        <div class="mt-20" data-aos="fade-up" data-aos-delay="300">
+            <div class="text-center mb-10">
                 <div class="inline-flex items-center px-4 py-2 bg-orange-100 text-orange-700 rounded-full text-sm font-medium mb-4">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     Lokasi Kami
                 </div>
-                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Lokasi <span class="text-orange-500">Kantor PII</span></h2>
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Temukan <span class="text-orange-500">Kantor Kami</span></h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Kunjungi kantor Persatuan Insinyur Indonesia untuk berdiskusi langsung dengan tim kami</p>
             </div>
-            <div class="rounded-3xl overflow-hidden shadow-2xl border border-gray-100">
-                <iframe src="{{ $kontak->map_url }}" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" class="w-full"></iframe>
+
+            <div class="relative group">
+                <!-- Decorative glow -->
+                <div class="absolute -inset-1 bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 rounded-[2rem] blur-lg opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+
+                <!-- Map container -->
+                <div class="relative bg-white rounded-3xl overflow-hidden shadow-2xl border border-gray-100">
+                    <!-- Map -->
+                    <div class="relative [&>iframe]:w-full [&>iframe]:h-[500px] [&>iframe]:border-0">
+                        {!! $kontak->map_url !!}
+
+                        <!-- Overlay card -->
+                        <div class="absolute bottom-6 left-6 right-6 md:right-auto md:max-w-sm">
+                            <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-gray-100 p-5">
+                                <div class="flex items-start gap-4">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-900 text-sm mb-1">Kantor PII</h4>
+                                        <p class="text-gray-600 text-xs leading-relaxed">{{ $kontak->address ?? '' }}</p>
+                                        @if($kontak->phone)
+                                        <div class="flex items-center gap-1.5 mt-2 text-orange-600">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                            <span class="text-xs font-medium">{{ $kontak->phone }}</span>
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         @endif

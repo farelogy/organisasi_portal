@@ -1698,9 +1698,10 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Google Maps Embed URL</label>
-                                    <input type="text" name="map_url" value="{{ $kontaks->map_url ?? '' }}"
-                                        class="form-input" placeholder="https://www.google.com/maps/embed?...">
+                                    <label class="form-label">Google Maps Embed Code</label>
+                                    <textarea name="map_url" class="form-input form-textarea" rows="4"
+                                        placeholder='Paste kode <iframe> dari Google Maps di sini...'>{{ $kontaks->map_url ?? '' }}</textarea>
+                                    <p style="font-size:11px;color:#d1d5db;margin-top:4px;">Google Maps → Share → Embed a map → Copy HTML</p>
                                 </div>
                                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
                                     <input type="hidden" name="is_active" value="0">
