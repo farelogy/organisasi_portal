@@ -26,7 +26,14 @@ class AppServiceProvider extends ServiceProvider
     {
         try {
             if (Schema::hasTable('settings')) {
-                View::share('site_settings', Setting::pluck('value', 'key')->toArray());
+                $siteSettings = Setting::pluck('value', 'key')->toArray();
+                if (!empty($siteSettings['site_logo'])) {
+                    $siteSettings['site_logo'] = asset($siteSettings['site_logo']);
+                }
+                if (!empty($siteSettings['site_favicon'])) {
+                    $siteSettings['site_favicon'] = asset($siteSettings['site_favicon']);
+                }
+                View::share('site_settings', $siteSettings);
             }
             if (Schema::hasTable('kontaks')) {
                 View::share('footer_kontak', Kontak::where('is_active', true)->first());

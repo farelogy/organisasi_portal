@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard — PII</title>
     @if (isset($site_settings['site_favicon']))
-        <link rel="icon" type="image/x-icon" href="{{ $site_settings['site_favicon'] }}">
+        <link rel="icon" type="image/x-icon" href="{{ asset($site_settings['site_favicon']) }}">
     @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
@@ -2245,7 +2245,7 @@
                                             class="form-input">
                                         @if (isset($site_settings['site_logo']))
                                             <div style="margin-top:8px;">
-                                                <img src="{{ $site_settings['site_logo'] }}"
+                                                <img src="{{ asset($site_settings['site_logo']) }}"
                                                     style="height:40px; border-radius:4px; background:#f8fafc; padding:4px; border:1px solid #e2e8f0;">
                                             </div>
                                         @endif
@@ -2259,7 +2259,7 @@
                                             Gambar besar akan otomatis dikompres ke 64x64px.</p>
                                         @if (isset($site_settings['site_favicon']))
                                             <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
-                                                <img src="{{ $site_settings['site_favicon'] }}"
+                                                <img src="{{ asset($site_settings['site_favicon']) }}"
                                                     style="width:32px; height:32px; border-radius:4px; background:#f8fafc; padding:2px; border:1px solid #e2e8f0;">
                                                 <span style="font-size:12px;color:#6b7280;">Preview Favicon</span>
                                             </div>

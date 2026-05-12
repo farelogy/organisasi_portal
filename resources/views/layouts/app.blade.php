@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'PII - Persatuan Insinyur Indonesia')</title>
     @if (isset($site_settings['site_favicon']))
-        <link rel="icon" type="image/x-icon" href="{{ $site_settings['site_favicon'] }}">
+        <link rel="icon" type="image/x-icon" href="{{ asset($site_settings['site_favicon']) }}">
     @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
@@ -29,7 +29,7 @@
                 <div class="flex items-center">
                     <a href="{{ route('home') }}" class="flex items-center space-x-3">
                         @if (isset($site_settings['site_logo']))
-                            <img src="{{ $site_settings['site_logo'] }}" alt="Logo"
+                            <img src="{{ asset($site_settings['site_logo']) }}" alt="Logo"
                                 class="w-12 h-12 object-contain flex-shrink-0">
                         @else
                             <div
@@ -235,7 +235,7 @@
                 <div class="col-span-1 md:col-span-2">
                     <div class="flex items-center space-x-3 mb-4">
                         @if (isset($site_settings['site_logo']))
-                            <img src="{{ $site_settings['site_logo'] }}" alt="Logo"
+                            <img src="{{ asset($site_settings['site_logo']) }}" alt="Logo"
                                 class="w-14 h-14 object-contain">
                         @else
                             <div class="w-14 h-14 bg-orange-500 rounded-full flex items-center justify-center">
