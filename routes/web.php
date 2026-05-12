@@ -54,7 +54,7 @@ Route::prefix('artikel')->name('artikel.')->group(function () {
 });
 
 // Gallery routes
-Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
+Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery.index');
 
 // Kemitraan routes
 Route::prefix('kemitraan')->name('kemitraan.')->group(function () {

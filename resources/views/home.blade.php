@@ -438,7 +438,7 @@
                     Sekilas foto kegiatan PII — klik untuk melihat galeri lengkap.
                 </p>
                 <div class="mt-8" data-aos="fade-up" data-aos-delay="200">
-                    <a href="{{ route('gallery') }}"
+                    <a href="{{ route('gallery.index') }}"
                         class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl font-semibold text-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg shadow-orange-500/20">
                         <span>Lihat Galeri Lengkap</span>
                         <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -452,7 +452,7 @@
             <!-- Compact Thumbnail Grid -->
             <div class="flex flex-wrap justify-center gap-2" data-aos="fade-up" data-aos-delay="200">
                 @forelse($galleries->take(10) as $gallery)
-                    <a href="{{ route('gallery') }}"
+                    <a href="{{ route('gallery.index') }}"
                         class="group relative overflow-hidden rounded-xl shadow-md w-48 h-48 sm:w-60 sm:h-60 md:w-72 md:h-72 flex-shrink-0"
                         aria-label="Lihat Galeri Lengkap">
                         <img src="{{ Str::startsWith($gallery->image, ['http://', 'https://']) ? $gallery->image : asset($gallery->image) }}"
@@ -469,7 +469,7 @@
 
             @if ($galleries->count() > 10)
                 <div class="text-center mt-6">
-                    <a href="{{ route('gallery') }}"
+                    <a href="{{ route('gallery.index') }}"
                         class="inline-flex items-center text-sm text-orange-500 font-medium hover:text-orange-600 transition-colors">
                         <span>Lihat {{ $galleries->count() - 10 }} foto lainnya</span>
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -87,6 +87,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             BeritaSeeder::class,
             EventSeeder::class,
+            GallerySeeder::class,
         ]);
     }
 }

@@ -119,7 +119,7 @@
                     </div>
 
                     <!-- Gallery -->
-                    <a href="{{ route('gallery') }}"
+                    <a href="{{ route('gallery.index') }}"
                         class="px-4 py-2 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition font-medium">Gallery</a>
 
                     <!-- Kemitraan Dropdown -->
@@ -204,7 +204,7 @@
                             class="block px-4 py-2 text-gray-600 hover:text-orange-500">Opini</a>
                     </div>
                 </div>
-                <a href="{{ route('gallery') }}"
+                <a href="{{ route('gallery.index') }}"
                     class="block px-4 py-2 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg">Gallery</a>
                 <div class="px-4 py-2">
                     <a href="{{ route('kemitraan.index') }}"
