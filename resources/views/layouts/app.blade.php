@@ -77,7 +77,7 @@
                                 class="block px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-500">Struktur
                                 Organisasi</a>
                             <a href="{{ route('tentang.kepengurusan') }}"
-                                class="block px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-500">Struktur
+                                class="block px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-500">
                                 Kepengurusan</a>
                             <a href="{{ route('tentang.kontak') }}"
                                 class="block px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-500 rounded-b-lg">Kontak</a>
