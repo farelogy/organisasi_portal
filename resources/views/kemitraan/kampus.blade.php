@@ -48,7 +48,7 @@
                 <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-2 transition-all duration-300 aspect-square flex items-center justify-center p-6"
                     data-aos="fade-up" data-aos-delay="{{ ($loop->index % 4) * 100 }}">
                     @if($kemitraan->logo)
-                    <img src="{{ $kemitraan->logo }}" alt="{{ $kemitraan->name }}"
+                    <img src="{{ Str::startsWith($kemitraan->logo, ['http://', 'https://']) ? $kemitraan->logo : asset($kemitraan->logo) }}" alt="{{ $kemitraan->name }}"
                          class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
                          title="{{ $kemitraan->name }}">
                     @else
@@ -59,6 +59,12 @@
             </a>
             @endforeach
         </div>
+
+        @if($kemitraans->hasPages())
+        <div class="mt-12 flex justify-center" data-aos="fade-up">
+            {{ $kemitraans->links() }}
+        </div>
+        @endif
         @else
         <div class="text-center py-12">
             <p class="text-gray-500 text-lg">Belum ada kerjasama kampus. Silakan hubungi admin untuk menambahkan konten.</p>

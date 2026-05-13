@@ -8,11 +8,13 @@ use App\Models\Berita;
 use App\Models\Sejarah;
 use App\Models\Sekila;
 use App\Models\StrukturOrganisasi;
+use App\Models\StrukturKepengurusan;
 use App\Models\Kontak;
 use App\Models\Event;
 use App\Models\Artikel;
 use App\Models\Gallery;
 use App\Models\Kemitraan;
+use App\Models\StrukturOrganisasiItem;
 use App\Models\KetuaUmum;
 use App\Models\User;
 use App\Models\VisiMisi;
@@ -39,6 +41,7 @@ class AdminController extends Controller
         $sejarah = Sejarah::first();
         $sekilas = Sekila::first();
         $strukturs = StrukturOrganisasi::first();
+        $kepengurusans = StrukturKepengurusan::first();
         $kontaks = Kontak::first();
         $events = Event::orderBy('event_date', 'desc')
             ->paginate(10, ['*'], 'events_page');
@@ -46,13 +49,14 @@ class AdminController extends Controller
         $galleries = Gallery::orderBy('order')
             ->paginate(10, ['*'], 'galleries_page');
         $kemitraans = Kemitraan::orderBy('order')->paginate(10, ['*'], 'kemitraans_page');
+        $strukturItems = StrukturOrganisasiItem::orderBy('order')->paginate(10, ['*'], 'struktur_items_page');
         $ketuaUmums = KetuaUmum::orderBy('order')->get();
         $users = User::orderBy('name')->paginate(10, ['*'], 'users_page');
         $visiMisis = VisiMisi::first();
 
         return view('admin.index', compact(
             'heroes', 'beritas', 'sejarah', 'sekilas',
-            'strukturs', 'kontaks', 'events', 'artikels', 'galleries', 'kemitraans', 'ketuaUmums', 'users', 'visiMisis'
+            'strukturs', 'kepengurusans', 'kontaks', 'events', 'artikels', 'galleries', 'kemitraans', 'strukturItems', 'ketuaUmums', 'users', 'visiMisis'
         ));
     }
 
@@ -62,11 +66,13 @@ class AdminController extends Controller
         'sejarahs' => \App\Models\Sejarah::class,
         'sekilas' => \App\Models\Sekila::class,
         'strukturs' => \App\Models\StrukturOrganisasi::class,
+        'kepengurusans' => \App\Models\StrukturKepengurusan::class,
         'kontaks' => \App\Models\Kontak::class,
         'events' => \App\Models\Event::class,
         'artikels' => \App\Models\Artikel::class,
         'galleries' => \App\Models\Gallery::class,
         'kemitraans' => \App\Models\Kemitraan::class,
+        'struktur-items' => \App\Models\StrukturOrganisasiItem::class,
         'ketuaUmums' => \App\Models\KetuaUmum::class,
         'users' => \App\Models\User::class,
         'visi-misis' => \App\Models\VisiMisi::class,
@@ -609,12 +615,11 @@ class AdminController extends Controller
         return $this->ajaxResponse($request, 'Visi & Misi berhasil diperbarui.');
     }
 
-    // Struktur Organisasi methods (single record, like sejarah)
+    // Struktur Organisasi methods (single record for title/image)
     public function storeStruktur(Request $request)
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'content' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'boolean',
         ]);
@@ -641,6 +646,112 @@ class AdminController extends Controller
         }
 
         return $this->ajaxResponse($request, 'Struktur Organisasi berhasil disimpan.');
+    }
+
+    // Struktur Organisasi Item methods (list data like Kemitraan, without type/description)
+    public function storeStrukturItem(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'link' => 'nullable|url|max:255',
+            'order' => 'integer',
+            'is_active' => 'boolean',
+        ]);
+
+        if ($request->hasFile('logo')) {
+            $image = $request->file('logo');
+            $imageName = time() . '_struktur_item.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/struktur_items'), $imageName);
+            $validated['logo'] = 'uploads/struktur_items/' . $imageName;
+        } else {
+            unset($validated['logo']);
+        }
+
+        StrukturOrganisasiItem::create($validated);
+
+        return $this->ajaxResponse($request, 'Item Struktur Organisasi berhasil ditambahkan.');
+    }
+
+    public function updateStrukturItem(Request $request, $id)
+    {
+        $item = StrukturOrganisasiItem::findOrFail($id);
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'link' => 'nullable|url|max:255',
+            'order' => 'integer',
+            'is_active' => 'boolean',
+        ]);
+
+        if ($request->hasFile('logo')) {
+            $this->deleteUploadedFile($item->logo);
+
+            $image = $request->file('logo');
+            $imageName = time() . '_struktur_item.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/struktur_items'), $imageName);
+            $validated['logo'] = 'uploads/struktur_items/' . $imageName;
+        } else {
+            unset($validated['logo']);
+        }
+
+        $item->update($validated);
+
+        return $this->ajaxResponse($request, 'Item Struktur Organisasi berhasil diperbarui.');
+    }
+
+    public function deleteStrukturItem(Request $request, $id)
+    {
+        $item = StrukturOrganisasiItem::findOrFail($id);
+
+        $this->deleteUploadedFile($item->logo);
+
+        $item->delete();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Item Struktur Organisasi berhasil dihapus.']);
+        }
+
+        $currentPage = (int) $request->input('struktur_items_page', 1);
+        $totalItems = StrukturOrganisasiItem::count();
+        $perPage = 10;
+        $lastPage = max(1, (int) ceil($totalItems / $perPage));
+        $redirectPage = min(max(1, $currentPage), $lastPage);
+
+        $redirectUrl = url('/admin?struktur_items_page=' . $redirectPage . '#tab=strukturs');
+        return redirect($redirectUrl)->with('success', 'Item Struktur Organisasi berhasil dihapus.');
+    }
+
+    // Struktur Kepengurusan methods (single record)
+    public function storeKepengurusan(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_active' => 'boolean',
+        ]);
+
+        $kepengurusan = StrukturKepengurusan::first();
+
+        if ($request->hasFile('image')) {
+            if ($kepengurusan) {
+                $this->deleteUploadedFile($kepengurusan->image);
+            }
+
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/kepengurusan'), $imageName);
+            $validated['image'] = 'uploads/kepengurusan/' . $imageName;
+        }
+
+        if ($kepengurusan) {
+            $kepengurusan->update($validated);
+        } else {
+            StrukturKepengurusan::create($validated);
+        }
+
+        return $this->ajaxResponse($request, 'Struktur Kepengurusan berhasil disimpan.');
     }
 
     // Kontak methods (single record)
@@ -1057,10 +1168,6 @@ class AdminController extends Controller
             'site_title' => 'nullable|string|max:255',
             'footer_description' => 'nullable|string',
             'footer_copyright' => 'nullable|string',
-            'footer_facebook' => 'nullable|string|max:255',
-            'footer_twitter' => 'nullable|string|max:255',
-            'footer_instagram' => 'nullable|string|max:255',
-            'footer_linkedin' => 'nullable|string|max:255',
             'site_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'site_logo_secondary' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'site_favicon' => 'nullable|image|mimes:png,ico,svg,jpeg,jpg,webp|max:2048',

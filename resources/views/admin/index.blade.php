@@ -824,6 +824,12 @@
                         <span class="nav-count">1</span>
                     @endif
                 </button>
+                <button onclick="showTab('kepengurusans')" id="nav-kepengurusans" class="nav-item">
+                    <span class="nav-icon">🧑‍💼</span> Struktur Kepengurusan
+                    @if ($kepengurusans)
+                        <span class="nav-count">1</span>
+                    @endif
+                </button>
                 <button onclick="showTab('kontaks')" id="nav-kontaks" class="nav-item">
                     <span class="nav-icon">📞</span> Kontak
                     @if ($kontaks)
@@ -1551,10 +1557,11 @@
 
                 {{-- ==================== STRUKTUR ==================== --}}
                 <div id="tab-strukturs" class="tab-panel">
-                    <div style="max-width:700px;">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Header Form (Title + Image) -->
                         <div class="card">
                             <div class="card-header">
-                                <h3>👥 Konten Struktur Organisasi</h3>
+                                <h3>👥 Header Struktur Organisasi</h3>
                                 @if ($strukturs)
                                     <span class="badge-active">Tersimpan</span>
                                 @else
@@ -1565,22 +1572,14 @@
                                 <form action="{{ route('admin.strukturs.store') }}" method="POST"
                                     enctype="multipart/form-data">
                                     @csrf
-                                    @if ($errors->any())
-                                        <div
-                                            style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#b91c1c;">
-                                            @foreach ($errors->all() as $e)
-                                                <div>• {{ $e }}</div>
-                                            @endforeach
-                                        </div>
-                                    @endif
                                     <div class="form-group">
                                         <label class="form-label">Judul</label>
                                         <input type="text" name="title" value="{{ $strukturs->title ?? '' }}"
                                             class="form-input" required
-                                            placeholder="Judul konten struktur organisasi">
+                                            placeholder="Judul halaman struktur organisasi">
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">Upload Gambar</label>
+                                        <label class="form-label">Upload Gambar Bagan</label>
                                         <div style="margin-bottom:8px;">
                                             @if ($strukturs && ($strukturs->image ?? false))
                                                 <img id="preview-struktur"
@@ -1595,13 +1594,7 @@
                                         <input type="file" name="image" accept="image/*" class="form-input"
                                             onchange="previewImage(this, 'preview-struktur')">
                                         <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF —
-                                            Maks.
-                                            2MB</p>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Konten</label>
-                                        <textarea name="content" id="struktur-editor" class="form-input form-textarea tinymce-editor"
-                                            placeholder="Tuliskan konten struktur organisasi PII di sini...">{{ $strukturs->content ?? '' }}</textarea>
+                                            Maks. 2MB</p>
                                     </div>
                                     <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
                                         <input type="hidden" name="is_active" value="0">
@@ -1610,8 +1603,7 @@
                                             style="width:16px;height:16px;accent-color:#f97316;"
                                             {{ $strukturs->is_active ?? true ? 'checked' : '' }}>
                                         <label for="is_active_struktur" class="form-label"
-                                            style="margin:0;">Tampilkan di
-                                            website</label>
+                                            style="margin:0;">Tampilkan di website</label>
                                     </div>
                                     <button type="submit" class="btn-orange"
                                         style="width:100%;justify-content:center;">
@@ -1620,7 +1612,205 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M5 13l4 4L19 7" />
                                         </svg>
-                                        Simpan Struktur Organisasi
+                                        Simpan Header
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- List Panel -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Daftar Item Struktur</h3>
+                                <button onclick="showForm(event, 'struktur-item')" class="btn-orange">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    Tambah Item
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                @if ($strukturItems->count() > 0)
+                                    <div class="space-y-4">
+                                        @foreach ($strukturItems as $item)
+                                            <div class="item-row">
+                                                @if ($item->logo)
+                                                    <img src="{{ Str::startsWith($item->logo, ['http://', 'https://']) ? $item->logo : asset($item->logo) }}" class="item-thumb"
+                                                        alt="{{ $item->name }}"
+                                                        style="object-fit:contain;background:#f9fafb;padding:4px;">
+                                                @else
+                                                    <div class="item-thumb-placeholder">👥</div>
+                                                @endif
+                                                <div class="item-info">
+                                                    <div class="item-title">{{ $item->name }}</div>
+                                                    <div style="margin-top:6px;display:flex;gap:8px;align-items:center;">
+                                                        <span
+                                                            class="{{ $item->is_active ? 'badge-active' : 'badge-inactive' }}">{{ $item->is_active ? 'Aktif' : 'Non-Aktif' }}</span>
+                                                        <span style="font-size:11px;color:#d1d5db;">Order:
+                                                            {{ $item->order }}</span>
+                                                    </div>
+                                                </div>
+                                                <div style="display:flex;gap:6px;align-items:center;">
+                                                    <button type="button"
+                                                        onclick="showForm(event, 'struktur-item', {{ $item->id }})"
+                                                        class="edit-btn" data-name="{{ $item->name }}"
+                                                        data-logo="{{ $item->logo }}"
+                                                        data-link="{{ $item->link }}"
+                                                        data-order="{{ $item->order }}"
+                                                        data-is_active="{{ $item->is_active ? 'true' : 'false' }}"
+                                                        data-current-image="{{ $item->logo }}">Edit</button>
+                                                    <form action="{{ route('admin.strukturItems.delete', $item->id) }}"
+                                                        method="POST" style="display:inline;">
+                                                        @method('DELETE')
+                                                        @csrf
+                                                        <input type="hidden" name="struktur_items_page"
+                                                            value="{{ request()->get('struktur_items_page', 1) }}">
+                                                        <button type="submit"
+                                                            style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:16px;"
+                                                            onclick="return confirm('Hapus item ini?')">🗑️</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <!-- Pagination -->
+                                    @if ($strukturItems->hasPages())
+                                        <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+                                            {{ $strukturItems->fragment('tab=strukturs')->links() }}
+                                        </div>
+                                    @endif
+                                @else
+                                    <div class="empty-state">
+                                        <div class="empty-icon">👥</div>
+                                        <div class="empty-title">Belum ada Item</div>
+                                        <div class="empty-desc">Tambahkan item struktur organisasi</div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Form Panel -->
+                        <div id="form-panel-struktur-item" class="card" style="display:none;">
+                            <div class="card-header">
+                                <h3 id="form-title-struktur-item">Tambah Item Struktur</h3>
+                                <button onclick="hideForm('struktur-item')" class="btn-cancel">Batal</button>
+                            </div>
+                            <div class="card-body">
+                                <form action="{{ route('admin.strukturItems.store') }}" method="POST"
+                                    enctype="multipart/form-data" id="form-struktur-item">
+                                    @csrf
+                                    <input type="hidden" name="_method" value="POST" id="struktur-item-method">
+                                    <div class="form-group">
+                                        <label class="form-label">Nama</label>
+                                        <input type="text" name="name" class="form-input" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Logo</label>
+                                        <input type="file" name="logo" accept="image/*" class="form-input"
+                                            onchange="previewStrukturItemImage(this)">
+                                        <div id="struktur-item-image-preview-wrap" style="margin-top:8px;display:none;">
+                                            <p id="struktur-item-image-preview-label"
+                                                style="font-size:11px;color:#6b7280;margin-bottom:4px;">Preview</p>
+                                            <img id="struktur-item-image-preview" src=""
+                                                style="max-height:100px;border-radius:6px;border:1px solid #e5e7eb;background:#f9fafb;padding:4px;">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Link</label>
+                                        <input type="text" name="link" id="struktur-item-link" class="form-input"
+                                            placeholder="https://...">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Urutan</label>
+                                        <input type="number" name="order" value="0" class="form-input">
+                                    </div>
+                                    <div style="display:flex;align-items:center;gap:8px;">
+                                        <input type="hidden" name="is_active" value="0">
+                                        <input type="checkbox" name="is_active" value="1" id="struktur-item-active"
+                                            style="width:16px;height:16px;accent-color:#f97316;" checked>
+                                        <label for="struktur-item-active" class="form-label"
+                                            style="margin:0;">Aktif</label>
+                                    </div>
+                                    <button type="submit" class="btn-orange"
+                                        style="width:100%;justify-content:center;margin-top:16px;">Simpan</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ==================== STRUKTUR KEPENGURUSAN ==================== --}}
+                <div id="tab-kepengurusans" class="tab-panel">
+                    <div style="max-width:700px;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>🧑‍💼 Konten Struktur Kepengurusan</h3>
+                                @if ($kepengurusans)
+                                    <span class="badge-active">Tersimpan</span>
+                                @else
+                                    <span class="badge-inactive">Belum ada</span>
+                                @endif
+                            </div>
+                            <div class="card-body">
+                                <form action="{{ route('admin.kepengurusans.store') }}" method="POST"
+                                    enctype="multipart/form-data">
+                                    @csrf
+                                    @if ($errors->any())
+                                        <div
+                                            style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#b91c1c;">
+                                            @foreach ($errors->all() as $e)
+                                                <div>• {{ $e }}</div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                    <div class="form-group">
+                                        <label class="form-label">Judul</label>
+                                        <input type="text" name="title" value="{{ $kepengurusans->title ?? '' }}"
+                                            class="form-input" required
+                                            placeholder="Judul konten struktur kepengurusan">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Upload Gambar</label>
+                                        <div style="margin-bottom:8px;">
+                                            @if ($kepengurusans && ($kepengurusans->image ?? false))
+                                                <img id="preview-kepengurusan"
+                                                    src="{{ Str::startsWith($kepengurusans->image, ['http://', 'https://']) ? $kepengurusans->image : asset($kepengurusans->image) }}"
+                                                    alt="Preview"
+                                                    style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
+                                            @else
+                                                <img id="preview-kepengurusan" src="" alt="Preview"
+                                                    style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
+                                            @endif
+                                        </div>
+                                        <input type="file" name="image" accept="image/*" class="form-input"
+                                            onchange="previewImage(this, 'preview-kepengurusan')">
+                                        <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF —
+                                            Maks. 2MB</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Konten</label>
+                                        <textarea name="content" id="kepengurusan-editor" class="form-input form-textarea tinymce-editor"
+                                            placeholder="Tuliskan konten struktur kepengurusan PII di sini...">{{ $kepengurusans->content ?? '' }}</textarea>
+                                    </div>
+                                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+                                        <input type="hidden" name="is_active" value="0">
+                                        <input type="checkbox" name="is_active" value="1"
+                                            id="is_active_kepengurusan"
+                                            style="width:16px;height:16px;accent-color:#f97316;"
+                                            {{ $kepengurusans->is_active ?? true ? 'checked' : '' }}>
+                                        <label for="is_active_kepengurusan" class="form-label"
+                                            style="margin:0;">Tampilkan di website</label>
+                                    </div>
+                                    <button type="submit" class="btn-orange"
+                                        style="width:100%;justify-content:center;">
+                                        <svg width="16" height="16" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Simpan Struktur Kepengurusan
                                     </button>
                                 </form>
                             </div>
@@ -1686,12 +1876,6 @@
                                             <input type="text" name="instagram"
                                                 value="{{ $kontaks->instagram ?? '' }}" class="form-input"
                                                 placeholder="URL Instagram">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">LinkedIn</label>
-                                            <input type="text" name="linkedin"
-                                                value="{{ $kontaks->linkedin ?? '' }}" class="form-input"
-                                                placeholder="URL LinkedIn">
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">YouTube</label>
@@ -2065,7 +2249,7 @@
                                     @foreach ($kemitraans as $km)
                                         <div class="item-row">
                                             @if ($km->logo)
-                                                <img src="{{ $km->logo }}" class="item-thumb"
+                                                <img src="{{ Str::startsWith($km->logo, ['http://', 'https://']) ? $km->logo : asset($km->logo) }}" class="item-thumb"
                                                     alt="{{ $km->name }}"
                                                     style="object-fit:contain;background:#f9fafb;padding:4px;">
                                             @else
@@ -2315,8 +2499,7 @@
                             <form action="{{ route('admin.settings.update') }}" method="POST"
                                 enctype="multipart/form-data">
                                 @csrf
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <!-- Kolom Kiri -->
+                                <div class="max-w-3xl">
                                     <div>
                                         <h4 style="font-size:14px;font-weight:700;margin-bottom:12px;color:#f97316;">
                                             Identitas Website</h4>
@@ -2390,31 +2573,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Kolom Kanan -->
-                                    <div>
-                                        <h4 style="font-size:14px;font-weight:700;margin-bottom:12px;color:#f97316;">
-                                            Sosial Media</h4>
-                                        <div class="form-group">
-                                            <label class="form-label">Facebook URL</label>
-                                            <input type="url" name="footer_facebook" class="form-input"
-                                                value="{{ $site_settings['footer_facebook'] ?? '' }}">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Twitter/X URL</label>
-                                            <input type="url" name="footer_twitter" class="form-input"
-                                                value="{{ $site_settings['footer_twitter'] ?? '' }}">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Instagram URL</label>
-                                            <input type="url" name="footer_instagram" class="form-input"
-                                                value="{{ $site_settings['footer_instagram'] ?? '' }}">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">YouTube URL</label>
-                                            <input type="url" name="footer_youtube" class="form-input"
-                                                value="{{ $site_settings['footer_youtube'] ?? '' }}">
-                                        </div>
-                                    </div>
                                 </div>
 
                                 <div style="margin-top:24px; border-top:1px solid #f1f5f9; padding-top:24px;">
@@ -2433,6 +2591,7 @@
                                             '/tentang/sejarah' => 'Tentang PII - Sejarah',
                                             '/tentang/sekilas' => 'Tentang PII - Sekilas',
                                             '/tentang/struktur' => 'Tentang PII - Struktur Organisasi',
+                                            '/tentang/kepengurusan' => 'Tentang PII - Struktur Kepengurusan',
                                             '/tentang/kontak' => 'Tentang PII - Kontak',
                                             '/event' => 'Event & Pelatihan (Semua)',
                                             '/event/seminar' => 'Event - Seminar',
@@ -2507,6 +2666,7 @@
             sejarahs: 'Sejarah & Ketua Umum',
             sekilas: 'Sekilas PII',
             strukturs: 'Struktur Organisasi',
+            kepengurusans: 'Struktur Kepengurusan',
             kontaks: 'Kontak',
             events: 'Event & Pelatihan',
             galleries: 'Gallery',
@@ -2521,10 +2681,12 @@
             sejarah: 'sejarahs',
             sekila: 'sekilas',
             struktur: 'strukturs',
+            kepengurusan: 'kepengurusans',
             kontak: 'kontaks',
             event: 'events',
             gallery: 'galleries',
             kemitraan: 'kemitraans',
+            'struktur-item': 'struktur-items',
             user: 'users',
             setting: 'settings'
         };
@@ -2735,6 +2897,13 @@
                     setKemitraanImagePreview(currentImage || '');
                 }
 
+                // Set image preview for struktur-item
+                if (type === 'struktur-item') {
+                    const btnEl = event && event.currentTarget ? event.currentTarget : null;
+                    const currentImage = btnEl ? btnEl.getAttribute('data-current-image') : '';
+                    setStrukturItemImagePreview(currentImage || '');
+                }
+
                 // Set image preview for gallery
                 if (type === 'gallery') {
                     const btnEl = event && event.currentTarget ? event.currentTarget : null;
@@ -2830,6 +2999,7 @@
                     if (wrap) wrap.style.display = 'none';
                 }
                 if (type === 'kemitraan') setKemitraanImagePreview('');
+                if (type === 'struktur-item') setStrukturItemImagePreview('');
                 if (type === 'gallery') setGalleryImagePreview('');
                 if (type === 'user') resetPasswordUI();
                 // Reset TinyMCE editors in this form
@@ -3264,6 +3434,36 @@
                     }
                 });
             });
+        }
+
+        // ---- STRUKTUR ITEM IMAGE PREVIEW ----
+        function previewStrukturItemImage(input) {
+            const wrap = document.getElementById('struktur-item-image-preview-wrap');
+            const img = document.getElementById('struktur-item-image-preview');
+            const label = document.getElementById('struktur-item-image-preview-label');
+            if (!wrap || !img || !input.files || !input.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result;
+                wrap.style.display = 'block';
+                if (label) label.textContent = 'Preview gambar baru';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+
+        function setStrukturItemImagePreview(url) {
+            const wrap = document.getElementById('struktur-item-image-preview-wrap');
+            const img = document.getElementById('struktur-item-image-preview');
+            const label = document.getElementById('struktur-item-image-preview-label');
+            if (!wrap || !img) return;
+            if (url) {
+                img.src = url;
+                wrap.style.display = 'block';
+                if (label) label.textContent = 'Logo saat ini';
+            } else {
+                img.src = '';
+                wrap.style.display = 'none';
+            }
         }
 
         // ---- KEMITRAAN IMAGE PREVIEW ----

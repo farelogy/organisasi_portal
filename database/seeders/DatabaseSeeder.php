@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
             BeritaSeeder::class,
             EventSeeder::class,
             GallerySeeder::class,
+            StrukturOrganisasiItemSeeder::class,
         ]);
     }
 }

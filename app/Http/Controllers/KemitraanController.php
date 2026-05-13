@@ -9,25 +9,25 @@ class KemitraanController extends Controller
 {
     public function index()
     {
-        $kemitraans = Kemitraan::where('is_active', true)->orderBy('order')->get();
+        $kemitraans = Kemitraan::where('is_active', true)->orderBy('order')->paginate(12);
         return view('kemitraan.index', compact('kemitraans'));
     }
 
     public function kampus()
     {
-        $kemitraans = Kemitraan::where('type', 'kerjasama_kampus')->where('is_active', true)->orderBy('order')->get();
+        $kemitraans = Kemitraan::where('type', 'kerjasama_kampus')->where('is_active', true)->orderBy('order')->paginate(12);
         return view('kemitraan.kampus', compact('kemitraans'));
     }
 
     public function industri()
     {
-        $kemitraans = Kemitraan::where('type', 'kerjasama_industri')->where('is_active', true)->orderBy('order')->get();
+        $kemitraans = Kemitraan::where('type', 'kerjasama_industri')->where('is_active', true)->orderBy('order')->paginate(12);
         return view('kemitraan.industri', compact('kemitraans'));
     }
 
     public function pemerintah()
     {
-        $kemitraans = Kemitraan::where('type', 'program_pemerintah')->where('is_active', true)->orderBy('order')->get();
+        $kemitraans = Kemitraan::where('type', 'program_pemerintah')->where('is_active', true)->orderBy('order')->paginate(12);
         return view('kemitraan.pemerintah', compact('kemitraans'));
     }
 }

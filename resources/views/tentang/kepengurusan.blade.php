@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Struktur Organisasi - PII')
+@section('title', 'Struktur Kepengurusan - PII')
 
 @section('content')
-    <!-- Struktur Organisasi Section - Landscape with Picture in Text -->
+    <!-- Struktur Kepengurusan Section -->
     <section class="py-20 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
         <!-- Background Pattern -->
         <div class="absolute inset-0 opacity-5">
@@ -25,16 +25,16 @@
                     Tentang PII
                 </span>
                 <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
-                    {{ $struktur->title ?? 'Struktur Organisasi' }}
+                    {{ $kepengurusan->title ?? 'Struktur Kepengurusan' }}
                 </h1>
             </div>
 
-            <!-- Landscape Content Card with Picture in Text -->
+            <!-- Content Card -->
             <div class="max-w-7xl mx-auto" data-aos="fade-up" data-aos-delay="100">
                 <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 md:p-12 lg:p-16">
 
-                    @if ($struktur && $struktur->image)
-                        <!-- Bagan Organisasi - Full Width -->
+                    @if ($kepengurusan && $kepengurusan->image)
+                        <!-- Bagan Kepengurusan - Full Width -->
                         <div class="mb-10" data-aos="zoom-in">
                             <div class="relative group">
                                 <div
@@ -42,43 +42,21 @@
                                 </div>
                                 <div
                                     class="relative rounded-2xl overflow-hidden shadow-lg border border-gray-100 bg-white p-2">
-                                    <img src="{{ Str::startsWith($struktur->image, ['http://', 'https://']) ? $struktur->image : asset($struktur->image) }}"
-                                        alt="{{ $struktur->title }}" class="w-full h-auto object-contain rounded-xl">
+                                    <img src="{{ Str::startsWith($kepengurusan->image, ['http://', 'https://']) ? $kepengurusan->image : asset($kepengurusan->image) }}"
+                                        alt="{{ $kepengurusan->title }}" class="w-full h-auto object-contain rounded-xl">
                                 </div>
                                 <div class="mt-3 text-center">
-                                    <span class="text-sm text-gray-500 font-medium">Bagan Struktur Organisasi PII</span>
+                                    <span class="text-sm text-gray-500 font-medium">Bagan Struktur Kepengurusan PII</span>
                                 </div>
                             </div>
                         </div>
                     @endif
 
-                    @if ($strukturItems->count() > 0)
-                        <!-- Struktur Items Grid -->
-                        <div class="mt-12" data-aos="fade-up">
-                            <div class="text-center mb-8">
-                                <h2 class="text-2xl font-bold text-gray-900">Daftar <span class="text-orange-500">Struktur Organisasi</span></h2>
-                                <p class="text-gray-500 mt-2">Berikut adalah susunan struktur organisasi Persatuan Insinyur Indonesia</p>
-                            </div>
-                            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                                @foreach ($strukturItems as $item)
-                                    <a href="{{ $item->link ? (Str::startsWith($item->link, ['http://', 'https://']) ? $item->link : 'https://' . $item->link) : '#' }}" target="_blank" class="group">
-                                        <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-2 transition-all duration-300 aspect-square flex items-center justify-center p-6"
-                                            data-aos="fade-up" data-aos-delay="{{ ($loop->index % 4) * 100 }}">
-                                            @if ($item->logo)
-                                                <img src="{{ Str::startsWith($item->logo, ['http://', 'https://']) ? $item->logo : asset($item->logo) }}"
-                                                    alt="{{ $item->name }}"
-                                                    class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
-                                                    title="{{ $item->name }}">
-                                            @else
-                                                <div class="text-6xl">👥</div>
-                                            @endif
-                                        </div>
-                                        <p class="mt-3 text-center text-sm font-medium text-gray-700 group-hover:text-orange-600 transition-colors truncate">{{ $item->name }}</p>
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
+                    <!-- Text Content -->
+                    <div class="prose prose-lg prose-slate max-w-none text-gray-700 leading-[1.8]">
+                        {!! $kepengurusan->content ??
+                            '<p class="text-gray-500 italic">Konten struktur kepengurusan sedang dalam pengembangan.</p>' !!}
+                    </div>
                 </div>
             </div>
         </div>
@@ -86,7 +64,6 @@
 
     <!-- Call to Action -->
     <section class="py-24 bg-gradient-to-r from-orange-500 to-orange-600 relative overflow-hidden">
-        <!-- Background Pattern -->
         <div class="absolute inset-0 opacity-10">
             <div class="absolute inset-0"
                 style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23FFFFFF&quot; fill-opacity=&quot;0.1&quot;%3E%3Ccircle cx=&quot;30&quot; cy=&quot;30&quot; r=&quot;2&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');">
@@ -112,9 +89,9 @@
                         </svg>
                         Hubungi Kami
                     </a>
-                    <a href="{{ route('tentang.sejarah') }}"
+                    <a href="{{ route('tentang.struktur') }}"
                         class="inline-flex items-center px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-2xl font-semibold text-lg hover:bg-white/20 transition-all duration-300 border border-white/20">
-                        <span>Lihat Sejarah PII</span>
+                        <span>Lihat Struktur Organisasi</span>
                         <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>

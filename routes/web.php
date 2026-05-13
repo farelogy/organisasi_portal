@@ -31,6 +31,7 @@ Route::prefix('tentang')->name('tentang.')->group(function () {
     Route::get('/sejarah', [TentangPiiController::class, 'sejarah'])->name('sejarah');
     Route::get('/sekilas', [TentangPiiController::class, 'sekilas'])->name('sekilas');
     Route::get('/struktur', [TentangPiiController::class, 'struktur'])->name('struktur');
+    Route::get('/kepengurusan', [TentangPiiController::class, 'kepengurusan'])->name('kepengurusan');
     Route::get('/kontak', [TentangPiiController::class, 'kontak'])->name('kontak');
 });
 
@@ -101,8 +102,16 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::post('/visi-misis', [AdminController::class, 'storeVisiMisi'])->name('visiMisis.store');
         Route::put('/visi-misis/{id}', [AdminController::class, 'updateVisiMisi'])->name('visiMisis.update');
 
-        // Struktur routes (single record)
+        // Struktur routes (single record for title/image)
         Route::post('/strukturs', [AdminController::class, 'storeStruktur'])->name('strukturs.store');
+
+        // Struktur Organisasi Item routes (list data)
+        Route::post('/struktur-items', [AdminController::class, 'storeStrukturItem'])->name('strukturItems.store');
+        Route::put('/struktur-items/{id}', [AdminController::class, 'updateStrukturItem'])->name('strukturItems.update');
+        Route::delete('/struktur-items/{id}', [AdminController::class, 'deleteStrukturItem'])->name('strukturItems.delete');
+
+        // Struktur Kepengurusan routes (single record)
+        Route::post('/kepengurusans', [AdminController::class, 'storeKepengurusan'])->name('kepengurusans.store');
 
         // Kontak routes (single record)
         Route::post('/kontaks', [AdminController::class, 'storeKontak'])->name('kontaks.store');
