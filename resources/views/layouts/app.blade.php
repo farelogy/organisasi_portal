@@ -188,7 +188,7 @@
                         <a href="{{ route('tentang.struktur') }}"
                             class="block px-4 py-2 text-gray-600 hover:text-orange-500">Struktur Organisasi</a>
                         <a href="{{ route('tentang.kepengurusan') }}"
-                            class="block px-4 py-2 text-gray-600 hover:text-orange-500">Struktur Kepengurusan</a>
+                            class="block px-4 py-2 text-gray-600 hover:text-orange-500">Kepengurusan</a>
                         <a href="{{ route('tentang.kontak') }}"
                             class="block px-4 py-2 text-gray-600 hover:text-orange-500">Kontak</a>
                     </div>
