@@ -11,19 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('events', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->string('type'); // seminar, pelatihan, konferensi
-            $table->text('description');
-            $table->longText('content')->nullable();
-            $table->string('image')->nullable();
-            $table->dateTime('event_date');
-            $table->string('location');
-            $table->string('link')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
-        });
+        Schema::dropIfExists('layanans');
     }
 
     /**
@@ -31,6 +19,16 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('events');
+        Schema::create('layanans', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->text('description');
+            $table->string('icon')->nullable();
+            $table->string('image')->nullable();
+            $table->string('link')->nullable();
+            $table->integer('order')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
     }
 };

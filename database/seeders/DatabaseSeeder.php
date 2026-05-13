@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Hero;
-use App\Models\Layanan;
 use App\Models\Berita;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -39,50 +38,7 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        // Seed Layanan
-        $layanans = [
-            [
-                'title' => 'Keanggotaan',
-                'description' => 'Bergabunglah dengan komunitas insinyur Indonesia dan nikmati berbagai keuntungan keanggotaan serta jaringan profesional yang luas.',
-                'icon' => '👥',
-                'image' => null,
-                'link' => '#',
-                'order' => 1,
-                'is_active' => true,
-            ],
-            [
-                'title' => 'Program Profesi Insinyur',
-                'description' => 'Kembangkan kompetensi profesional melalui program pelatihan dan sertifikasi yang diakui secara nasional maupun internasional.',
-                'icon' => '🎓',
-                'image' => null,
-                'link' => '#',
-                'order' => 2,
-                'is_active' => true,
-            ],
-            [
-                'title' => 'Sertifikasi',
-                'description' => 'Dapatkan sertifikasi profesional untuk meningkatkan kredibilitas karir dan kompetensi keinsinyuran Anda.',
-                'icon' => '📜',
-                'image' => null,
-                'link' => '#',
-                'order' => 3,
-                'is_active' => true,
-            ],
-            [
-                'title' => 'Advokasi',
-                'description' => 'Layanan advokasi untuk melindungi hak dan kepentingan profesi insinyur serta memberikan dukungan hukum.',
-                'icon' => '⚖️',
-                'image' => null,
-                'link' => '#',
-                'order' => 4,
-                'is_active' => true,
-            ],
-        ];
-
-        foreach ($layanans as $layanan) {
-            Layanan::create($layanan);
-        }
-
+        
         // Call additional seeders
         $this->call([
             BeritaSeeder::class,

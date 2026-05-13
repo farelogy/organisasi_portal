@@ -39,7 +39,7 @@ Route::prefix('event')->name('event.')->group(function () {
     Route::get('/', [EventController::class, 'index'])->name('index');
     Route::get('/seminar', [EventController::class, 'seminar'])->name('seminar');
     Route::get('/pelatihan', [EventController::class, 'pelatihan'])->name('pelatihan');
-    Route::get('/konvensi', [EventController::class, 'konvensi'])->name('konvensi');
+    Route::get('/konferensi', [EventController::class, 'konferensi'])->name('konferensi');
     Route::get('/{id}', [EventController::class, 'show'])->name('show');
 });
 
@@ -75,12 +75,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::put('/heroes/{id}', [AdminController::class, 'updateHero'])->name('heroes.update');
     Route::delete('/heroes/{id}', [AdminController::class, 'deleteHero'])->name('heroes.delete');
 
-    // Layanan routes
-    Route::get('/layanans/create', [AdminController::class, 'createLayanan'])->name('layanans.create');
-    Route::post('/layanans', [AdminController::class, 'storeLayanan'])->name('layanans.store');
-    Route::get('/layanans/{id}/edit', [AdminController::class, 'editLayanan'])->name('layanans.edit');
-    Route::put('/layanans/{id}', [AdminController::class, 'updateLayanan'])->name('layanans.update');
-
+    
     // Berita routes
     Route::get('/beritas/create', [AdminController::class, 'createBerita'])->name('beritas.create');
     Route::post('/beritas', [AdminController::class, 'storeBerita'])->name('beritas.store');

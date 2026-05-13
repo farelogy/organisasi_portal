@@ -59,9 +59,9 @@ class EventController extends Controller
         return view('event.pelatihan', compact('events'));
     }
 
-    public function konvensi(Request $request)
+    public function konferensi(Request $request)
     {
-        $events = Event::where('type', 'konvensi')
+        $events = Event::where('type', 'konferensi')
             ->where('is_active', true)
             ->orderBy('event_date', 'desc')
             ->paginate(self::PER_PAGE);
@@ -70,7 +70,7 @@ class EventController extends Controller
             return $this->ajaxListResponse($events);
         }
 
-        return view('event.konvensi', compact('events'));
+        return view('event.konferensi', compact('events'));
     }
 
     /**

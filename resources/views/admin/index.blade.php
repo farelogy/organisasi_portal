@@ -802,10 +802,6 @@
             <button onclick="showTab('heroes')" id="nav-heroes" class="nav-item active">
                 <span class="nav-icon">🎯</span> Hero Section
             </button>
-            <button onclick="showTab('layanans')" id="nav-layanans" class="nav-item">
-                <span class="nav-icon">🛠️</span> Layanan
-                <span class="nav-count">{{ $layanans->count() }}</span>
-            </button>
             <button onclick="showTab('beritas')" id="nav-beritas" class="nav-item">
                 <span class="nav-icon">📰</span> Berita
                 <span class="nav-count">{{ $beritas->total() }}</span>
@@ -817,15 +813,21 @@
             </button>
             <button onclick="showTab('sekilas')" id="nav-sekilas" class="nav-item">
                 <span class="nav-icon">👁️</span> Sekilas
-                @if($sekilas)<span class="nav-count">1</span>@endif
+                @if ($sekilas)
+                    <span class="nav-count">1</span>
+                @endif
             </button>
             <button onclick="showTab('strukturs')" id="nav-strukturs" class="nav-item">
                 <span class="nav-icon">👥</span> Struktur Org.
-                @if($strukturs)<span class="nav-count">1</span>@endif
+                @if ($strukturs)
+                    <span class="nav-count">1</span>
+                @endif
             </button>
             <button onclick="showTab('kontaks')" id="nav-kontaks" class="nav-item">
                 <span class="nav-icon">📞</span> Kontak
-                @if($kontaks)<span class="nav-count">1</span>@endif
+                @if ($kontaks)
+                    <span class="nav-count">1</span>
+                @endif
             </button>
 
             <div class="nav-label">Kegiatan & Media</div>
@@ -878,8 +880,8 @@
         <!-- TOPBAR -->
         <div class="topbar">
             <div style="display:flex; align-items:center; gap:12px;">
-                <button type="button" id="mobile-menu-toggle" class="mobile-menu-btn"
-                    onclick="toggleMobileSidebar()" aria-label="Toggle Menu">
+                <button type="button" id="mobile-menu-toggle" class="mobile-menu-btn" onclick="toggleMobileSidebar()"
+                    aria-label="Toggle Menu">
                     <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 6h16M4 12h16M4 18h16" />
@@ -969,7 +971,9 @@
                                                     style="width:160px;height:90px;object-fit:cover;border-radius:10px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,0.08);"
                                                     alt="{{ $hero->title }}">
                                             @else
-                                                <div style="width:160px;height:90px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#94a3b8;font-size:24px;">🎯</div>
+                                                <div
+                                                    style="width:160px;height:90px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#94a3b8;font-size:24px;">
+                                                    🎯</div>
                                             @endif
                                             <div class="item-info">
                                                 <div class="item-title">{{ $hero->title }}</div>
@@ -1034,9 +1038,11 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Gambar</label>
-                                    <input type="file" name="image" accept="image/*" class="form-input" onchange="previewHeroImage(this)">
+                                    <input type="file" name="image" accept="image/*" class="form-input"
+                                        onchange="previewHeroImage(this)">
                                     <div id="hero-image-preview-wrap" style="margin-top:10px;display:none;">
-                                        <img id="hero-image-preview" src="" alt="Preview" style="width:120px;height:68px;object-fit:cover;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+                                        <img id="hero-image-preview" src="" alt="Preview"
+                                            style="width:120px;height:68px;object-fit:cover;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.1);">
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -1063,94 +1069,6 @@
                 </div>
             </div>
 
-            {{-- ==================== LAYANAN ==================== --}}
-            <div id="tab-layanans" class="tab-panel">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- List Panel -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Daftar Layanan</h3>
-                            <button onclick="showForm(event, 'layanan')" class="btn-orange">
-                                <svg width="16" height="16" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 4v16m8-8H4" />
-                                </svg>
-                                Tambah Layanan
-                            </button>
-                        </div>
-                        <div class="card-body">
-                            @if ($layanans->count() > 0)
-                                <div class="space-y-4">
-                                    @foreach ($layanans as $layanan)
-                                        <div class="item-row">
-                                            <div class="item-thumb-placeholder">{{ $layanan->icon ?? '🛠️' }}</div>
-                                            <div class="item-info">
-                                                <div class="item-title">{{ $layanan->title }}</div>
-                                                <div class="item-meta">{{ Str::limit($layanan->description, 70) }}
-                                                </div>
-                                                <div
-                                                    style="margin-top:6px; display:flex; gap:8px; align-items:center;">
-                                                    <span
-                                                        class="{{ $layanan->is_active ? 'badge-active' : 'badge-inactive' }}">{{ $layanan->is_active ? 'Aktif' : 'Non-Aktif' }}</span>
-                                                    <span style="font-size:11px;color:#d1d5db;">Urutan:
-                                                        {{ $layanan->order }}</span>
-                                                </div>
-                                            </div>
-                                            <button onclick="showForm(event, 'layanan', {{ $layanan->id }})"
-                                                class="edit-btn">Edit</button>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @else
-                                <div class="empty-state">
-                                    <div class="empty-icon">🛠️</div>
-                                    <div class="empty-title">Belum ada Layanan</div>
-                                    <div class="empty-desc">Tambahkan layanan yang ditawarkan PII</div>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-
-                    <!-- Form Panel -->
-                    <div id="form-panel-layanan" class="card" style="display:none;">
-                        <div class="card-header">
-                            <h3 id="form-title-layanan">Tambah Layanan</h3>
-                            <button onclick="hideForm('layanan')" class="btn-cancel">Batal</button>
-                        </div>
-                        <div class="card-body">
-                            <form action="{{ route('admin.layanans.store') }}" method="POST" id="form-layanan">
-                                @csrf
-                                <input type="hidden" name="_method" value="POST" id="layanan-method">
-                                <div class="form-group">
-                                    <label class="form-label">Icon</label>
-                                    <input type="text" name="icon" class="form-input" placeholder="🛠️">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Title</label>
-                                    <input type="text" name="title" class="form-input" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Description</label>
-                                    <textarea name="description" class="form-input form-textarea" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Urutan</label>
-                                    <input type="number" name="order" value="0" class="form-input">
-                                </div>
-                                <div style="display:flex;align-items:center;gap:8px;">
-                                    <input type="hidden" name="is_active" value="0">
-                                    <input type="checkbox" name="is_active" value="1" id="layanan-active"
-                                        style="width:16px;height:16px;accent-color:#f97316;" checked>
-                                    <label for="layanan-active" class="form-label" style="margin:0;">Aktif</label>
-                                </div>
-                                <button type="submit" class="btn-orange"
-                                    style="width:100%;justify-content:center;margin-top:16px;">Simpan</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             {{-- ==================== BERITA ==================== --}}
             <div id="tab-beritas" class="tab-panel">
@@ -1173,8 +1091,8 @@
                                     @foreach ($beritas as $berita)
                                         <div class="item-row">
                                             @if ($berita->image)
-                                                <img src="{{ Str::startsWith($berita->image, ['http://', 'https://']) ? $berita->image : asset($berita->image) }}" class="item-thumb"
-                                                    alt="{{ $berita->title }}">
+                                                <img src="{{ Str::startsWith($berita->image, ['http://', 'https://']) ? $berita->image : asset($berita->image) }}"
+                                                    class="item-thumb" alt="{{ $berita->title }}">
                                             @else
                                                 <div class="item-thumb-placeholder">📰</div>
                                             @endif
@@ -1333,14 +1251,20 @@
                                 <div class="form-group">
                                     <label class="form-label">Upload Gambar</label>
                                     <div style="margin-bottom:8px;">
-                                        @if($sejarah && ($sejarah->image ?? false))
-                                        <img id="preview-sejarah" src="{{ Str::startsWith($sejarah->image, ['http://', 'https://']) ? $sejarah->image : asset($sejarah->image) }}" alt="Preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
+                                        @if ($sejarah && ($sejarah->image ?? false))
+                                            <img id="preview-sejarah"
+                                                src="{{ Str::startsWith($sejarah->image, ['http://', 'https://']) ? $sejarah->image : asset($sejarah->image) }}"
+                                                alt="Preview"
+                                                style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
                                         @else
-                                        <img id="preview-sejarah" src="" alt="Preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
+                                            <img id="preview-sejarah" src="" alt="Preview"
+                                                style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
                                         @endif
                                     </div>
-                                    <input type="file" name="image" accept="image/*" class="form-input" onchange="previewImage(this, 'preview-sejarah')">
-                                    <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF — Maks. 2MB</p>
+                                    <input type="file" name="image" accept="image/*" class="form-input"
+                                        onchange="previewImage(this, 'preview-sejarah')">
+                                    <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF — Maks.
+                                        2MB</p>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Konten</label>
@@ -1432,8 +1356,8 @@
                                     @foreach ($ketuaUmums->sortBy('order') as $k)
                                         <div class="item-row">
                                             @if ($k->image)
-                                                <img src="{{ Str::startsWith($k->image, ['http://', 'https://']) ? $k->image : asset($k->image) }}" class="item-thumb"
-                                                    alt="{{ $k->name }}"
+                                                <img src="{{ Str::startsWith($k->image, ['http://', 'https://']) ? $k->image : asset($k->image) }}"
+                                                    class="item-thumb" alt="{{ $k->name }}"
                                                     style="width:44px;height:44px;border-radius:50%;">
                                             @else
                                                 <div class="item-thumb-placeholder"
@@ -1484,42 +1408,58 @@
                     <div class="card">
                         <div class="card-header">
                             <h3>👁️ Konten Sekilas PII</h3>
-                            @if($sekilas)
+                            @if ($sekilas)
                                 <span class="badge-active">Tersimpan</span>
                             @else
                                 <span class="badge-inactive">Belum ada</span>
                             @endif
                         </div>
                         <div class="card-body">
-                            <form action="{{ route('admin.sekilas.store') }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('admin.sekilas.store') }}" method="POST"
+                                enctype="multipart/form-data">
                                 @csrf
                                 <div class="form-group">
                                     <label class="form-label">Judul</label>
-                                    <input type="text" name="title" value="{{ $sekilas->title ?? '' }}" class="form-input" required placeholder="Judul konten sekilas">
+                                    <input type="text" name="title" value="{{ $sekilas->title ?? '' }}"
+                                        class="form-input" required placeholder="Judul konten sekilas">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Upload Gambar</label>
                                     <div style="margin-bottom:8px;">
-                                        @if($sekilas && ($sekilas->image ?? false))
-                                        <img id="preview-sekilas" src="{{ Str::startsWith($sekilas->image, ['http://', 'https://']) ? $sekilas->image : asset($sekilas->image) }}" alt="Preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
+                                        @if ($sekilas && ($sekilas->image ?? false))
+                                            <img id="preview-sekilas"
+                                                src="{{ Str::startsWith($sekilas->image, ['http://', 'https://']) ? $sekilas->image : asset($sekilas->image) }}"
+                                                alt="Preview"
+                                                style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
                                         @else
-                                        <img id="preview-sekilas" src="" alt="Preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
+                                            <img id="preview-sekilas" src="" alt="Preview"
+                                                style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
                                         @endif
                                     </div>
-                                    <input type="file" name="image" accept="image/*" class="form-input" onchange="previewImage(this, 'preview-sekilas')">
-                                    <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF — Maks. 2MB</p>
+                                    <input type="file" name="image" accept="image/*" class="form-input"
+                                        onchange="previewImage(this, 'preview-sekilas')">
+                                    <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF — Maks.
+                                        2MB</p>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Konten</label>
-                                    <textarea name="content" id="sekilas-editor" class="form-input form-textarea tinymce-editor" placeholder="Tuliskan konten sekilas PII di sini...">{{ $sekilas->content ?? '' }}</textarea>
+                                    <textarea name="content" id="sekilas-editor" class="form-input form-textarea tinymce-editor"
+                                        placeholder="Tuliskan konten sekilas PII di sini...">{{ $sekilas->content ?? '' }}</textarea>
                                 </div>
                                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
                                     <input type="hidden" name="is_active" value="0">
-                                    <input type="checkbox" name="is_active" value="1" id="is_active_sekilas" style="width:16px;height:16px;accent-color:#f97316;" {{ ($sekilas->is_active ?? true) ? 'checked' : '' }}>
-                                    <label for="is_active_sekilas" class="form-label" style="margin:0;">Tampilkan di website</label>
+                                    <input type="checkbox" name="is_active" value="1" id="is_active_sekilas"
+                                        style="width:16px;height:16px;accent-color:#f97316;"
+                                        {{ $sekilas->is_active ?? true ? 'checked' : '' }}>
+                                    <label for="is_active_sekilas" class="form-label" style="margin:0;">Tampilkan di
+                                        website</label>
                                 </div>
                                 <button type="submit" class="btn-orange" style="width:100%;justify-content:center;">
-                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    <svg width="16" height="16" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
                                     Simpan Sekilas
                                 </button>
                             </form>
@@ -1530,7 +1470,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h3>🎯 Visi &amp; Misi</h3>
-                            @if(isset($visiMisis) && $visiMisis)
+                            @if (isset($visiMisis) && $visiMisis)
                                 <span class="badge-active">Tersimpan</span>
                             @else
                                 <span class="badge-inactive">Belum ada</span>
@@ -1541,19 +1481,28 @@
                                 @csrf
                                 <div class="form-group">
                                     <label class="form-label">Judul</label>
-                                    <input type="text" name="title" value="{{ $visiMisis->title ?? '' }}" class="form-input" required placeholder="contoh: Visi &amp; Misi PII">
+                                    <input type="text" name="title" value="{{ $visiMisis->title ?? '' }}"
+                                        class="form-input" required placeholder="contoh: Visi &amp; Misi PII">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Isi Konten</label>
-                                    <textarea name="content" id="visi-misi-editor" class="form-input form-textarea tinymce-editor" placeholder="Tuliskan visi dan misi di sini...">{{ $visiMisis->content ?? '' }}</textarea>
+                                    <textarea name="content" id="visi-misi-editor" class="form-input form-textarea tinymce-editor"
+                                        placeholder="Tuliskan visi dan misi di sini...">{{ $visiMisis->content ?? '' }}</textarea>
                                 </div>
                                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
                                     <input type="hidden" name="is_active" value="0">
-                                    <input type="checkbox" name="is_active" value="1" id="is_active_visi_misi" style="width:16px;height:16px;accent-color:#f97316;" {{ ($visiMisis->is_active ?? true) ? 'checked' : '' }}>
-                                    <label for="is_active_visi_misi" class="form-label" style="margin:0;">Tampilkan di website</label>
+                                    <input type="checkbox" name="is_active" value="1" id="is_active_visi_misi"
+                                        style="width:16px;height:16px;accent-color:#f97316;"
+                                        {{ $visiMisis->is_active ?? true ? 'checked' : '' }}>
+                                    <label for="is_active_visi_misi" class="form-label" style="margin:0;">Tampilkan
+                                        di website</label>
                                 </div>
                                 <button type="submit" class="btn-orange" style="width:100%;justify-content:center;">
-                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    <svg width="16" height="16" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
                                     Simpan Visi &amp; Misi
                                 </button>
                             </form>
@@ -1595,14 +1544,20 @@
                                 <div class="form-group">
                                     <label class="form-label">Upload Gambar</label>
                                     <div style="margin-bottom:8px;">
-                                        @if($strukturs && ($strukturs->image ?? false))
-                                        <img id="preview-struktur" src="{{ Str::startsWith($strukturs->image, ['http://', 'https://']) ? $strukturs->image : asset($strukturs->image) }}" alt="Preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
+                                        @if ($strukturs && ($strukturs->image ?? false))
+                                            <img id="preview-struktur"
+                                                src="{{ Str::startsWith($strukturs->image, ['http://', 'https://']) ? $strukturs->image : asset($strukturs->image) }}"
+                                                alt="Preview"
+                                                style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
                                         @else
-                                        <img id="preview-struktur" src="" alt="Preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
+                                            <img id="preview-struktur" src="" alt="Preview"
+                                                style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
                                         @endif
                                     </div>
-                                    <input type="file" name="image" accept="image/*" class="form-input" onchange="previewImage(this, 'preview-struktur')">
-                                    <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF — Maks. 2MB</p>
+                                    <input type="file" name="image" accept="image/*" class="form-input"
+                                        onchange="previewImage(this, 'preview-struktur')">
+                                    <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF — Maks.
+                                        2MB</p>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Konten</label>
@@ -1656,8 +1611,7 @@
                                 @endif
                                 <div class="form-group">
                                     <label class="form-label">Alamat</label>
-                                    <textarea name="address" class="form-input form-textarea" required
-                                        placeholder="Alamat lengkap kantor PII">{{ $kontaks->address ?? '' }}</textarea>
+                                    <textarea name="address" class="form-input form-textarea" required placeholder="Alamat lengkap kantor PII">{{ $kontaks->address ?? '' }}</textarea>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Telepon</label>
@@ -1670,7 +1624,8 @@
                                         class="form-input" required placeholder="Email resmi">
                                 </div>
                                 <div style="border-top:1px solid #e5e7eb;margin:16px 0;padding-top:16px;">
-                                    <p style="font-size:13px;font-weight:600;color:#6b7280;margin-bottom:12px;">Media Sosial (opsional)</p>
+                                    <p style="font-size:13px;font-weight:600;color:#6b7280;margin-bottom:12px;">Media
+                                        Sosial (opsional)</p>
                                     <div class="form-group">
                                         <label class="form-label">Facebook</label>
                                         <input type="text" name="facebook" value="{{ $kontaks->facebook ?? '' }}"
@@ -1683,8 +1638,9 @@
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">Instagram</label>
-                                        <input type="text" name="instagram" value="{{ $kontaks->instagram ?? '' }}"
-                                            class="form-input" placeholder="URL Instagram">
+                                        <input type="text" name="instagram"
+                                            value="{{ $kontaks->instagram ?? '' }}" class="form-input"
+                                            placeholder="URL Instagram">
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">LinkedIn</label>
@@ -1701,7 +1657,8 @@
                                     <label class="form-label">Google Maps Embed Code</label>
                                     <textarea name="map_url" class="form-input form-textarea" rows="4"
                                         placeholder='Paste kode <iframe> dari Google Maps di sini...'>{{ $kontaks->map_url ?? '' }}</textarea>
-                                    <p style="font-size:11px;color:#d1d5db;margin-top:4px;">Google Maps → Share → Embed a map → Copy HTML</p>
+                                    <p style="font-size:11px;color:#d1d5db;margin-top:4px;">Google Maps → Share → Embed
+                                        a map → Copy HTML</p>
                                 </div>
                                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
                                     <input type="hidden" name="is_active" value="0">
@@ -1733,8 +1690,10 @@
                         <div class="card-header">
                             <h3>Daftar Event & Pelatihan</h3>
                             <button onclick="showForm(event, 'event')" class="btn-orange">
-                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                <svg width="16" height="16" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4v16m8-8H4" />
                                 </svg>
                                 Tambah Event
                             </button>
@@ -1745,7 +1704,8 @@
                                     @foreach ($events as $e)
                                         <div class="item-row">
                                             @if ($e->image)
-                                                <img src="{{ Str::startsWith($e->image, ['http://', 'https://']) ? $e->image : asset($e->image) }}" class="item-thumb" alt="{{ $e->title }}">
+                                                <img src="{{ Str::startsWith($e->image, ['http://', 'https://']) ? $e->image : asset($e->image) }}"
+                                                    class="item-thumb" alt="{{ $e->title }}">
                                             @else
                                                 <div class="item-thumb-placeholder">📅</div>
                                             @endif
@@ -1753,20 +1713,29 @@
                                                 <div class="item-title">{{ $e->title }}</div>
                                                 <div class="item-meta" style="color:#f97316;font-weight:500;">
                                                     {{ ucfirst($e->type) }}
-                                                    @if($e->category) · {{ str_replace('_', ' ', ucwords($e->category, '_')) }} @endif
-                                                    @if($e->sub_category) · {{ $e->sub_category }} @endif
+                                                    @if ($e->category)
+                                                        · {{ str_replace('_', ' ', ucwords($e->category, '_')) }}
+                                                    @endif
+                                                    @if ($e->sub_category)
+                                                        · {{ $e->sub_category }}
+                                                    @endif
                                                 </div>
-                                                @if($e->event_date)
-                                                <div class="item-meta">📅 {{ $e->event_date->format('d M Y') }} @if($e->location) · 📍 {{ $e->location }} @endif</div>
+                                                @if ($e->event_date)
+                                                    <div class="item-meta">📅 {{ $e->event_date->format('d M Y') }}
+                                                        @if ($e->location)
+                                                            · 📍 {{ $e->location }}
+                                                        @endif
+                                                    </div>
                                                 @endif
                                                 <div style="margin-top:6px;">
-                                                    <span class="{{ $e->is_active ? 'badge-active' : 'badge-inactive' }}">{{ $e->is_active ? 'Aktif' : 'Non-Aktif' }}</span>
+                                                    <span
+                                                        class="{{ $e->is_active ? 'badge-active' : 'badge-inactive' }}">{{ $e->is_active ? 'Aktif' : 'Non-Aktif' }}</span>
                                                 </div>
                                             </div>
                                             <div style="display:flex;gap:6px;align-items:center;">
-                                                <button type="button" onclick="showForm(event, 'event', {{ $e->id }})"
-                                                    class="edit-btn"
-                                                    data-title="{{ $e->title }}"
+                                                <button type="button"
+                                                    onclick="showForm(event, 'event', {{ $e->id }})"
+                                                    class="edit-btn" data-title="{{ $e->title }}"
                                                     data-type="{{ $e->type }}"
                                                     data-category="{{ $e->category }}"
                                                     data-sub_category="{{ $e->sub_category }}"
@@ -1775,11 +1744,15 @@
                                                     data-link="{{ $e->link }}"
                                                     data-current-image="{{ $e->image ?? '' }}"
                                                     data-is_active="{{ $e->is_active ? 'true' : 'false' }}">Edit</button>
-                                                <form action="{{ route('admin.events.delete', $e->id) }}" method="POST" style="display:inline;">
+                                                <form action="{{ route('admin.events.delete', $e->id) }}"
+                                                    method="POST" style="display:inline;">
                                                     @method('DELETE')
                                                     @csrf
-                                                    <input type="hidden" name="events_page" value="{{ $events->currentPage() }}">
-                                                    <button type="submit" style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:16px;" onclick="return confirm('Hapus event ini?')">🗑️</button>
+                                                    <input type="hidden" name="events_page"
+                                                        value="{{ $events->currentPage() }}">
+                                                    <button type="submit"
+                                                        style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:16px;"
+                                                        onclick="return confirm('Hapus event ini?')">🗑️</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -1821,7 +1794,7 @@
                                     <select name="type" class="form-input" required>
                                         <option value="seminar">Seminar</option>
                                         <option value="pelatihan">Pelatihan</option>
-                                        <option value="konvensi">Konvensi</option>
+                                        <option value="konferensi">Konferensi</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -1836,7 +1809,8 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Sub Kategori (Opsional)</label>
-                                    <input type="text" name="sub_category" class="form-input" placeholder="Tuliskan sub kategori bebas...">
+                                    <input type="text" name="sub_category" class="form-input"
+                                        placeholder="Tuliskan sub kategori bebas...">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Tanggal Event</label>
@@ -1844,11 +1818,13 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Lokasi</label>
-                                    <input type="text" name="location" class="form-input" placeholder="Kota / Online">
+                                    <input type="text" name="location" class="form-input"
+                                        placeholder="Kota / Online">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Link Pendaftaran (Opsional)</label>
-                                    <input type="text" name="link" class="form-input" placeholder="https://...">
+                                    <input type="text" name="link" class="form-input"
+                                        placeholder="https://...">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Konten</label>
@@ -1856,9 +1832,11 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Gambar</label>
-                                    <input type="file" name="image" accept="image/*" class="form-input" onchange="previewEventImage(event)">
+                                    <input type="file" name="image" accept="image/*" class="form-input"
+                                        onchange="previewEventImage(event)">
                                     <div id="event-image-preview-wrap" style="margin-top:10px;display:none;">
-                                        <img id="event-image-preview" src="" alt="Preview" style="max-width:200px;max-height:140px;border-radius:8px;border:1px solid #e2e8f0;object-fit:cover;">
+                                        <img id="event-image-preview" src="" alt="Preview"
+                                            style="max-width:200px;max-height:140px;border-radius:8px;border:1px solid #e2e8f0;object-fit:cover;">
                                     </div>
                                 </div>
                                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
@@ -1867,7 +1845,8 @@
                                         style="width:16px;height:16px;accent-color:#f97316;" checked>
                                     <label for="event-active" class="form-label" style="margin:0;">Aktif</label>
                                 </div>
-                                <button type="submit" class="btn-orange" style="width:100%;justify-content:center;">Simpan Event</button>
+                                <button type="submit" class="btn-orange"
+                                    style="width:100%;justify-content:center;">Simpan Event</button>
                             </form>
                         </div>
                     </div>
@@ -1897,8 +1876,8 @@
                                     @foreach ($galleries as $g)
                                         <div class="item-row">
                                             @if ($g->image)
-                                                <img src="{{ Str::startsWith($g->image, ['http://', 'https://']) ? $g->image : asset($g->image) }}" class="item-thumb"
-                                                    alt="{{ $g->title }}">
+                                                <img src="{{ Str::startsWith($g->image, ['http://', 'https://']) ? $g->image : asset($g->image) }}"
+                                                    class="item-thumb" alt="{{ $g->title }}">
                                             @else
                                                 <div class="item-thumb-placeholder">🖼️</div>
                                             @endif
@@ -1922,6 +1901,7 @@
                                                     data-category="{{ $g->category }}"
                                                     data-description="{{ $g->description }}"
                                                     data-order="{{ $g->order }}"
+                                                    data-current-image="{{ $g->image ?? '' }}"
                                                     data-is_active="{{ $g->is_active ? 'true' : 'false' }}">Edit</button>
                                                 <form action="{{ route('admin.galleries.delete', $g->id) }}"
                                                     method="POST" style="display:inline;">
@@ -1982,7 +1962,13 @@
                                 <div class="form-group">
                                     <label class="form-label">Gambar</label>
                                     <input type="file" name="image" id="gallery-image" accept="image/*"
-                                        class="form-input">
+                                        class="form-input" onchange="previewGalleryImage(event)">
+                                    <div id="gallery-image-preview-wrap" style="margin-top:10px;display:none;">
+                                        <img id="gallery-image-preview" src="" alt="Preview"
+                                            style="max-width:200px;max-height:140px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;padding:4px;object-fit:cover;">
+                                        <p id="gallery-image-preview-label"
+                                            style="font-size:12px;color:#6b7280;margin-top:4px;">Preview gambar</p>
+                                    </div>
                                     <p style="font-size:11px;color:#9ca3af;margin-top:4px;">Kosongkan jika ingin
                                         mempertahankan gambar saat ini (mode edit).</p>
                                 </div>
@@ -2048,8 +2034,7 @@
                                             <div style="display:flex;gap:6px;align-items:center;">
                                                 <button type="button"
                                                     onclick="showForm(event, 'kemitraan', {{ $km->id }})"
-                                                    class="edit-btn"
-                                                    data-name="{{ $km->name }}"
+                                                    class="edit-btn" data-name="{{ $km->name }}"
                                                     data-type="{{ $km->type }}"
                                                     data-description="{{ $km->description }}"
                                                     data-logo="{{ $km->logo }}"
@@ -2119,7 +2104,8 @@
                                     <input type="file" name="logo" accept="image/*" class="form-input"
                                         onchange="previewKemitraanImage(this)">
                                     <div id="kemitraan-image-preview-wrap" style="margin-top:8px;display:none;">
-                                        <p id="kemitraan-image-preview-label" style="font-size:11px;color:#6b7280;margin-bottom:4px;">Preview</p>
+                                        <p id="kemitraan-image-preview-label"
+                                            style="font-size:11px;color:#6b7280;margin-bottom:4px;">Preview</p>
                                         <img id="kemitraan-image-preview" src=""
                                             style="max-height:100px;border-radius:6px;border:1px solid #e5e7eb;background:#f9fafb;padding:4px;">
                                     </div>
@@ -2230,18 +2216,23 @@
                                     <input type="password" name="password" id="user-password" class="form-input"
                                         placeholder="Kosongkan untuk tetap menggunakan password saat ini (mode edit)"
                                         oninput="checkPasswordStrength(this.value)">
-                                    <div id="password-strength-bar" style="height:4px;border-radius:4px;margin-top:6px;background:#e5e7eb;overflow:hidden;">
-                                        <div id="password-strength-fill" style="height:100%;width:0%;transition:width 0.3s,background 0.3s;border-radius:4px;"></div>
+                                    <div id="password-strength-bar"
+                                        style="height:4px;border-radius:4px;margin-top:6px;background:#e5e7eb;overflow:hidden;">
+                                        <div id="password-strength-fill"
+                                            style="height:100%;width:0%;transition:width 0.3s,background 0.3s;border-radius:4px;">
+                                        </div>
                                     </div>
-                                    <p id="password-strength-text" style="font-size:11px;margin-top:4px;color:#9ca3af;"></p>
+                                    <p id="password-strength-text"
+                                        style="font-size:11px;margin-top:4px;color:#9ca3af;"></p>
                                     <p style="font-size:11px;color:#6b7280;margin-top:4px;">
                                         Min. 8 karakter &bull; Huruf besar &amp; kecil &bull; Angka
                                     </p>
                                 </div>
                                 <div class="form-group" id="password-confirm-group">
                                     <label class="form-label">Konfirmasi Password</label>
-                                    <input type="password" name="password_confirmation" id="user-password-confirm" class="form-input"
-                                        placeholder="Ulangi password" oninput="checkPasswordMatch()">
+                                    <input type="password" name="password_confirmation" id="user-password-confirm"
+                                        class="form-input" placeholder="Ulangi password"
+                                        oninput="checkPasswordMatch()">
                                     <p id="password-match-text" style="font-size:11px;margin-top:4px;"></p>
                                 </div>
                                 <div class="form-group">
@@ -2280,12 +2271,23 @@
                                             value="{{ $site_settings['site_title'] ?? 'Persatuan Insinyur Indonesia' }}">
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">Logo Website</label>
+                                        <label class="form-label">Logo Website (Utama)</label>
                                         <input type="file" name="site_logo" accept="image/*"
                                             class="form-input">
                                         @if (isset($site_settings['site_logo']))
                                             <div style="margin-top:8px;">
                                                 <img src="{{ asset($site_settings['site_logo']) }}"
+                                                    style="height:40px; border-radius:4px; background:#f8fafc; padding:4px; border:1px solid #e2e8f0;">
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Logo Website (Kedua)</label>
+                                        <input type="file" name="site_logo_secondary" accept="image/*"
+                                            class="form-input">
+                                        @if (isset($site_settings['site_logo_secondary']))
+                                            <div style="margin-top:8px;">
+                                                <img src="{{ asset($site_settings['site_logo_secondary']) }}"
                                                     style="height:40px; border-radius:4px; background:#f8fafc; padding:4px; border:1px solid #e2e8f0;">
                                             </div>
                                         @endif
@@ -2304,6 +2306,15 @@
                                                 <span style="font-size:12px;color:#6b7280;">Preview Favicon</span>
                                             </div>
                                         @endif
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Link Daftar Anggota</label>
+                                        <input type="url" name="member_registration_link" class="form-input"
+                                            value="{{ $site_settings['member_registration_link'] ?? '' }}"
+                                            placeholder="https://example.com/daftar-anggota">
+                                        <p style="font-size:12px;color:#9ca3af;margin-top:4px;">Link untuk button
+                                            "Daftar Anggota" di halaman utama. Contoh: https://forms.google.com/... atau
+                                            https://pi.or.id/daftar</p>
                                     </div>
 
                                     <h4
@@ -2365,7 +2376,7 @@
                                         '/event' => 'Event & Pelatihan (Semua)',
                                         '/event/seminar' => 'Event - Seminar',
                                         '/event/pelatihan' => 'Event - Pelatihan',
-                                        '/event/konvensi' => 'Event - Konvensi',
+                                        '/event/konferensi' => 'Event - Konferensi',
                                         '/artikel' => 'Berita & Artikel (Semua)',
                                         '/artikel/artikel-teknik' => 'Artikel Teknik',
                                         '/artikel/regulasi' => 'Artikel Regulasi',
@@ -2429,7 +2440,6 @@
     <script>
         const titles = {
             heroes: 'Hero Section',
-            layanans: 'Layanan',
             beritas: 'Berita',
             sejarahs: 'Sejarah & Ketua Umum',
             sekilas: 'Sekilas PII',
@@ -2444,7 +2454,6 @@
 
         const pluralMap = {
             hero: 'heroes',
-            layanan: 'layanans',
             berita: 'beritas',
             sejarah: 'sejarahs',
             sekila: 'sekilas',
@@ -2513,7 +2522,10 @@
             const img = document.getElementById('event-image-preview');
             if (file && wrap && img) {
                 const reader = new FileReader();
-                reader.onload = (ev) => { img.src = ev.target.result; wrap.style.display = 'block'; };
+                reader.onload = (ev) => {
+                    img.src = ev.target.result;
+                    wrap.style.display = 'block';
+                };
                 reader.readAsDataURL(file);
             }
         }
@@ -2562,6 +2574,37 @@
                 if (empty) empty.style.display = 'none';
             };
             reader.readAsDataURL(file);
+        }
+
+        function previewGalleryImage(event) {
+            const file = event.target.files && event.target.files[0];
+            const wrap = document.getElementById('gallery-image-preview-wrap');
+            const img = document.getElementById('gallery-image-preview');
+            const label = document.getElementById('gallery-image-preview-label');
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result;
+                wrap.style.display = 'block';
+                if (label) label.textContent = 'Preview gambar baru';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function setGalleryImagePreview(url) {
+            const wrap = document.getElementById('gallery-image-preview-wrap');
+            const img = document.getElementById('gallery-image-preview');
+            const label = document.getElementById('gallery-image-preview-label');
+            if (!wrap || !img) return;
+            if (url) {
+                // Handle both absolute URLs and relative paths
+                img.src = url.startsWith('http') ? url : '/' + url.replace(/^\/+/, '');
+                wrap.style.display = 'block';
+                if (label) label.textContent = 'Gambar saat ini';
+            } else {
+                wrap.style.display = 'none';
+                img.src = '';
+            }
         }
 
         function setBeritaImagePreview(url) {
@@ -2629,6 +2672,13 @@
                     setKemitraanImagePreview(currentImage || '');
                 }
 
+                // Set image preview for gallery
+                if (type === 'gallery') {
+                    const btnEl = event && event.currentTarget ? event.currentTarget : null;
+                    const currentImage = btnEl ? btnEl.getAttribute('data-current-image') : '';
+                    setGalleryImagePreview(currentImage || '');
+                }
+
                 // Set image preview for hero
                 if (type === 'hero') {
                     const btnEl = event && event.currentTarget ? event.currentTarget : null;
@@ -2650,7 +2700,8 @@
                         if (!attr.name.startsWith('data-')) continue;
                         const key = attr.name.slice(5); // remove 'data-' prefix
                         // Find checkbox first if exists, otherwise fall back to generic name match
-                        let input = form.querySelector(`input[type="checkbox"][name="${key}"]`) || form.querySelector(`[name="${key}"]`);
+                        let input = form.querySelector(`input[type="checkbox"][name="${key}"]`) || form.querySelector(
+                            `[name="${key}"]`);
                         if (!input) continue;
                         const val = attr.value;
                         if (input.type === 'checkbox') {
@@ -2680,7 +2731,8 @@
                     if (res.ok) {
                         const data = await res.json();
                         for (let key in data) {
-                            let input = form.querySelector(`input[type="checkbox"][name="${key}"]`) || form.querySelector(`[name="${key}"]`);
+                            let input = form.querySelector(`input[type="checkbox"][name="${key}"]`) || form
+                                .querySelector(`[name="${key}"]`);
                             if (!input) continue;
                             // Skip non-checkbox inputs if already filled by dataset; always update checkboxes
                             if (input.type !== 'checkbox' && input.value) continue;
@@ -2715,6 +2767,7 @@
                     if (wrap) wrap.style.display = 'none';
                 }
                 if (type === 'kemitraan') setKemitraanImagePreview('');
+                if (type === 'gallery') setGalleryImagePreview('');
                 if (type === 'user') resetPasswordUI();
                 // Reset TinyMCE editors in this form
                 form.querySelectorAll('.tinymce-editor').forEach(textarea => {
@@ -2834,7 +2887,7 @@
             document.getElementById('form-title-visi-misi').textContent = 'Tambah Visi & Misi';
             document.getElementById('visi-misi-method').value = 'POST';
             document.getElementById('visi-misi-id').value = '';
-            form.action = '{{ route("admin.visiMisis.store") }}';
+            form.action = '{{ route('admin.visiMisis.store') }}';
             form.reset();
 
             const editor = typeof tinymce !== 'undefined' ? tinymce.get('visi-misi-editor') : null;
@@ -3194,33 +3247,55 @@
             }
 
             let score = 0;
-            if (value.length >= 8)  score++;
+            if (value.length >= 8) score++;
             if (value.length >= 12) score++;
             if (/[a-z]/.test(value) && /[A-Z]/.test(value)) score++;
             if (/[0-9]/.test(value)) score++;
             if (/[^a-zA-Z0-9]/.test(value)) score++;
 
-            const levels = [
-                { label: 'Sangat Lemah', color: '#ef4444', width: '20%' },
-                { label: 'Lemah',        color: '#f97316', width: '40%' },
-                { label: 'Cukup',        color: '#eab308', width: '60%' },
-                { label: 'Kuat',         color: '#22c55e', width: '80%' },
-                { label: 'Sangat Kuat',  color: '#16a34a', width: '100%' },
+            const levels = [{
+                    label: 'Sangat Lemah',
+                    color: '#ef4444',
+                    width: '20%'
+                },
+                {
+                    label: 'Lemah',
+                    color: '#f97316',
+                    width: '40%'
+                },
+                {
+                    label: 'Cukup',
+                    color: '#eab308',
+                    width: '60%'
+                },
+                {
+                    label: 'Kuat',
+                    color: '#22c55e',
+                    width: '80%'
+                },
+                {
+                    label: 'Sangat Kuat',
+                    color: '#16a34a',
+                    width: '100%'
+                },
             ];
             const level = levels[Math.min(score - 1, 4)] || levels[0];
-            fill.style.width  = level.width;
+            fill.style.width = level.width;
             fill.style.background = level.color;
-            text.style.color  = level.color;
-            text.textContent  = level.label;
+            text.style.color = level.color;
+            text.textContent = level.label;
             checkPasswordMatch();
         }
 
         function checkPasswordMatch() {
-            const pw  = document.getElementById('user-password');
+            const pw = document.getElementById('user-password');
             const cfg = document.getElementById('user-password-confirm');
             const msg = document.getElementById('password-match-text');
             if (!pw || !cfg || !msg) return;
-            if (!cfg.value) { msg.textContent = ''; return; }
+            if (!cfg.value) {
+                msg.textContent = '';
+                return;
+            }
             if (pw.value === cfg.value) {
                 msg.style.color = '#22c55e';
                 msg.textContent = '✓ Password cocok';
@@ -3235,10 +3310,13 @@
             const text = document.getElementById('password-strength-text');
             const match = document.getElementById('password-match-text');
             const cfg = document.getElementById('user-password-confirm');
-            if (fill)  { fill.style.width = '0%'; fill.style.background = ''; }
-            if (text)  text.textContent = '';
+            if (fill) {
+                fill.style.width = '0%';
+                fill.style.background = '';
+            }
+            if (text) text.textContent = '';
             if (match) match.textContent = '';
-            if (cfg)   cfg.value = '';
+            if (cfg) cfg.value = '';
         }
 
         // Initialize

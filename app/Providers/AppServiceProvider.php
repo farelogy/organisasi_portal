@@ -30,6 +30,9 @@ class AppServiceProvider extends ServiceProvider
                 if (!empty($siteSettings['site_logo'])) {
                     $siteSettings['site_logo'] = asset($siteSettings['site_logo']);
                 }
+                if (!empty($siteSettings['site_logo_secondary'])) {
+                    $siteSettings['site_logo_secondary'] = asset($siteSettings['site_logo_secondary']);
+                }
                 if (!empty($siteSettings['site_favicon'])) {
                     $siteSettings['site_favicon'] = asset($siteSettings['site_favicon']);
                 }

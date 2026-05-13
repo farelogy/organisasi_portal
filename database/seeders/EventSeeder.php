@@ -38,7 +38,7 @@ class EventSeeder extends Seeder
             ],
             [
                 'title' => 'Konvensi Insinyur Internasional Asia Pacific 2025',
-                'type' => 'konvensi',
+                'type' => 'konferensi',
                 'category' => 'internasional',
                 'sub_category' => 'Asia Pacific Engineering Forum',
                 'description' => 'Konvensi tahunan insinyur se-Asia Pacific membahas tantangan dan peluang di era revolusi industri 4.0.',
@@ -46,7 +46,7 @@ class EventSeeder extends Seeder
                 'image' => null,
                 'event_date' => '2025-10-20 08:00:00',
                 'location' => 'Bali International Convention Centre, Bali',
-                'link' => 'https://pii.or.id/konvensi-internasional-2025',
+                'link' => 'https://pii.or.id/konferensi-internasional-2025',
                 'is_active' => true,
             ],
             [
@@ -123,7 +123,7 @@ class EventSeeder extends Seeder
             ],
             [
                 'title' => 'Konvensi Tahunan Insinyur Sipil Indonesia 2025',
-                'type' => 'konvensi',
+                'type' => 'konferensi',
                 'category' => 'nasional',
                 'sub_category' => 'Teknik Sipil',
                 'description' => 'Konvensi tahunan untuk insinyur sipil membahas perkembangan terkini teknologi dan standar konstruksi.',
@@ -131,7 +131,7 @@ class EventSeeder extends Seeder
                 'image' => 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
                 'event_date' => '2025-09-18 08:00:00',
                 'location' => 'Surabaya Convention Hall, Surabaya',
-                'link' => 'https://pii.or.id/konvensi-sipil-2025',
+                'link' => 'https://pii.or.id/konferensi-sipil-2025',
                 'is_active' => true,
             ],
             [
@@ -188,7 +188,7 @@ class EventSeeder extends Seeder
             ],
             [
                 'title' => 'Konvensi Insinyur Energi Terbarukan Indonesia',
-                'type' => 'konvensi',
+                'type' => 'konferensi',
                 'category' => 'nasional',
                 'sub_category' => 'Energi Terbarukan',
                 'description' => 'Konvensi khusus membahas transisi energi dan peran insinyur dalam mengakselerasi pengembangan energi terbarukan.',
@@ -196,7 +196,7 @@ class EventSeeder extends Seeder
                 'image' => 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80',
                 'event_date' => '2025-11-15 08:00:00',
                 'location' => 'Nusa Dua Convention Center, Bali',
-                'link' => 'https://pii.or.id/konvensi-ebt-2025',
+                'link' => 'https://pii.or.id/konferensi-ebt-2025',
                 'is_active' => true,
             ],
             [
@@ -253,7 +253,7 @@ class EventSeeder extends Seeder
             ],
             [
                 'title' => 'Konvensi Insinyur Tambang dan Mineral',
-                'type' => 'konvensi',
+                'type' => 'konferensi',
                 'category' => 'nasional',
                 'sub_category' => 'Pertambangan',
                 'description' => 'Konvensi tahunan insinyur pertambangan membahas isu keberlanjutan, regulasi, dan teknologi terkini industri mining.',
@@ -261,7 +261,7 @@ class EventSeeder extends Seeder
                 'image' => 'https://images.unsplash.com/photo-1578496479531-32e296d5c6e1?w=800&q=80',
                 'event_date' => '2025-11-25 08:00:00',
                 'location' => 'Kalimantan Convention Centre, Balikpapan',
-                'link' => 'https://pii.or.id/konvensi-tambang-2025',
+                'link' => 'https://pii.or.id/konferensi-tambang-2025',
                 'is_active' => true,
             ],
             [
@@ -344,7 +344,7 @@ class EventSeeder extends Seeder
             ],
             [
                 'title' => 'Konvensi Insinyur Infrastruktur Transportasi',
-                'type' => 'konvensi',
+                'type' => 'konferensi',
                 'category' => 'internasional',
                 'sub_category' => 'Transportasi & Mobilitas',
                 'description' => 'Konvensi internasional membahas masa depan infrastruktur transportasi — jalan tol, kereta cepat, dan pelabuhan.',
@@ -352,7 +352,7 @@ class EventSeeder extends Seeder
                 'image' => 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=800&q=80',
                 'event_date' => '2025-12-17 08:00:00',
                 'location' => 'Jakarta International Expo, Jakarta',
-                'link' => 'https://pii.or.id/konvensi-transportasi-2025',
+                'link' => 'https://pii.or.id/konferensi-transportasi-2025',
                 'is_active' => true,
             ],
             [
@@ -409,7 +409,7 @@ class EventSeeder extends Seeder
             ],
             [
                 'title' => 'Konvensi Insinyur Telekomunikasi Indonesia',
-                'type' => 'konvensi',
+                'type' => 'konferensi',
                 'category' => 'nasional',
                 'sub_category' => 'Telekomunikasi',
                 'description' => 'Konvensi tahunan insinyur telekomunikasi membahas perkembangan 5G dan infrastruktur digital.',
@@ -417,7 +417,7 @@ class EventSeeder extends Seeder
                 'image' => 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80',
                 'event_date' => '2025-11-20 08:00:00',
                 'location' => 'Telkom HQ, Bandung',
-                'link' => 'https://pii.or.id/konvensi-telekomunikasi-2025',
+                'link' => 'https://pii.or.id/konferensi-telekomunikasi-2025',
                 'is_active' => true,
             ],
         ];
@@ -425,7 +425,7 @@ class EventSeeder extends Seeder
         $futureEvents = [
             [
                 'title' => 'World Engineering Forum 2026',
-                'type' => 'konvensi',
+                'type' => 'konferensi',
                 'category' => 'internasional',
                 'sub_category' => 'Global Engineering',
                 'description' => 'Forum engineering dunia membahas solusi global untuk tantangan iklim dan energi.',
@@ -477,7 +477,7 @@ class EventSeeder extends Seeder
             ],
             [
                 'title' => 'Konvensi Insinyur Lingkungan Asia Pasifik',
-                'type' => 'konvensi',
+                'type' => 'konferensi',
                 'category' => 'internasional',
                 'sub_category' => 'Environmental Engineering',
                 'description' => 'Konvensi regional membahas solusi engineering untuk isu lingkungan Asia Pasifik.',
@@ -542,7 +542,7 @@ class EventSeeder extends Seeder
             ],
             [
                 'title' => 'Konvensi Insinyur Masa Depan 2027',
-                'type' => 'konvensi',
+                'type' => 'konferensi',
                 'category' => 'nasional',
                 'sub_category' => 'Future Engineering',
                 'description' => 'Konvensi visioner membahas masa depan profesi keinsinyuran Indonesia 2045.',
@@ -550,7 +550,7 @@ class EventSeeder extends Seeder
                 'image' => 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&q=80',
                 'event_date' => '2027-01-20 08:00:00',
                 'location' => 'Indonesia Convention Exhibition, Jakarta',
-                'link' => 'https://pii.or.id/konvensi-future-2027',
+                'link' => 'https://pii.or.id/konferensi-future-2027',
                 'is_active' => true,
             ],
         ];

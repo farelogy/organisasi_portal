@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Hero;
-use App\Models\Layanan;
 use App\Models\Berita;
 use App\Models\Sejarah;
 use App\Models\Sekila;
@@ -33,7 +32,6 @@ class AdminController extends Controller
     {
         // Query fresh data for admin panel - no caching to avoid serialization issues
         $heroes = Hero::all();
-        $layanans = Layanan::orderBy('order')->get();
         // Don't cache paginator - query fresh each time
         $beritas = Berita::select(self::ADMIN_LIST_COLUMNS)
             ->orderBy('created_at', 'desc')
@@ -53,14 +51,13 @@ class AdminController extends Controller
         $visiMisis = VisiMisi::first();
 
         return view('admin.index', compact(
-            'heroes', 'layanans', 'beritas', 'sejarah', 'sekilas',
+            'heroes', 'beritas', 'sejarah', 'sekilas',
             'strukturs', 'kontaks', 'events', 'artikels', 'galleries', 'kemitraans', 'ketuaUmums', 'users', 'visiMisis'
         ));
     }
 
     private $modelMap = [
         'heroes' => \App\Models\Hero::class,
-        'layanans' => \App\Models\Layanan::class,
         'beritas' => \App\Models\Berita::class,
         'sejarahs' => \App\Models\Sejarah::class,
         'sekilas' => \App\Models\Sekila::class,
@@ -143,6 +140,9 @@ class AdminController extends Controller
 
         // Handle image upload
         if ($request->hasFile('image')) {
+            // Delete old image if exists
+            $this->deleteUploadedFile($hero->image);
+
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/heroes'), $imageName);
@@ -159,62 +159,14 @@ class AdminController extends Controller
         $hero = Hero::findOrFail($id);
 
         // Delete image file if exists
-        if ($hero->image && file_exists(public_path($hero->image))) {
-            unlink(public_path($hero->image));
-        }
+        $this->deleteUploadedFile($hero->image);
 
         $hero->delete();
 
         return $this->ajaxResponse($request, 'Hero berhasil dihapus.');
     }
 
-    // Layanan methods
-    public function createLayanan()
-    {
-        return view('admin.layanans.create');
-    }
-
-    public function storeLayanan(Request $request)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'icon' => 'required|string',
-            'image' => 'nullable|string',
-            'link' => 'nullable|string',
-            'order' => 'integer',
-            'is_active' => 'boolean',
-        ]);
-
-        Layanan::create($validated);
-
-        return $this->ajaxResponse($request, 'Layanan berhasil ditambahkan.');
-    }
-
-    public function editLayanan($id)
-    {
-        $layanan = Layanan::findOrFail($id);
-        return view('admin.layanans.edit', compact('layanan'));
-    }
-
-    public function updateLayanan(Request $request, $id)
-    {
-        $layanan = Layanan::findOrFail($id);
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'icon' => 'required|string',
-            'image' => 'nullable|string',
-            'link' => 'nullable|string',
-            'order' => 'integer',
-            'is_active' => 'boolean',
-        ]);
-
-        $layanan->update($validated);
-
-        return $this->ajaxResponse($request, 'Layanan berhasil diperbarui.');
-    }
-
+    
     // Berita methods
     public function createBerita()
     {
@@ -290,6 +242,9 @@ class AdminController extends Controller
 
         // Handle image upload (same pattern as Ketua Umum / Hero)
         if ($request->hasFile('image')) {
+            // Delete old image if exists
+            $this->deleteUploadedFile($berita->image);
+
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/beritas'), $imageName);
@@ -311,11 +266,9 @@ class AdminController extends Controller
     public function deleteBerita($id)
     {
         $berita = Berita::findOrFail($id);
-        
-        // Optionally delete the image file here if needed
-        // if ($berita->image && file_exists(public_path(parse_url($berita->image, PHP_URL_PATH)))) {
-        //     unlink(public_path(parse_url($berita->image, PHP_URL_PATH)));
-        // }
+
+        // Delete image file if exists
+        $this->deleteUploadedFile($berita->image);
 
         $berita->delete();
 
@@ -341,6 +294,35 @@ class AdminController extends Controller
         $redirectPage = min($currentPage, $lastPage);
         $redirectUrl = url('/admin?page=' . $redirectPage . '#tab=beritas');
         return redirect($redirectUrl)->with('success', 'Berita berhasil dihapus.');
+    }
+
+    /**
+     * Safely delete an uploaded file from public/ directory.
+     * Skips external URLs (http/https) and missing files.
+     */
+    private function deleteUploadedFile(?string $path): void
+    {
+        if (empty($path)) {
+            return;
+        }
+
+        // Skip external URLs
+        if (preg_match('/^https?:\/\//i', $path)) {
+            return;
+        }
+
+        // Normalize: strip leading slashes and any URL prefix
+        $relativePath = ltrim(parse_url($path, PHP_URL_PATH) ?? $path, '/');
+
+        // Restrict deletion to the uploads directory only (safety)
+        if (!str_starts_with($relativePath, 'uploads/')) {
+            return;
+        }
+
+        $fullPath = public_path($relativePath);
+        if (file_exists($fullPath) && is_file($fullPath)) {
+            @unlink($fullPath);
+        }
     }
 
     /**
@@ -382,7 +364,15 @@ class AdminController extends Controller
             'is_active' => 'boolean',
         ]);
 
+        // If sejarah exists, update it, otherwise create new
+        $sejarah = Sejarah::first();
+
         if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($sejarah) {
+                $this->deleteUploadedFile($sejarah->image_path ?? $sejarah->image);
+            }
+
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/sejarah'), $imageName);
@@ -390,8 +380,6 @@ class AdminController extends Controller
             $validated['image'] = 'uploads/sejarah/' . $imageName;
         }
 
-        // If sejarah exists, update it, otherwise create new
-        $sejarah = Sejarah::first();
         if ($sejarah) {
             $sejarah->update($validated);
         } else {
@@ -420,9 +408,7 @@ class AdminController extends Controller
 
         if ($request->hasFile('image')) {
             // Delete old image if exists
-            if ($sejarah->image_path && file_exists(public_path($sejarah->image_path))) {
-                unlink(public_path($sejarah->image_path));
-            }
+            $this->deleteUploadedFile($sejarah->image_path ?? $sejarah->image);
 
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -473,9 +459,7 @@ class AdminController extends Controller
 
         if ($request->hasFile('image')) {
             // Delete old image if exists
-            if ($ketuaUmum->image_path && file_exists(public_path($ketuaUmum->image_path))) {
-                unlink(public_path($ketuaUmum->image_path));
-            }
+            $this->deleteUploadedFile($ketuaUmum->image_path ?? $ketuaUmum->image);
 
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -492,12 +476,10 @@ class AdminController extends Controller
     public function deleteKetuaUmum(Request $request, $id)
     {
         $ketuaUmum = KetuaUmum::findOrFail($id);
-        
+
         // Delete image if exists
-        if ($ketuaUmum->image_path && file_exists(public_path($ketuaUmum->image_path))) {
-            unlink(public_path($ketuaUmum->image_path));
-        }
-        
+        $this->deleteUploadedFile($ketuaUmum->image_path ?? $ketuaUmum->image);
+
         $ketuaUmum->delete();
 
         return $this->ajaxResponse($request, 'Ketua Umum berhasil dihapus.');
@@ -518,7 +500,15 @@ class AdminController extends Controller
             'is_active' => 'boolean',
         ]);
 
+        // Single record: update existing or create new
+        $existing = Sekila::first();
+
         if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($existing) {
+                $this->deleteUploadedFile($existing->image);
+            }
+
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/sekilas'), $imageName);
@@ -529,8 +519,6 @@ class AdminController extends Controller
 
         $validated['is_active'] = $request->boolean('is_active', true);
 
-        // Single record: update existing or create new
-        $existing = Sekila::first();
         if ($existing) {
             $existing->update($validated);
         } else {
@@ -557,6 +545,9 @@ class AdminController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
+            // Delete old image if exists
+            $this->deleteUploadedFile($sekila->image);
+
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/sekilas'), $imageName);
@@ -618,15 +609,21 @@ class AdminController extends Controller
             'is_active' => 'boolean',
         ]);
 
+        // Single record: update if exists, otherwise create
+        $struktur = StrukturOrganisasi::first();
+
         if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($struktur) {
+                $this->deleteUploadedFile($struktur->image);
+            }
+
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/struktur'), $imageName);
             $validated['image'] = 'uploads/struktur/' . $imageName;
         }
 
-        // Single record: update if exists, otherwise create
-        $struktur = StrukturOrganisasi::first();
         if ($struktur) {
             $struktur->update($validated);
         } else {
@@ -733,6 +730,9 @@ class AdminController extends Controller
         }
 
         if ($request->hasFile('image')) {
+            // Delete old image if exists
+            $this->deleteUploadedFile($event->image);
+
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/events'), $imageName);
@@ -750,6 +750,10 @@ class AdminController extends Controller
     public function deleteEvent(Request $request, $id)
     {
         $event = Event::findOrFail($id);
+
+        // Delete image file if exists
+        $this->deleteUploadedFile($event->image);
+
         $event->delete();
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json(['success' => true, 'message' => 'Event berhasil dihapus.']);
@@ -863,6 +867,9 @@ class AdminController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
+            // Delete old image if exists
+            $this->deleteUploadedFile($gallery->image);
+
             $image = $request->file('image');
             $imageName = time() . '_' . preg_replace('/[^A-Za-z0-9\-_\.]/', '', $image->getClientOriginalName());
             $image->move(public_path('uploads/galleries'), $imageName);
@@ -879,6 +886,10 @@ class AdminController extends Controller
     public function deleteGallery(Request $request, $id)
     {
         $gallery = Gallery::findOrFail($id);
+
+        // Delete image file if exists
+        $this->deleteUploadedFile($gallery->image);
+
         $gallery->delete();
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json(['success' => true, 'message' => 'Gallery berhasil dihapus.']);
@@ -949,6 +960,9 @@ class AdminController extends Controller
         ]);
 
         if ($request->hasFile('logo')) {
+            // Delete old logo if exists
+            $this->deleteUploadedFile($kemitraan->logo);
+
             $image = $request->file('logo');
             $imageName = time() . '_kemitraan.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/kemitraans'), $imageName);
@@ -965,6 +979,10 @@ class AdminController extends Controller
     public function deleteKemitraan(Request $request, $id)
     {
         $kemitraan = Kemitraan::findOrFail($id);
+
+        // Delete logo file if exists
+        $this->deleteUploadedFile($kemitraan->logo);
+
         $kemitraan->delete();
 
         if ($request->ajax() || $request->wantsJson()) {
@@ -1034,10 +1052,15 @@ class AdminController extends Controller
             'footer_instagram' => 'nullable|string|max:255',
             'footer_linkedin' => 'nullable|string|max:255',
             'site_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'site_logo_secondary' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'site_favicon' => 'nullable|image|mimes:png,ico,svg,jpeg,jpg,webp|max:2048',
+            'member_registration_link' => 'nullable|url|max:255',
         ]);
 
         if ($request->hasFile('site_logo')) {
+            // Delete old logo if exists
+            $this->deleteUploadedFile(Setting::where('key', 'site_logo')->value('value'));
+
             $image = $request->file('site_logo');
             $imageName = time() . '_logo.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/settings'), $imageName);
@@ -1046,7 +1069,22 @@ class AdminController extends Controller
             unset($validated['site_logo']);
         }
 
+        if ($request->hasFile('site_logo_secondary')) {
+            // Delete old secondary logo if exists
+            $this->deleteUploadedFile(Setting::where('key', 'site_logo_secondary')->value('value'));
+
+            $image = $request->file('site_logo_secondary');
+            $imageName = time() . '_logo_secondary.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/settings'), $imageName);
+            $validated['site_logo_secondary'] = 'uploads/settings/' . $imageName;
+        } else {
+            unset($validated['site_logo_secondary']);
+        }
+
         if ($request->hasFile('site_favicon')) {
+            // Delete old favicon if exists
+            $this->deleteUploadedFile(Setting::where('key', 'site_favicon')->value('value'));
+
             $favicon = $request->file('site_favicon');
             $ext = strtolower($favicon->getClientOriginalExtension());
             $uploadPath = public_path('uploads/settings');

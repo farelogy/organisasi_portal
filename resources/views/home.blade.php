@@ -294,29 +294,50 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @forelse($events as $event)
                     @php
-                        $typeColors = ['seminar' => 'from-orange-400 to-orange-600', 'pelatihan' => 'from-blue-400 to-blue-600', 'konvensi' => 'from-green-400 to-green-600'];
+                        $typeColors = [
+                            'seminar' => 'from-orange-400 to-orange-600',
+                            'pelatihan' => 'from-blue-400 to-blue-600',
+                            'konferensi' => 'from-green-400 to-green-600',
+                        ];
                         $typeColor = $typeColors[$event->type] ?? 'from-purple-400 to-purple-600';
-                        $textColor = ['seminar' => 'text-orange-400', 'pelatihan' => 'text-blue-400', 'konvensi' => 'text-green-400'];
+                        $textColor = [
+                            'seminar' => 'text-orange-400',
+                            'pelatihan' => 'text-blue-400',
+                            'konferensi' => 'text-green-400',
+                        ];
                         $textColorClass = $textColor[$event->type] ?? 'text-purple-400';
-                        $hoverColor = ['seminar' => 'hover:text-orange-300', 'pelatihan' => 'hover:text-blue-300', 'konvensi' => 'hover:text-green-300'];
+                        $hoverColor = [
+                            'seminar' => 'hover:text-orange-300',
+                            'pelatihan' => 'hover:text-blue-300',
+                            'konferensi' => 'hover:text-green-300',
+                        ];
                         $hoverColorClass = $hoverColor[$event->type] ?? 'hover:text-purple-300';
-                        $badgeColor = ['seminar' => 'bg-orange-500/20 text-orange-300 border-orange-400/30', 'pelatihan' => 'bg-blue-500/20 text-blue-300 border-blue-400/30', 'konvensi' => 'bg-green-500/20 text-green-300 border-green-400/30'];
-                        $badgeColorClass = $badgeColor[$event->type] ?? 'bg-purple-500/20 text-purple-300 border-purple-400/30';
+                        $badgeColor = [
+                            'seminar' => 'bg-orange-500/20 text-orange-300 border-orange-400/30',
+                            'pelatihan' => 'bg-blue-500/20 text-blue-300 border-blue-400/30',
+                            'konferensi' => 'bg-green-500/20 text-green-300 border-green-400/30',
+                        ];
+                        $badgeColorClass =
+                            $badgeColor[$event->type] ?? 'bg-purple-500/20 text-purple-300 border-purple-400/30';
                     @endphp
                     <div class="group bg-white/10 backdrop-blur-md rounded-3xl border border-white/20 hover:bg-white/15 transition-all duration-500 transform hover:-translate-y-2 overflow-hidden flex flex-col"
                         data-aos="fade-up" data-aos-delay="{{ ($loop->index + 1) * 100 }}">
                         <!-- Image / Date Header -->
                         <div class="relative h-48 overflow-hidden event-image-container">
-                            @if($event->image)
-                                <img src="{{ Str::startsWith($event->image, ['http://', 'https://']) ? $event->image : asset($event->image) }}" alt="{{ $event->title }}"
-                                    crossorigin="anonymous"
+                            @if ($event->image)
+                                <img src="{{ Str::startsWith($event->image, ['http://', 'https://']) ? $event->image : asset($event->image) }}"
+                                    alt="{{ $event->title }}" crossorigin="anonymous"
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 event-image"
                                     onload="adjustTextColor(this)"
                                     onerror="this.removeAttribute('crossorigin'); this.src=this.src;">
-                                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent"></div>
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent">
+                                </div>
                             @else
-                                <div class="w-full h-full bg-gradient-to-br {{ $typeColor }} flex items-center justify-center">
-                                    <svg class="w-16 h-16 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div
+                                    class="w-full h-full bg-gradient-to-br {{ $typeColor }} flex items-center justify-center">
+                                    <svg class="w-16 h-16 text-white/80" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
                                         </path>
@@ -324,50 +345,61 @@
                                 </div>
                             @endif
                             <!-- Date Badge (default: light bg + dark text; JS swaps for light images) -->
-                            @if($event->event_date)
-                                <div class="date-badge absolute top-4 left-4 rounded-2xl px-4 py-2 text-center shadow-xl ring-1 ring-black/10 bg-white">
-                                    <div class="date-day font-bold text-2xl leading-none text-slate-900">{{ $event->event_date->format('d') }}</div>
-                                    <div class="date-month text-xs font-semibold uppercase mt-0.5 text-slate-600">{{ $event->event_date->format('M Y') }}</div>
+                            @if ($event->event_date)
+                                <div
+                                    class="date-badge absolute top-4 left-4 rounded-2xl px-4 py-2 text-center shadow-xl ring-1 ring-black/10 bg-white">
+                                    <div class="date-day font-bold text-2xl leading-none text-slate-900">
+                                        {{ $event->event_date->format('d') }}</div>
+                                    <div class="date-month text-xs font-semibold uppercase mt-0.5 text-slate-600">
+                                        {{ $event->event_date->format('M Y') }}</div>
                                 </div>
                             @endif
                             <!-- Type Badge -->
                             <div class="absolute top-4 right-4">
-                                <span class="type-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold capitalize shadow-lg ring-1 ring-black/10 bg-white text-slate-900">
+                                <span
+                                    class="type-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold capitalize shadow-lg ring-1 ring-black/10 bg-white text-slate-900">
                                     {{ $event->type }}
                                 </span>
                             </div>
                         </div>
                         <!-- Content -->
                         <div class="p-6 flex-1 flex flex-col">
-                            @if($event->category || $event->sub_category)
+                            @if ($event->category || $event->sub_category)
                                 <div class="flex flex-wrap gap-2 mb-3">
-                                    @if($event->category)
+                                    @if ($event->category)
                                         <span class="text-xs text-gray-400 capitalize">{{ $event->category }}</span>
                                     @endif
-                                    @if($event->sub_category)
+                                    @if ($event->sub_category)
                                         <span class="text-xs text-gray-500">• {{ $event->sub_category }}</span>
                                     @endif
                                 </div>
                             @endif
-                            <h3 class="text-xl font-bold text-white mb-3 {{ $hoverColorClass }} transition-colors line-clamp-2">{{ $event->title }}</h3>
+                            <h3
+                                class="text-xl font-bold text-white mb-3 {{ $hoverColorClass }} transition-colors line-clamp-2">
+                                {{ $event->title }}</h3>
                             <p class="text-gray-300 text-sm mb-4 leading-relaxed line-clamp-2 flex-1">
                                 {{ Str::limit($event->description, 100) }}
                             </p>
                             <div class="space-y-2 mb-4 text-sm text-gray-400">
-                                @if($event->location)
+                                @if ($event->location)
                                     <div class="flex items-start gap-2">
-                                        <svg class="w-4 h-4 mt-0.5 flex-shrink-0 {{ $textColorClass }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 mt-0.5 flex-shrink-0 {{ $textColorClass }}" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                            </path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         </svg>
                                         <span class="line-clamp-1">{{ $event->location }}</span>
                                     </div>
                                 @endif
-                                @if($event->event_date)
+                                @if ($event->event_date)
                                     <div class="flex items-center gap-2">
-                                        <svg class="w-4 h-4 flex-shrink-0 {{ $textColorClass }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        <svg class="w-4 h-4 flex-shrink-0 {{ $textColorClass }}" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                         <span>{{ $event->event_date->format('H:i') }} WIB</span>
                                     </div>
@@ -378,7 +410,8 @@
                                     class="inline-flex items-center {{ $textColorClass }} font-semibold text-sm {{ $hoverColorClass }} transition-colors">
                                     <span>Detail</span>
                                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7"></path>
                                     </svg>
                                 </a>
                             </div>
@@ -387,10 +420,12 @@
                 @empty
                     <div class="col-span-full text-center py-12">
                         <div class="text-gray-400 text-lg mb-4">Belum ada event mendatang</div>
-                        <a href="{{ route('event.index') }}" class="inline-flex items-center text-orange-400 font-semibold hover:text-orange-300 transition-colors">
+                        <a href="{{ route('event.index') }}"
+                            class="inline-flex items-center text-orange-400 font-semibold hover:text-orange-300 transition-colors">
                             <span>Lihat Semua Event</span>
                             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                                </path>
                             </svg>
                         </a>
                     </div>
@@ -559,7 +594,8 @@
 
                     <!-- CTA Buttons -->
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="#"
+                        <a href="{{ $site_settings['member_registration_link'] ?? '#' }}"
+                            @if (!empty($site_settings['member_registration_link'])) target="_blank" @endif
                             class="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl font-semibold text-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl shadow-orange-500/25">
                             <span>Daftar Anggota</span>
                             <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none"
@@ -568,7 +604,7 @@
                                     d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                             </svg>
                         </a>
-                        <a href="#"
+                        <a href="{{ route('tentang.kontak') }}"
                             class="inline-flex items-center px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-2xl font-semibold text-lg hover:bg-white/20 transition-all duration-300 border border-white/20">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -706,8 +742,14 @@
                     dateBadge.classList.add('bg-slate-900', 'ring-white/20');
                     const day = dateBadge.querySelector('.date-day');
                     const month = dateBadge.querySelector('.date-month');
-                    if (day) { day.classList.remove('text-slate-900'); day.classList.add('text-white'); }
-                    if (month) { month.classList.remove('text-slate-600'); month.classList.add('text-gray-300'); }
+                    if (day) {
+                        day.classList.remove('text-slate-900');
+                        day.classList.add('text-white');
+                    }
+                    if (month) {
+                        month.classList.remove('text-slate-600');
+                        month.classList.add('text-gray-300');
+                    }
                 }
                 if (typeBadge) {
                     typeBadge.classList.remove('bg-white', 'text-slate-900', 'ring-black/10');
@@ -717,8 +759,8 @@
         }
 
         // Handle images already cached / loaded before listener attached
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.event-image').forEach(function (img) {
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.event-image').forEach(function(img) {
                 if (img.complete && img.naturalWidth > 0) {
                     adjustTextColor(img);
                 }
