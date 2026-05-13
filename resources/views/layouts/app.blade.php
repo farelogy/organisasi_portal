@@ -48,7 +48,7 @@
                             @endif
                         </div>
                         <span
-                            class="text-lg md:text-xl font-bold text-gray-800 max-w-[140px] sm:max-w-[200px] md:max-w-[280px] lg:max-w-[350px] whitespace-normal leading-tight">{{ $site_settings['site_title'] ?? 'Persatuan Insinyur Indonesia' }}</span>
+                            class="text-lg md:text-xl font-bold text-gray-800 max-w-[140px] sm:max-w-[200px] md:max-w-[280px] lg:max-w-[350px] whitespace-normal leading-tight">{{ $site_settings['site_title'] ?? '' }}</span>
                     </a>
                 </div>
 
@@ -143,7 +143,7 @@
                             </svg>
                         </a>
                         <div
-                            class="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                            class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                             <a href="{{ route('kemitraan.kampus') }}"
                                 class="block px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-500 rounded-t-lg">Kerjasama
                                 Kampus</a>
@@ -269,8 +269,7 @@
                                 </div>
                             @endif
                         </div>
-                        <span
-                            class="text-xl font-bold">{{ $site_settings['site_title'] ?? 'Persatuan Insinyur Indonesia' }}</span>
+                        <span class="text-xl font-bold">{{ $site_settings['site_title'] ?? '' }}</span>
                     </div>
                     <p class="text-gray-400 mb-4">
                         {{ $site_settings['footer_description'] ?? 'Wadah persatuan dan kesatuan insinyur Indonesia untuk memajukan profesi keinsinyuran dan berkontribusi bagi pembangunan bangsa.' }}

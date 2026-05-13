@@ -83,27 +83,30 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::put('/beritas/{id}', [AdminController::class, 'updateBerita'])->name('beritas.update');
     Route::delete('/beritas/{id}', [AdminController::class, 'deleteBerita'])->name('beritas.delete');
 
-    // Sejarah routes
-    Route::get('/sejarahs/create', [AdminController::class, 'createSejarah'])->name('sejarahs.create');
-    Route::post('/sejarahs', [AdminController::class, 'storeSejarah'])->name('sejarahs.store');
-    Route::get('/sejarahs/{id}/edit', [AdminController::class, 'editSejarah'])->name('sejarahs.edit');
-    Route::put('/sejarahs/{id}', [AdminController::class, 'updateSejarah'])->name('sejarahs.update');
+    // ===== Admin-only routes (sejarah, sekila, visi-misi, struktur, kontak) =====
+    Route::middleware('admin')->group(function () {
+        // Sejarah routes
+        Route::get('/sejarahs/create', [AdminController::class, 'createSejarah'])->name('sejarahs.create');
+        Route::post('/sejarahs', [AdminController::class, 'storeSejarah'])->name('sejarahs.store');
+        Route::get('/sejarahs/{id}/edit', [AdminController::class, 'editSejarah'])->name('sejarahs.edit');
+        Route::put('/sejarahs/{id}', [AdminController::class, 'updateSejarah'])->name('sejarahs.update');
 
-    // Sekila routes
-    Route::get('/sekilas/create', [AdminController::class, 'createSekila'])->name('sekilas.create');
-    Route::post('/sekilas', [AdminController::class, 'storeSekila'])->name('sekilas.store');
-    Route::get('/sekilas/{id}/edit', [AdminController::class, 'editSekila'])->name('sekilas.edit');
-    Route::put('/sekilas/{id}', [AdminController::class, 'updateSekila'])->name('sekilas.update');
+        // Sekila routes
+        Route::get('/sekilas/create', [AdminController::class, 'createSekila'])->name('sekilas.create');
+        Route::post('/sekilas', [AdminController::class, 'storeSekila'])->name('sekilas.store');
+        Route::get('/sekilas/{id}/edit', [AdminController::class, 'editSekila'])->name('sekilas.edit');
+        Route::put('/sekilas/{id}', [AdminController::class, 'updateSekila'])->name('sekilas.update');
 
-    // Visi Misi routes
-    Route::post('/visi-misis', [AdminController::class, 'storeVisiMisi'])->name('visiMisis.store');
-    Route::put('/visi-misis/{id}', [AdminController::class, 'updateVisiMisi'])->name('visiMisis.update');
+        // Visi Misi routes
+        Route::post('/visi-misis', [AdminController::class, 'storeVisiMisi'])->name('visiMisis.store');
+        Route::put('/visi-misis/{id}', [AdminController::class, 'updateVisiMisi'])->name('visiMisis.update');
 
-    // Struktur routes (single record)
-    Route::post('/strukturs', [AdminController::class, 'storeStruktur'])->name('strukturs.store');
+        // Struktur routes (single record)
+        Route::post('/strukturs', [AdminController::class, 'storeStruktur'])->name('strukturs.store');
 
-    // Kontak routes (single record)
-    Route::post('/kontaks', [AdminController::class, 'storeKontak'])->name('kontaks.store');
+        // Kontak routes (single record)
+        Route::post('/kontaks', [AdminController::class, 'storeKontak'])->name('kontaks.store');
+    });
 
     // Event routes
     Route::get('/events/create', [AdminController::class, 'createEvent'])->name('events.create');
@@ -112,11 +115,13 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::put('/events/{id}', [AdminController::class, 'updateEvent'])->name('events.update');
     Route::delete('/events/{id}', [AdminController::class, 'deleteEvent'])->name('events.delete');
 
-    // Artikel routes
-    Route::get('/artikels/create', [AdminController::class, 'createArtikel'])->name('artikels.create');
-    Route::post('/artikels', [AdminController::class, 'storeArtikel'])->name('artikels.store');
-    Route::get('/artikels/{id}/edit', [AdminController::class, 'editArtikel'])->name('artikels.edit');
-    Route::put('/artikels/{id}', [AdminController::class, 'updateArtikel'])->name('artikels.update');
+    // ===== Artikel routes (admin only) =====
+    Route::middleware('admin')->group(function () {
+        Route::get('/artikels/create', [AdminController::class, 'createArtikel'])->name('artikels.create');
+        Route::post('/artikels', [AdminController::class, 'storeArtikel'])->name('artikels.store');
+        Route::get('/artikels/{id}/edit', [AdminController::class, 'editArtikel'])->name('artikels.edit');
+        Route::put('/artikels/{id}', [AdminController::class, 'updateArtikel'])->name('artikels.update');
+    });
 
     // Gallery routes
     Route::get('/galleries/create', [AdminController::class, 'createGallery'])->name('galleries.create');
@@ -132,17 +137,20 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::put('/kemitraans/{id}', [AdminController::class, 'updateKemitraan'])->name('kemitraans.update');
     Route::delete('/kemitraans/{id}', [AdminController::class, 'deleteKemitraan'])->name('kemitraans.delete');
 
-    // KetuaUmum routes
-    Route::post('/ketua-umums', [AdminController::class, 'storeKetuaUmum'])->name('ketuaUmums.store');
-    Route::put('/ketua-umums/{id}', [AdminController::class, 'updateKetuaUmum'])->name('ketuaUmums.update');
-    Route::delete('/ketua-umums/{id}', [AdminController::class, 'deleteKetuaUmum'])->name('ketuaUmums.delete');
+    // ===== Admin-only routes (ketua-umum, users, settings) =====
+    Route::middleware('admin')->group(function () {
+        // KetuaUmum routes
+        Route::post('/ketua-umums', [AdminController::class, 'storeKetuaUmum'])->name('ketuaUmums.store');
+        Route::put('/ketua-umums/{id}', [AdminController::class, 'updateKetuaUmum'])->name('ketuaUmums.update');
+        Route::delete('/ketua-umums/{id}', [AdminController::class, 'deleteKetuaUmum'])->name('ketuaUmums.delete');
 
-    // User management routes
-    Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
-    Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('users.update');
+        // User management routes
+        Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
+        Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('users.update');
 
-    // Settings route
-    Route::post('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
+        // Settings route
+        Route::post('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
+    });
 
     // Generic item API for AJAX
     Route::get('/items/{type}/{id}', [AdminController::class, 'getItem'])->name('items.get');

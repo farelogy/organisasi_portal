@@ -13,9 +13,7 @@ class AuthController extends Controller
     public function showLogin()
     {
         if (Auth::check()) {
-            return Auth::user()->role === 'admin'
-                ? redirect()->route('admin.index')
-                : redirect()->route('home');
+            return redirect()->route('admin.index');
         }
 
         return view('auth.login');
@@ -41,12 +39,7 @@ class AuthController extends Controller
             RateLimiter::clear($throttleKey);
             $request->session()->regenerate();
             
-            // Check if user is admin
-            if (Auth::user()->role === 'admin') {
-                return redirect()->intended(route('admin.index'));
-            }
-            
-            return redirect()->intended(route('home'));
+            return redirect()->intended(route('admin.index'));
         }
 
         RateLimiter::hit($throttleKey, 60);

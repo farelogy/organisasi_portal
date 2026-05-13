@@ -807,28 +807,30 @@
                 <span class="nav-count">{{ $beritas->total() }}</span>
             </button>
 
-            <div class="nav-label">Tentang PII</div>
-            <button onclick="showTab('sejarahs')" id="nav-sejarahs" class="nav-item">
-                <span class="nav-icon">📜</span> Sejarah
-            </button>
-            <button onclick="showTab('sekilas')" id="nav-sekilas" class="nav-item">
-                <span class="nav-icon">👁️</span> Sekilas
-                @if ($sekilas)
-                    <span class="nav-count">1</span>
-                @endif
-            </button>
-            <button onclick="showTab('strukturs')" id="nav-strukturs" class="nav-item">
-                <span class="nav-icon">👥</span> Struktur Org.
-                @if ($strukturs)
-                    <span class="nav-count">1</span>
-                @endif
-            </button>
-            <button onclick="showTab('kontaks')" id="nav-kontaks" class="nav-item">
-                <span class="nav-icon">📞</span> Kontak
-                @if ($kontaks)
-                    <span class="nav-count">1</span>
-                @endif
-            </button>
+            @if (Auth::user()->role === 'admin')
+                <div class="nav-label">Tentang PII</div>
+                <button onclick="showTab('sejarahs')" id="nav-sejarahs" class="nav-item">
+                    <span class="nav-icon">📜</span> Sejarah
+                </button>
+                <button onclick="showTab('sekilas')" id="nav-sekilas" class="nav-item">
+                    <span class="nav-icon">👁️</span> Sekilas
+                    @if ($sekilas)
+                        <span class="nav-count">1</span>
+                    @endif
+                </button>
+                <button onclick="showTab('strukturs')" id="nav-strukturs" class="nav-item">
+                    <span class="nav-icon">👥</span> Struktur Org.
+                    @if ($strukturs)
+                        <span class="nav-count">1</span>
+                    @endif
+                </button>
+                <button onclick="showTab('kontaks')" id="nav-kontaks" class="nav-item">
+                    <span class="nav-icon">📞</span> Kontak
+                    @if ($kontaks)
+                        <span class="nav-count">1</span>
+                    @endif
+                </button>
+            @endif
 
             <div class="nav-label">Kegiatan & Media</div>
             <button onclick="showTab('events')" id="nav-events" class="nav-item">
@@ -844,14 +846,16 @@
                 <span class="nav-count">{{ $kemitraans->total() }}</span>
             </button>
 
-            <div class="nav-label">Manajemen</div>
-            <button onclick="showTab('users')" id="nav-users" class="nav-item">
-                <span class="nav-icon">👤</span> Users
-                <span class="nav-count">{{ $users->total() }}</span>
-            </button>
-            <button onclick="showTab('settings')" id="nav-settings" class="nav-item">
-                <span class="nav-icon">⚙️</span> Pengaturan Situs
-            </button>
+            @if (Auth::user()->role === 'admin')
+                <div class="nav-label">Manajemen</div>
+                <button onclick="showTab('users')" id="nav-users" class="nav-item">
+                    <span class="nav-icon">👤</span> Users
+                    <span class="nav-count">{{ $users->total() }}</span>
+                </button>
+                <button onclick="showTab('settings')" id="nav-settings" class="nav-item">
+                    <span class="nav-icon">⚙️</span> Pengaturan Situs
+                </button>
+            @endif
         </nav>
         <div class="sidebar-footer" style="display:flex;flex-direction:column;gap:10px;">
             <div
@@ -1235,469 +1239,500 @@
                 </div>
             </div>
 
-            {{-- ==================== SEJARAH ==================== --}}
-            <div id="tab-sejarahs" class="tab-panel">
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
-                    <!-- Panel Sejarah -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>✍️ Konten Sejarah</h3>
-                            @if ($sejarah)
-                                <span class="badge-active">Tersimpan</span>
-                            @else
-                                <span class="badge-inactive">Belum ada</span>
-                            @endif
-                        </div>
-                        <div class="card-body">
-                            <form action="{{ route('admin.sejarahs.store') }}" method="POST"
-                                enctype="multipart/form-data">
-                                @csrf
-                                @if ($errors->any())
-                                    <div
-                                        style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#b91c1c;">
-                                        @foreach ($errors->all() as $e)
-                                            <div>• {{ $e }}</div>
-                                        @endforeach
-                                    </div>
+            @if (Auth::user()->role === 'admin')
+                {{-- ==================== SEJARAH ==================== --}}
+                <div id="tab-sejarahs" class="tab-panel">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+                        <!-- Panel Sejarah -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>✍️ Konten Sejarah</h3>
+                                @if ($sejarah)
+                                    <span class="badge-active">Tersimpan</span>
+                                @else
+                                    <span class="badge-inactive">Belum ada</span>
                                 @endif
-                                <div class="form-group">
-                                    <label class="form-label">Judul</label>
-                                    <input type="text" name="title" value="{{ $sejarah->title ?? '' }}"
-                                        class="form-input" required placeholder="Judul konten sejarah">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Upload Gambar</label>
-                                    <div style="margin-bottom:8px;">
-                                        @if ($sejarah && ($sejarah->image ?? false))
-                                            <img id="preview-sejarah"
-                                                src="{{ Str::startsWith($sejarah->image, ['http://', 'https://']) ? $sejarah->image : asset($sejarah->image) }}"
-                                                alt="Preview"
-                                                style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
-                                        @else
-                                            <img id="preview-sejarah" src="" alt="Preview"
-                                                style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
-                                        @endif
-                                    </div>
-                                    <input type="file" name="image" accept="image/*" class="form-input"
-                                        onchange="previewImage(this, 'preview-sejarah')">
-                                    <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF — Maks.
-                                        2MB</p>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Konten</label>
-                                    <textarea name="content" id="sejarah-editor" class="form-input form-textarea tinymce-editor"
-                                        placeholder="Tuliskan sejarah PII di sini...">{{ $sejarah->content ?? '' }}</textarea>
-                                </div>
-                                <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
-                                    <input type="hidden" name="is_active" value="0">
-                                    <input type="checkbox" name="is_active" value="1" id="is_active_sejarah"
-                                        style="width:16px;height:16px;accent-color:#f97316;"
-                                        {{ $sejarah->is_active ?? true ? 'checked' : '' }}>
-                                    <label for="is_active_sejarah" class="form-label" style="margin:0;">Tampilkan di
-                                        website</label>
-                                </div>
-                                <button type="submit" class="btn-orange" style="width:100%;justify-content:center;">
-                                    <svg width="16" height="16" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    Simpan Sejarah
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-
-                    <!-- Panel Ketua Umum -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>👑 Ketua Umum PII</h3>
-                            <span class="badge-active">{{ $ketuaUmums->count() }}
-                                data</span>
-                        </div>
-                        <div class="card-body">
-                            <form action="{{ route('admin.ketuaUmums.store') }}" method="POST"
-                                enctype="multipart/form-data" id="ketua-umum-form"
-                                style="padding-bottom:16px;border-bottom:1px solid #f3f4f6;margin-bottom:16px;">
-                                @csrf
-                                <input type="hidden" name="_method" value="POST" id="ketua-umum-method">
-                                <input type="hidden" name="ketua_umum_id" id="ketua-umum-id">
-                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                            </div>
+                            <div class="card-body">
+                                <form action="{{ route('admin.sejarahs.store') }}" method="POST"
+                                    enctype="multipart/form-data">
+                                    @csrf
+                                    @if ($errors->any())
+                                        <div
+                                            style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#b91c1c;">
+                                            @foreach ($errors->all() as $e)
+                                                <div>• {{ $e }}</div>
+                                            @endforeach
+                                        </div>
+                                    @endif
                                     <div class="form-group">
-                                        <label class="form-label">Nama</label>
-                                        <input type="text" name="name" id="ketua-umum-name" class="form-input"
-                                            required placeholder="Nama lengkap">
+                                        <label class="form-label">Judul</label>
+                                        <input type="text" name="title" value="{{ $sejarah->title ?? '' }}"
+                                            class="form-input" required placeholder="Judul konten sejarah">
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">Periode</label>
-                                        <input type="text" name="period" id="ketua-umum-period"
-                                            class="form-input" placeholder="cth: 2020–2024">
+                                        <label class="form-label">Upload Gambar</label>
+                                        <div style="margin-bottom:8px;">
+                                            @if ($sejarah && ($sejarah->image ?? false))
+                                                <img id="preview-sejarah"
+                                                    src="{{ Str::startsWith($sejarah->image, ['http://', 'https://']) ? $sejarah->image : asset($sejarah->image) }}"
+                                                    alt="Preview"
+                                                    style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
+                                            @else
+                                                <img id="preview-sejarah" src="" alt="Preview"
+                                                    style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
+                                            @endif
+                                        </div>
+                                        <input type="file" name="image" accept="image/*" class="form-input"
+                                            onchange="previewImage(this, 'preview-sejarah')">
+                                        <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF —
+                                            Maks.
+                                            2MB</p>
                                     </div>
-                                </div>
-                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
                                     <div class="form-group">
-                                        <label class="form-label">Foto</label>
-                                        <input type="file" name="image" id="ketua-umum-image" accept="image/*"
-                                            class="form-input">
+                                        <label class="form-label">Konten</label>
+                                        <textarea name="content" id="sejarah-editor" class="form-input form-textarea tinymce-editor"
+                                            placeholder="Tuliskan sejarah PII di sini...">{{ $sejarah->content ?? '' }}</textarea>
                                     </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Urutan</label>
-                                        <input type="number" name="order" id="ketua-umum-order" value="0"
-                                            class="form-input">
+                                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+                                        <input type="hidden" name="is_active" value="0">
+                                        <input type="checkbox" name="is_active" value="1"
+                                            id="is_active_sejarah"
+                                            style="width:16px;height:16px;accent-color:#f97316;"
+                                            {{ $sejarah->is_active ?? true ? 'checked' : '' }}>
+                                        <label for="is_active_sejarah" class="form-label" style="margin:0;">Tampilkan
+                                            di
+                                            website</label>
                                     </div>
-                                </div>
-                                <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-                                    <input type="hidden" name="is_active" value="0">
-                                    <input type="checkbox" name="is_active" value="1" id="ketua-umum-is_active"
-                                        style="width:16px;height:16px;accent-color:#f97316;" checked>
-                                    <label for="ketua-umum-is_active" class="form-label"
-                                        style="margin:0;">Aktifkan</label>
-                                </div>
-                                <div id="ketua-umum-form-actions">
                                     <button type="submit" class="btn-orange"
                                         style="width:100%;justify-content:center;">
                                         <svg width="16" height="16" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 4v16m8-8H4" />
+                                                d="M5 13l4 4L19 7" />
                                         </svg>
-                                        Tambah Ketua Umum
+                                        Simpan Sejarah
                                     </button>
-                                </div>
-                                <button type="button" id="ketua-umum-cancel" onclick="cancelEditKetuaUmum()"
-                                    class="btn-cancel"
-                                    style="width:100%;justify-content:center;margin-top:8px;display:none;">Batal</button>
-                            </form>
-                            @if ($ketuaUmums->count() > 0)
-                                <div style="max-height:260px;overflow-y:auto;">
-                                    @foreach ($ketuaUmums->sortBy('order') as $k)
-                                        <div class="item-row">
-                                            @if ($k->image)
-                                                <img src="{{ Str::startsWith($k->image, ['http://', 'https://']) ? $k->image : asset($k->image) }}"
-                                                    class="item-thumb" alt="{{ $k->name }}"
-                                                    style="width:44px;height:44px;border-radius:50%;">
-                                            @else
-                                                <div class="item-thumb-placeholder"
-                                                    style="width:44px;height:44px;border-radius:50%;font-size:18px;">👤
-                                                </div>
-                                            @endif
-                                            <div class="item-info">
-                                                <div class="item-title" style="font-size:13px;">{{ $k->name }}
-                                                </div>
-                                                <div class="item-meta">{{ $k->period }} · Urutan:
-                                                    {{ $k->order }}</div>
-                                            </div>
-                                            <div style="display:flex;gap:6px;align-items:center;">
-                                                <button type="button"
-                                                    onclick="editKetuaUmum(event, {{ $k->id }})"
-                                                    class="edit-btn" data-name="{{ $k->name }}"
-                                                    data-period="{{ $k->period }}"
-                                                    data-order="{{ $k->order }}"
-                                                    data-is_active="{{ $k->is_active ? 'true' : 'false' }}">✏️</button>
-                                                <form action="{{ route('admin.ketuaUmums.delete', $k->id) }}"
-                                                    method="POST" style="display:inline;">
-                                                    @method('DELETE')
-                                                    @csrf
-                                                    <button type="submit"
-                                                        style="background:none;border:none;cursor:pointer;color:#f87171;font-size:16px;"
-                                                        onclick="return confirm('Hapus?')">🗑️</button>
-                                                </form>
-                                            </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Panel Ketua Umum -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>👑 Ketua Umum PII</h3>
+                                <span class="badge-active">{{ $ketuaUmums->count() }}
+                                    data</span>
+                            </div>
+                            <div class="card-body">
+                                <form action="{{ route('admin.ketuaUmums.store') }}" method="POST"
+                                    enctype="multipart/form-data" id="ketua-umum-form"
+                                    style="padding-bottom:16px;border-bottom:1px solid #f3f4f6;margin-bottom:16px;">
+                                    @csrf
+                                    <input type="hidden" name="_method" value="POST" id="ketua-umum-method">
+                                    <input type="hidden" name="ketua_umum_id" id="ketua-umum-id">
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                                        <div class="form-group">
+                                            <label class="form-label">Nama</label>
+                                            <input type="text" name="name" id="ketua-umum-name"
+                                                class="form-input" required placeholder="Nama lengkap">
                                         </div>
-                                    @endforeach
-                                </div>
-                            @else
-                                <div class="empty-state" style="padding:24px;">
-                                    <div class="empty-icon" style="font-size:32px;">👑</div>
-                                    <div class="empty-desc">Belum ada data ketua umum</div>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- ==================== SEKILAS ==================== --}}
-            <div id="tab-sekilas" class="tab-panel">
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
-
-                    {{-- Panel Konten Sekilas --}}
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>👁️ Konten Sekilas PII</h3>
-                            @if ($sekilas)
-                                <span class="badge-active">Tersimpan</span>
-                            @else
-                                <span class="badge-inactive">Belum ada</span>
-                            @endif
-                        </div>
-                        <div class="card-body">
-                            <form action="{{ route('admin.sekilas.store') }}" method="POST"
-                                enctype="multipart/form-data">
-                                @csrf
-                                <div class="form-group">
-                                    <label class="form-label">Judul</label>
-                                    <input type="text" name="title" value="{{ $sekilas->title ?? '' }}"
-                                        class="form-input" required placeholder="Judul konten sekilas">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Upload Gambar</label>
-                                    <div style="margin-bottom:8px;">
-                                        @if ($sekilas && ($sekilas->image ?? false))
-                                            <img id="preview-sekilas"
-                                                src="{{ Str::startsWith($sekilas->image, ['http://', 'https://']) ? $sekilas->image : asset($sekilas->image) }}"
-                                                alt="Preview"
-                                                style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
-                                        @else
-                                            <img id="preview-sekilas" src="" alt="Preview"
-                                                style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
-                                        @endif
+                                        <div class="form-group">
+                                            <label class="form-label">Periode</label>
+                                            <input type="text" name="period" id="ketua-umum-period"
+                                                class="form-input" placeholder="cth: 2020–2024">
+                                        </div>
                                     </div>
-                                    <input type="file" name="image" accept="image/*" class="form-input"
-                                        onchange="previewImage(this, 'preview-sekilas')">
-                                    <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF — Maks.
-                                        2MB</p>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Konten</label>
-                                    <textarea name="content" id="sekilas-editor" class="form-input form-textarea tinymce-editor"
-                                        placeholder="Tuliskan konten sekilas PII di sini...">{{ $sekilas->content ?? '' }}</textarea>
-                                </div>
-                                <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
-                                    <input type="hidden" name="is_active" value="0">
-                                    <input type="checkbox" name="is_active" value="1" id="is_active_sekilas"
-                                        style="width:16px;height:16px;accent-color:#f97316;"
-                                        {{ $sekilas->is_active ?? true ? 'checked' : '' }}>
-                                    <label for="is_active_sekilas" class="form-label" style="margin:0;">Tampilkan di
-                                        website</label>
-                                </div>
-                                <button type="submit" class="btn-orange" style="width:100%;justify-content:center;">
-                                    <svg width="16" height="16" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    Simpan Sekilas
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-
-                    {{-- Panel Visi & Misi --}}
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>🎯 Visi &amp; Misi</h3>
-                            @if (isset($visiMisis) && $visiMisis)
-                                <span class="badge-active">Tersimpan</span>
-                            @else
-                                <span class="badge-inactive">Belum ada</span>
-                            @endif
-                        </div>
-                        <div class="card-body">
-                            <form action="{{ route('admin.visiMisis.store') }}" method="POST" id="form-visi-misi">
-                                @csrf
-                                <div class="form-group">
-                                    <label class="form-label">Judul</label>
-                                    <input type="text" name="title" value="{{ $visiMisis->title ?? '' }}"
-                                        class="form-input" required placeholder="contoh: Visi &amp; Misi PII">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Isi Konten</label>
-                                    <textarea name="content" id="visi-misi-editor" class="form-input form-textarea tinymce-editor"
-                                        placeholder="Tuliskan visi dan misi di sini...">{{ $visiMisis->content ?? '' }}</textarea>
-                                </div>
-                                <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
-                                    <input type="hidden" name="is_active" value="0">
-                                    <input type="checkbox" name="is_active" value="1" id="is_active_visi_misi"
-                                        style="width:16px;height:16px;accent-color:#f97316;"
-                                        {{ $visiMisis->is_active ?? true ? 'checked' : '' }}>
-                                    <label for="is_active_visi_misi" class="form-label" style="margin:0;">Tampilkan
-                                        di website</label>
-                                </div>
-                                <button type="submit" class="btn-orange" style="width:100%;justify-content:center;">
-                                    <svg width="16" height="16" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    Simpan Visi &amp; Misi
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            {{-- ==================== STRUKTUR ==================== --}}
-            <div id="tab-strukturs" class="tab-panel">
-                <div style="max-width:700px;">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>👥 Konten Struktur Organisasi</h3>
-                            @if ($strukturs)
-                                <span class="badge-active">Tersimpan</span>
-                            @else
-                                <span class="badge-inactive">Belum ada</span>
-                            @endif
-                        </div>
-                        <div class="card-body">
-                            <form action="{{ route('admin.strukturs.store') }}" method="POST"
-                                enctype="multipart/form-data">
-                                @csrf
-                                @if ($errors->any())
-                                    <div
-                                        style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#b91c1c;">
-                                        @foreach ($errors->all() as $e)
-                                            <div>• {{ $e }}</div>
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                                        <div class="form-group">
+                                            <label class="form-label">Foto</label>
+                                            <input type="file" name="image" id="ketua-umum-image"
+                                                accept="image/*" class="form-input">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Urutan</label>
+                                            <input type="number" name="order" id="ketua-umum-order"
+                                                value="0" class="form-input">
+                                        </div>
+                                    </div>
+                                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+                                        <input type="hidden" name="is_active" value="0">
+                                        <input type="checkbox" name="is_active" value="1"
+                                            id="ketua-umum-is_active"
+                                            style="width:16px;height:16px;accent-color:#f97316;" checked>
+                                        <label for="ketua-umum-is_active" class="form-label"
+                                            style="margin:0;">Aktifkan</label>
+                                    </div>
+                                    <div id="ketua-umum-form-actions">
+                                        <button type="submit" class="btn-orange"
+                                            style="width:100%;justify-content:center;">
+                                            <svg width="16" height="16" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 4v16m8-8H4" />
+                                            </svg>
+                                            Tambah Ketua Umum
+                                        </button>
+                                    </div>
+                                    <button type="button" id="ketua-umum-cancel" onclick="cancelEditKetuaUmum()"
+                                        class="btn-cancel"
+                                        style="width:100%;justify-content:center;margin-top:8px;display:none;">Batal</button>
+                                </form>
+                                @if ($ketuaUmums->count() > 0)
+                                    <div style="max-height:260px;overflow-y:auto;">
+                                        @foreach ($ketuaUmums->sortBy('order') as $k)
+                                            <div class="item-row">
+                                                @if ($k->image)
+                                                    <img src="{{ Str::startsWith($k->image, ['http://', 'https://']) ? $k->image : asset($k->image) }}"
+                                                        class="item-thumb" alt="{{ $k->name }}"
+                                                        style="width:44px;height:44px;border-radius:50%;">
+                                                @else
+                                                    <div class="item-thumb-placeholder"
+                                                        style="width:44px;height:44px;border-radius:50%;font-size:18px;">
+                                                        👤
+                                                    </div>
+                                                @endif
+                                                <div class="item-info">
+                                                    <div class="item-title" style="font-size:13px;">
+                                                        {{ $k->name }}
+                                                    </div>
+                                                    <div class="item-meta">{{ $k->period }} · Urutan:
+                                                        {{ $k->order }}</div>
+                                                </div>
+                                                <div style="display:flex;gap:6px;align-items:center;">
+                                                    <button type="button"
+                                                        onclick="editKetuaUmum(event, {{ $k->id }})"
+                                                        class="edit-btn" data-name="{{ $k->name }}"
+                                                        data-period="{{ $k->period }}"
+                                                        data-order="{{ $k->order }}"
+                                                        data-is_active="{{ $k->is_active ? 'true' : 'false' }}">✏️</button>
+                                                    <form action="{{ route('admin.ketuaUmums.delete', $k->id) }}"
+                                                        method="POST" style="display:inline;">
+                                                        @method('DELETE')
+                                                        @csrf
+                                                        <button type="submit"
+                                                            style="background:none;border:none;cursor:pointer;color:#f87171;font-size:16px;"
+                                                            onclick="return confirm('Hapus?')">🗑️</button>
+                                                    </form>
+                                                </div>
+                                            </div>
                                         @endforeach
                                     </div>
-                                @endif
-                                <div class="form-group">
-                                    <label class="form-label">Judul</label>
-                                    <input type="text" name="title" value="{{ $strukturs->title ?? '' }}"
-                                        class="form-input" required placeholder="Judul konten struktur organisasi">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Upload Gambar</label>
-                                    <div style="margin-bottom:8px;">
-                                        @if ($strukturs && ($strukturs->image ?? false))
-                                            <img id="preview-struktur"
-                                                src="{{ Str::startsWith($strukturs->image, ['http://', 'https://']) ? $strukturs->image : asset($strukturs->image) }}"
-                                                alt="Preview"
-                                                style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
-                                        @else
-                                            <img id="preview-struktur" src="" alt="Preview"
-                                                style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
-                                        @endif
+                                @else
+                                    <div class="empty-state" style="padding:24px;">
+                                        <div class="empty-icon" style="font-size:32px;">👑</div>
+                                        <div class="empty-desc">Belum ada data ketua umum</div>
                                     </div>
-                                    <input type="file" name="image" accept="image/*" class="form-input"
-                                        onchange="previewImage(this, 'preview-struktur')">
-                                    <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF — Maks.
-                                        2MB</p>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Konten</label>
-                                    <textarea name="content" id="struktur-editor" class="form-input form-textarea tinymce-editor"
-                                        placeholder="Tuliskan konten struktur organisasi PII di sini...">{{ $strukturs->content ?? '' }}</textarea>
-                                </div>
-                                <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
-                                    <input type="hidden" name="is_active" value="0">
-                                    <input type="checkbox" name="is_active" value="1" id="is_active_struktur"
-                                        style="width:16px;height:16px;accent-color:#f97316;"
-                                        {{ $strukturs->is_active ?? true ? 'checked' : '' }}>
-                                    <label for="is_active_struktur" class="form-label" style="margin:0;">Tampilkan di
-                                        website</label>
-                                </div>
-                                <button type="submit" class="btn-orange" style="width:100%;justify-content:center;">
-                                    <svg width="16" height="16" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    Simpan Struktur Organisasi
-                                </button>
-                            </form>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {{-- ==================== KONTAK ==================== --}}
-            <div id="tab-kontaks" class="tab-panel">
-                <div style="max-width:700px;">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>📞 Informasi Kontak</h3>
-                            @if ($kontaks)
-                                <span class="badge-active">Tersimpan</span>
-                            @else
-                                <span class="badge-inactive">Belum ada</span>
-                            @endif
-                        </div>
-                        <div class="card-body">
-                            <form action="{{ route('admin.kontaks.store') }}" method="POST">
-                                @csrf
-                                @if ($errors->any())
-                                    <div
-                                        style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#b91c1c;">
-                                        @foreach ($errors->all() as $e)
-                                            <div>• {{ $e }}</div>
-                                        @endforeach
-                                    </div>
+                {{-- ==================== SEKILAS ==================== --}}
+                <div id="tab-sekilas" class="tab-panel">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+
+                        {{-- Panel Konten Sekilas --}}
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>👁️ Konten Sekilas PII</h3>
+                                @if ($sekilas)
+                                    <span class="badge-active">Tersimpan</span>
+                                @else
+                                    <span class="badge-inactive">Belum ada</span>
                                 @endif
-                                <div class="form-group">
-                                    <label class="form-label">Alamat</label>
-                                    <textarea name="address" class="form-input form-textarea" required placeholder="Alamat lengkap kantor PII">{{ $kontaks->address ?? '' }}</textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Telepon</label>
-                                    <input type="text" name="phone" value="{{ $kontaks->phone ?? '' }}"
-                                        class="form-input" required placeholder="Nomor telepon">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Email</label>
-                                    <input type="email" name="email" value="{{ $kontaks->email ?? '' }}"
-                                        class="form-input" required placeholder="Email resmi">
-                                </div>
-                                <div style="border-top:1px solid #e5e7eb;margin:16px 0;padding-top:16px;">
-                                    <p style="font-size:13px;font-weight:600;color:#6b7280;margin-bottom:12px;">Media
-                                        Sosial (opsional)</p>
+                            </div>
+                            <div class="card-body">
+                                <form action="{{ route('admin.sekilas.store') }}" method="POST"
+                                    enctype="multipart/form-data">
+                                    @csrf
                                     <div class="form-group">
-                                        <label class="form-label">Facebook</label>
-                                        <input type="text" name="facebook" value="{{ $kontaks->facebook ?? '' }}"
-                                            class="form-input" placeholder="URL Facebook">
+                                        <label class="form-label">Judul</label>
+                                        <input type="text" name="title" value="{{ $sekilas->title ?? '' }}"
+                                            class="form-input" required placeholder="Judul konten sekilas">
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">Twitter / X</label>
-                                        <input type="text" name="twitter" value="{{ $kontaks->twitter ?? '' }}"
-                                            class="form-input" placeholder="URL Twitter / X">
+                                        <label class="form-label">Upload Gambar</label>
+                                        <div style="margin-bottom:8px;">
+                                            @if ($sekilas && ($sekilas->image ?? false))
+                                                <img id="preview-sekilas"
+                                                    src="{{ Str::startsWith($sekilas->image, ['http://', 'https://']) ? $sekilas->image : asset($sekilas->image) }}"
+                                                    alt="Preview"
+                                                    style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
+                                            @else
+                                                <img id="preview-sekilas" src="" alt="Preview"
+                                                    style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
+                                            @endif
+                                        </div>
+                                        <input type="file" name="image" accept="image/*" class="form-input"
+                                            onchange="previewImage(this, 'preview-sekilas')">
+                                        <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF —
+                                            Maks.
+                                            2MB</p>
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">Instagram</label>
-                                        <input type="text" name="instagram"
-                                            value="{{ $kontaks->instagram ?? '' }}" class="form-input"
-                                            placeholder="URL Instagram">
+                                        <label class="form-label">Konten</label>
+                                        <textarea name="content" id="sekilas-editor" class="form-input form-textarea tinymce-editor"
+                                            placeholder="Tuliskan konten sekilas PII di sini...">{{ $sekilas->content ?? '' }}</textarea>
+                                    </div>
+                                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+                                        <input type="hidden" name="is_active" value="0">
+                                        <input type="checkbox" name="is_active" value="1"
+                                            id="is_active_sekilas"
+                                            style="width:16px;height:16px;accent-color:#f97316;"
+                                            {{ $sekilas->is_active ?? true ? 'checked' : '' }}>
+                                        <label for="is_active_sekilas" class="form-label" style="margin:0;">Tampilkan
+                                            di
+                                            website</label>
+                                    </div>
+                                    <button type="submit" class="btn-orange"
+                                        style="width:100%;justify-content:center;">
+                                        <svg width="16" height="16" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Simpan Sekilas
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        {{-- Panel Visi & Misi --}}
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>🎯 Visi &amp; Misi</h3>
+                                @if (isset($visiMisis) && $visiMisis)
+                                    <span class="badge-active">Tersimpan</span>
+                                @else
+                                    <span class="badge-inactive">Belum ada</span>
+                                @endif
+                            </div>
+                            <div class="card-body">
+                                <form action="{{ route('admin.visiMisis.store') }}" method="POST"
+                                    id="form-visi-misi">
+                                    @csrf
+                                    <div class="form-group">
+                                        <label class="form-label">Judul</label>
+                                        <input type="text" name="title" value="{{ $visiMisis->title ?? '' }}"
+                                            class="form-input" required placeholder="contoh: Visi &amp; Misi PII">
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">LinkedIn</label>
-                                        <input type="text" name="linkedin" value="{{ $kontaks->linkedin ?? '' }}"
-                                            class="form-input" placeholder="URL LinkedIn">
+                                        <label class="form-label">Isi Konten</label>
+                                        <textarea name="content" id="visi-misi-editor" class="form-input form-textarea tinymce-editor"
+                                            placeholder="Tuliskan visi dan misi di sini...">{{ $visiMisis->content ?? '' }}</textarea>
+                                    </div>
+                                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+                                        <input type="hidden" name="is_active" value="0">
+                                        <input type="checkbox" name="is_active" value="1"
+                                            id="is_active_visi_misi"
+                                            style="width:16px;height:16px;accent-color:#f97316;"
+                                            {{ $visiMisis->is_active ?? true ? 'checked' : '' }}>
+                                        <label for="is_active_visi_misi" class="form-label"
+                                            style="margin:0;">Tampilkan
+                                            di website</label>
+                                    </div>
+                                    <button type="submit" class="btn-orange"
+                                        style="width:100%;justify-content:center;">
+                                        <svg width="16" height="16" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Simpan Visi &amp; Misi
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                {{-- ==================== STRUKTUR ==================== --}}
+                <div id="tab-strukturs" class="tab-panel">
+                    <div style="max-width:700px;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>👥 Konten Struktur Organisasi</h3>
+                                @if ($strukturs)
+                                    <span class="badge-active">Tersimpan</span>
+                                @else
+                                    <span class="badge-inactive">Belum ada</span>
+                                @endif
+                            </div>
+                            <div class="card-body">
+                                <form action="{{ route('admin.strukturs.store') }}" method="POST"
+                                    enctype="multipart/form-data">
+                                    @csrf
+                                    @if ($errors->any())
+                                        <div
+                                            style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#b91c1c;">
+                                            @foreach ($errors->all() as $e)
+                                                <div>• {{ $e }}</div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                    <div class="form-group">
+                                        <label class="form-label">Judul</label>
+                                        <input type="text" name="title" value="{{ $strukturs->title ?? '' }}"
+                                            class="form-input" required
+                                            placeholder="Judul konten struktur organisasi">
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">YouTube</label>
-                                        <input type="text" name="youtube" value="{{ $kontaks->youtube ?? '' }}"
-                                            class="form-input" placeholder="URL YouTube">
+                                        <label class="form-label">Upload Gambar</label>
+                                        <div style="margin-bottom:8px;">
+                                            @if ($strukturs && ($strukturs->image ?? false))
+                                                <img id="preview-struktur"
+                                                    src="{{ Str::startsWith($strukturs->image, ['http://', 'https://']) ? $strukturs->image : asset($strukturs->image) }}"
+                                                    alt="Preview"
+                                                    style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
+                                            @else
+                                                <img id="preview-struktur" src="" alt="Preview"
+                                                    style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
+                                            @endif
+                                        </div>
+                                        <input type="file" name="image" accept="image/*" class="form-input"
+                                            onchange="previewImage(this, 'preview-struktur')">
+                                        <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF —
+                                            Maks.
+                                            2MB</p>
                                     </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Google Maps Embed Code</label>
-                                    <textarea name="map_url" class="form-input form-textarea" rows="4"
-                                        placeholder='Paste kode <iframe> dari Google Maps di sini...'>{{ $kontaks->map_url ?? '' }}</textarea>
-                                    <p style="font-size:11px;color:#d1d5db;margin-top:4px;">Google Maps → Share → Embed
-                                        a map → Copy HTML</p>
-                                </div>
-                                <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
-                                    <input type="hidden" name="is_active" value="0">
-                                    <input type="checkbox" name="is_active" value="1" id="is_active_kontak"
-                                        style="width:16px;height:16px;accent-color:#f97316;"
-                                        {{ $kontaks->is_active ?? true ? 'checked' : '' }}>
-                                    <label for="is_active_kontak" class="form-label" style="margin:0;">Tampilkan di
-                                        website</label>
-                                </div>
-                                <button type="submit" class="btn-orange" style="width:100%;justify-content:center;">
-                                    <svg width="16" height="16" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    Simpan Kontak
-                                </button>
-                            </form>
+                                    <div class="form-group">
+                                        <label class="form-label">Konten</label>
+                                        <textarea name="content" id="struktur-editor" class="form-input form-textarea tinymce-editor"
+                                            placeholder="Tuliskan konten struktur organisasi PII di sini...">{{ $strukturs->content ?? '' }}</textarea>
+                                    </div>
+                                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+                                        <input type="hidden" name="is_active" value="0">
+                                        <input type="checkbox" name="is_active" value="1"
+                                            id="is_active_struktur"
+                                            style="width:16px;height:16px;accent-color:#f97316;"
+                                            {{ $strukturs->is_active ?? true ? 'checked' : '' }}>
+                                        <label for="is_active_struktur" class="form-label"
+                                            style="margin:0;">Tampilkan di
+                                            website</label>
+                                    </div>
+                                    <button type="submit" class="btn-orange"
+                                        style="width:100%;justify-content:center;">
+                                        <svg width="16" height="16" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Simpan Struktur Organisasi
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+
+                {{-- ==================== KONTAK ==================== --}}
+                <div id="tab-kontaks" class="tab-panel">
+                    <div style="max-width:700px;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>📞 Informasi Kontak</h3>
+                                @if ($kontaks)
+                                    <span class="badge-active">Tersimpan</span>
+                                @else
+                                    <span class="badge-inactive">Belum ada</span>
+                                @endif
+                            </div>
+                            <div class="card-body">
+                                <form action="{{ route('admin.kontaks.store') }}" method="POST">
+                                    @csrf
+                                    @if ($errors->any())
+                                        <div
+                                            style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#b91c1c;">
+                                            @foreach ($errors->all() as $e)
+                                                <div>• {{ $e }}</div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                    <div class="form-group">
+                                        <label class="form-label">Alamat</label>
+                                        <textarea name="address" class="form-input form-textarea" required placeholder="Alamat lengkap kantor PII">{{ $kontaks->address ?? '' }}</textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Telepon</label>
+                                        <input type="text" name="phone" value="{{ $kontaks->phone ?? '' }}"
+                                            class="form-input" required placeholder="Nomor telepon">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" name="email" value="{{ $kontaks->email ?? '' }}"
+                                            class="form-input" required placeholder="Email resmi">
+                                    </div>
+                                    <div style="border-top:1px solid #e5e7eb;margin:16px 0;padding-top:16px;">
+                                        <p style="font-size:13px;font-weight:600;color:#6b7280;margin-bottom:12px;">
+                                            Media
+                                            Sosial (opsional)</p>
+                                        <div class="form-group">
+                                            <label class="form-label">Facebook</label>
+                                            <input type="text" name="facebook"
+                                                value="{{ $kontaks->facebook ?? '' }}" class="form-input"
+                                                placeholder="URL Facebook">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Twitter / X</label>
+                                            <input type="text" name="twitter"
+                                                value="{{ $kontaks->twitter ?? '' }}" class="form-input"
+                                                placeholder="URL Twitter / X">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Instagram</label>
+                                            <input type="text" name="instagram"
+                                                value="{{ $kontaks->instagram ?? '' }}" class="form-input"
+                                                placeholder="URL Instagram">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">LinkedIn</label>
+                                            <input type="text" name="linkedin"
+                                                value="{{ $kontaks->linkedin ?? '' }}" class="form-input"
+                                                placeholder="URL LinkedIn">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">YouTube</label>
+                                            <input type="text" name="youtube"
+                                                value="{{ $kontaks->youtube ?? '' }}" class="form-input"
+                                                placeholder="URL YouTube">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Google Maps Embed Code</label>
+                                        <textarea name="map_url" class="form-input form-textarea" rows="4"
+                                            placeholder='Paste kode <iframe> dari Google Maps di sini...'>{{ $kontaks->map_url ?? '' }}</textarea>
+                                        <p style="font-size:11px;color:#d1d5db;margin-top:4px;">Google Maps → Share →
+                                            Embed
+                                            a map → Copy HTML</p>
+                                    </div>
+                                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+                                        <input type="hidden" name="is_active" value="0">
+                                        <input type="checkbox" name="is_active" value="1" id="is_active_kontak"
+                                            style="width:16px;height:16px;accent-color:#f97316;"
+                                            {{ $kontaks->is_active ?? true ? 'checked' : '' }}>
+                                        <label for="is_active_kontak" class="form-label" style="margin:0;">Tampilkan
+                                            di
+                                            website</label>
+                                    </div>
+                                    <button type="submit" class="btn-orange"
+                                        style="width:100%;justify-content:center;">
+                                        <svg width="16" height="16" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Simpan Kontak
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            @endif
 
             {{-- ==================== EVENTS ==================== --}}
             <div id="tab-events" class="tab-panel">
@@ -2151,300 +2186,311 @@
                 </div>
             </div>
 
-            {{-- ==================== USERS ==================== --}}
-            <div id="tab-users" class="tab-panel">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- List Panel -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Daftar User</h3>
-                            <button onclick="showForm(event, 'user')" class="btn-orange">
-                                <svg width="16" height="16" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 4v16m8-8H4" />
-                                </svg>
-                                Tambah User
-                            </button>
-                        </div>
-                        <div class="card-body">
-                            @if ($users->count() > 0)
-                                <div class="space-y-4">
-                                    @foreach ($users as $u)
-                                        <div class="item-row">
-                                            <div class="item-thumb-placeholder">👤</div>
-                                            <div class="item-info">
-                                                <div class="item-title">{{ $u->name }}</div>
-                                                <div class="item-meta">{{ $u->email }} ·
-                                                    {{ $u->role ?? 'user' }}</div>
-                                                <div style="margin-top:6px;">
-                                                    <span
-                                                        class="{{ $u->role === 'admin' ? 'badge-active' : 'badge-inactive' }}">
-                                                        {{ $u->role === 'admin' ? 'Admin' : 'User' }}
-                                                    </span>
+            @if (Auth::user()->role === 'admin')
+                {{-- ==================== USERS ==================== --}}
+                <div id="tab-users" class="tab-panel">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- List Panel -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Daftar User</h3>
+                                <button onclick="showForm(event, 'user')" class="btn-orange">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    Tambah User
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                @if ($users->count() > 0)
+                                    <div class="space-y-4">
+                                        @foreach ($users as $u)
+                                            <div class="item-row">
+                                                <div class="item-thumb-placeholder">👤</div>
+                                                <div class="item-info">
+                                                    <div class="item-title">{{ $u->name }}</div>
+                                                    <div class="item-meta">{{ $u->email }} ·
+                                                        {{ $u->role ?? 'user' }}</div>
+                                                    <div style="margin-top:6px;">
+                                                        <span
+                                                            class="{{ $u->role === 'admin' ? 'badge-active' : 'badge-inactive' }}">
+                                                            {{ $u->role === 'admin' ? 'Admin' : 'User' }}
+                                                        </span>
+                                                    </div>
                                                 </div>
+                                                <button onclick="showForm(event, 'user', {{ $u->id }})"
+                                                    class="edit-btn" data-name="{{ $u->name }}"
+                                                    data-email="{{ $u->email }}"
+                                                    data-role="{{ $u->role }}">Edit</button>
                                             </div>
-                                            <button onclick="showForm(event, 'user', {{ $u->id }})"
-                                                class="edit-btn" data-name="{{ $u->name }}"
-                                                data-email="{{ $u->email }}"
-                                                data-role="{{ $u->role }}">Edit</button>
+                                        @endforeach
+                                    </div>
+                                    <!-- Pagination -->
+                                    @if ($users->hasPages())
+                                        <div
+                                            style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+                                            {{ $users->fragment('tab=users')->links() }}
                                         </div>
-                                    @endforeach
-                                </div>
-                                <!-- Pagination -->
-                                @if ($users->hasPages())
-                                    <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
-                                        {{ $users->fragment('tab=users')->links() }}
+                                    @endif
+                                @else
+                                    <div class="empty-state">
+                                        <div class="empty-icon">👤</div>
+                                        <div class="empty-title">Belum ada User</div>
+                                        <div class="empty-desc">Tambahkan user untuk mengakses admin panel</div>
                                     </div>
                                 @endif
-                            @else
-                                <div class="empty-state">
-                                    <div class="empty-icon">👤</div>
-                                    <div class="empty-title">Belum ada User</div>
-                                    <div class="empty-desc">Tambahkan user untuk mengakses admin panel</div>
-                                </div>
-                            @endif
+                            </div>
+                        </div>
+
+                        <!-- Form Panel -->
+                        <div id="form-panel-user" class="card" style="display:none;">
+                            <div class="card-header">
+                                <h3 id="form-title-user">Tambah User</h3>
+                                <button onclick="hideForm('user')" class="btn-cancel">Batal</button>
+                            </div>
+                            <div class="card-body">
+                                <form action="{{ route('admin.users.store') }}" method="POST" id="form-user">
+                                    @csrf
+                                    <input type="hidden" name="_method" value="POST" id="user-method">
+                                    <input type="hidden" name="user_id" id="user-id">
+                                    <div class="form-group">
+                                        <label class="form-label">Nama</label>
+                                        <input type="text" name="name" id="user-name" class="form-input"
+                                            required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" name="email" id="user-email" class="form-input"
+                                            required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Password</label>
+                                        <input type="password" name="password" id="user-password"
+                                            class="form-input"
+                                            placeholder="Kosongkan untuk tetap menggunakan password saat ini (mode edit)"
+                                            oninput="checkPasswordStrength(this.value)">
+                                        <div id="password-strength-bar"
+                                            style="height:4px;border-radius:4px;margin-top:6px;background:#e5e7eb;overflow:hidden;">
+                                            <div id="password-strength-fill"
+                                                style="height:100%;width:0%;transition:width 0.3s,background 0.3s;border-radius:4px;">
+                                            </div>
+                                        </div>
+                                        <p id="password-strength-text"
+                                            style="font-size:11px;margin-top:4px;color:#9ca3af;"></p>
+                                        <p style="font-size:11px;color:#6b7280;margin-top:4px;">
+                                            Min. 8 karakter &bull; Huruf besar &amp; kecil &bull; Angka
+                                        </p>
+                                    </div>
+                                    <div class="form-group" id="password-confirm-group">
+                                        <label class="form-label">Konfirmasi Password</label>
+                                        <input type="password" name="password_confirmation"
+                                            id="user-password-confirm" class="form-input"
+                                            placeholder="Ulangi password" oninput="checkPasswordMatch()">
+                                        <p id="password-match-text" style="font-size:11px;margin-top:4px;"></p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Role</label>
+                                        <select name="role" id="user-role" class="form-input">
+                                            <option value="user">User</option>
+                                            <option value="admin">Admin</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn-orange"
+                                        style="width:100%;justify-content:center;margin-top:16px;">Simpan</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Form Panel -->
-                    <div id="form-panel-user" class="card" style="display:none;">
+                {{-- ==================== PENGATURAN SITUS ==================== --}}
+                <div id="tab-settings" class="tab-panel">
+                    <div class="card">
                         <div class="card-header">
-                            <h3 id="form-title-user">Tambah User</h3>
-                            <button onclick="hideForm('user')" class="btn-cancel">Batal</button>
+                            <h3>⚙️ Pengaturan Situs</h3>
                         </div>
                         <div class="card-body">
-                            <form action="{{ route('admin.users.store') }}" method="POST" id="form-user">
+                            <form action="{{ route('admin.settings.update') }}" method="POST"
+                                enctype="multipart/form-data">
                                 @csrf
-                                <input type="hidden" name="_method" value="POST" id="user-method">
-                                <input type="hidden" name="user_id" id="user-id">
-                                <div class="form-group">
-                                    <label class="form-label">Nama</label>
-                                    <input type="text" name="name" id="user-name" class="form-input"
-                                        required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Email</label>
-                                    <input type="email" name="email" id="user-email" class="form-input"
-                                        required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Password</label>
-                                    <input type="password" name="password" id="user-password" class="form-input"
-                                        placeholder="Kosongkan untuk tetap menggunakan password saat ini (mode edit)"
-                                        oninput="checkPasswordStrength(this.value)">
-                                    <div id="password-strength-bar"
-                                        style="height:4px;border-radius:4px;margin-top:6px;background:#e5e7eb;overflow:hidden;">
-                                        <div id="password-strength-fill"
-                                            style="height:100%;width:0%;transition:width 0.3s,background 0.3s;border-radius:4px;">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <!-- Kolom Kiri -->
+                                    <div>
+                                        <h4 style="font-size:14px;font-weight:700;margin-bottom:12px;color:#f97316;">
+                                            Identitas Website</h4>
+                                        <div class="form-group">
+                                            <label class="form-label">Nama Website (Navbar)</label>
+                                            <input type="text" name="site_title" class="form-input"
+                                                value="{{ $site_settings['site_title'] ?? '' }}"
+                                                placeholder="Contoh: Persatuan Insinyur Indonesia">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Logo Website (Utama)</label>
+                                            <input type="file" name="site_logo" accept="image/*"
+                                                class="form-input">
+                                            @if (isset($site_settings['site_logo']))
+                                                <div style="margin-top:8px;">
+                                                    <img src="{{ asset($site_settings['site_logo']) }}"
+                                                        style="height:40px; border-radius:4px; background:#f8fafc; padding:4px; border:1px solid #e2e8f0;">
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Logo Website (Kedua)</label>
+                                            <input type="file" name="site_logo_secondary" accept="image/*"
+                                                class="form-input">
+                                            @if (isset($site_settings['site_logo_secondary']))
+                                                <div style="margin-top:8px;">
+                                                    <img src="{{ asset($site_settings['site_logo_secondary']) }}"
+                                                        style="height:40px; border-radius:4px; background:#f8fafc; padding:4px; border:1px solid #e2e8f0;">
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Favicon (Icon Tab Browser)</label>
+                                            <input type="file" name="site_favicon" accept="image/*,.ico"
+                                                class="form-input">
+                                            <p style="font-size:12px;color:#9ca3af;margin-top:4px;">Format: PNG, JPG,
+                                                WEBP, ICO, SVG.
+                                                Gambar besar akan otomatis dikompres ke 64x64px.</p>
+                                            @if (isset($site_settings['site_favicon']))
+                                                <div
+                                                    style="margin-top:8px; display:flex; align-items:center; gap:8px;">
+                                                    <img src="{{ asset($site_settings['site_favicon']) }}"
+                                                        style="width:32px; height:32px; border-radius:4px; background:#f8fafc; padding:2px; border:1px solid #e2e8f0;">
+                                                    <span style="font-size:12px;color:#6b7280;">Preview Favicon</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Link Daftar Anggota</label>
+                                            <input type="url" name="member_registration_link"
+                                                class="form-input"
+                                                value="{{ $site_settings['member_registration_link'] ?? '' }}"
+                                                placeholder="https://example.com/daftar-anggota">
+                                            <p style="font-size:12px;color:#9ca3af;margin-top:4px;">Link untuk button
+                                                "Daftar Anggota" di halaman utama. Contoh: https://forms.google.com/...
+                                                atau
+                                                https://pi.or.id/daftar</p>
+                                        </div>
+
+                                        <h4
+                                            style="font-size:14px;font-weight:700;margin-top:24px;margin-bottom:12px;color:#f97316;">
+                                            Footer Info</h4>
+                                        <div class="form-group">
+                                            <label class="form-label">Deskripsi Singkat</label>
+                                            <textarea name="footer_description" class="form-input" rows="4">{{ $site_settings['footer_description'] ?? 'Wadah persatuan dan kesatuan insinyur Indonesia untuk memajukan profesi keinsinyuran dan berkontribusi bagi pembangunan bangsa.' }}</textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Teks Copyright</label>
+                                            <input type="text" name="footer_copyright" class="form-input"
+                                                value="{{ $site_settings['footer_copyright'] ?? 'Persatuan Insinyur Indonesia. Hak Cipta Dilindungi.' }}">
                                         </div>
                                     </div>
-                                    <p id="password-strength-text"
-                                        style="font-size:11px;margin-top:4px;color:#9ca3af;"></p>
-                                    <p style="font-size:11px;color:#6b7280;margin-top:4px;">
-                                        Min. 8 karakter &bull; Huruf besar &amp; kecil &bull; Angka
-                                    </p>
+
+                                    <!-- Kolom Kanan -->
+                                    <div>
+                                        <h4 style="font-size:14px;font-weight:700;margin-bottom:12px;color:#f97316;">
+                                            Sosial Media</h4>
+                                        <div class="form-group">
+                                            <label class="form-label">Facebook URL</label>
+                                            <input type="url" name="footer_facebook" class="form-input"
+                                                value="{{ $site_settings['footer_facebook'] ?? '' }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Twitter/X URL</label>
+                                            <input type="url" name="footer_twitter" class="form-input"
+                                                value="{{ $site_settings['footer_twitter'] ?? '' }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Instagram URL</label>
+                                            <input type="url" name="footer_instagram" class="form-input"
+                                                value="{{ $site_settings['footer_instagram'] ?? '' }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">YouTube URL</label>
+                                            <input type="url" name="footer_youtube" class="form-input"
+                                                value="{{ $site_settings['footer_youtube'] ?? '' }}">
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-group" id="password-confirm-group">
-                                    <label class="form-label">Konfirmasi Password</label>
-                                    <input type="password" name="password_confirmation" id="user-password-confirm"
-                                        class="form-input" placeholder="Ulangi password"
-                                        oninput="checkPasswordMatch()">
-                                    <p id="password-match-text" style="font-size:11px;margin-top:4px;"></p>
+
+                                <div style="margin-top:24px; border-top:1px solid #f1f5f9; padding-top:24px;">
+                                    <h4 style="font-size:14px;font-weight:700;margin-bottom:12px;color:#f97316;">
+                                        Tautan
+                                        Cepat (Footer)</h4>
+                                    @php
+                                        $quick_links = [];
+                                        if (isset($site_settings['footer_quick_links'])) {
+                                            $quick_links =
+                                                json_decode($site_settings['footer_quick_links'], true) ?? [];
+                                        }
+                                        $available_routes = [
+                                            '' => '-- Pilih Halaman --',
+                                            '/' => 'Beranda',
+                                            '/tentang/sejarah' => 'Tentang PII - Sejarah',
+                                            '/tentang/sekilas' => 'Tentang PII - Sekilas',
+                                            '/tentang/struktur' => 'Tentang PII - Struktur Organisasi',
+                                            '/tentang/kontak' => 'Tentang PII - Kontak',
+                                            '/event' => 'Event & Pelatihan (Semua)',
+                                            '/event/seminar' => 'Event - Seminar',
+                                            '/event/pelatihan' => 'Event - Pelatihan',
+                                            '/event/konferensi' => 'Event - Konferensi',
+                                            '/artikel' => 'Berita & Artikel (Semua)',
+                                            '/artikel/artikel-teknik' => 'Artikel Teknik',
+                                            '/artikel/regulasi' => 'Artikel Regulasi',
+                                            '/artikel/inovasi' => 'Artikel Inovasi',
+                                            '/artikel/opini' => 'Artikel Opini',
+                                            '/gallery' => 'Gallery',
+                                            '/kemitraan' => 'Kemitraan (Semua)',
+                                            '/kemitraan/kampus' => 'Kemitraan Kampus',
+                                            '/kemitraan/industri' => 'Kemitraan Industri',
+                                            '/kemitraan/pemerintah' => 'Kemitraan Pemerintah',
+                                        ];
+                                    @endphp
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <div style="display:flex; gap:12px;">
+                                                <div class="form-group" style="flex:1; margin-bottom:0;">
+                                                    <input type="text"
+                                                        name="quick_link_label_{{ $i }}"
+                                                        class="form-input"
+                                                        placeholder="Label Tautan {{ $i }}"
+                                                        value="{{ $quick_links[$i - 1]['label'] ?? '' }}">
+                                                </div>
+                                                <div class="form-group" style="flex:2; margin-bottom:0;">
+                                                    <select name="quick_link_url_{{ $i }}"
+                                                        class="form-input">
+                                                        @foreach ($available_routes as $url => $name)
+                                                            <option value="{{ $url }}"
+                                                                {{ ($quick_links[$i - 1]['url'] ?? '') == $url ? 'selected' : '' }}>
+                                                                {{ $name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        @endfor
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label class="form-label">Role</label>
-                                    <select name="role" id="user-role" class="form-input">
-                                        <option value="user">User</option>
-                                        <option value="admin">Admin</option>
-                                    </select>
+
+                                <div style="margin-top:32px;">
+                                    <button type="submit" class="btn-orange"
+                                        style="min-width:200px; justify-content:center;">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Simpan Pengaturan
+                                    </button>
                                 </div>
-                                <button type="submit" class="btn-orange"
-                                    style="width:100%;justify-content:center;margin-top:16px;">Simpan</button>
                             </form>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            {{-- ==================== PENGATURAN SITUS ==================== --}}
-            <div id="tab-settings" class="tab-panel">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>⚙️ Pengaturan Situs</h3>
-                    </div>
-                    <div class="card-body">
-                        <form action="{{ route('admin.settings.update') }}" method="POST"
-                            enctype="multipart/form-data">
-                            @csrf
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <!-- Kolom Kiri -->
-                                <div>
-                                    <h4 style="font-size:14px;font-weight:700;margin-bottom:12px;color:#f97316;">
-                                        Identitas Website</h4>
-                                    <div class="form-group">
-                                        <label class="form-label">Nama Website (Navbar)</label>
-                                        <input type="text" name="site_title" class="form-input"
-                                            value="{{ $site_settings['site_title'] ?? 'Persatuan Insinyur Indonesia' }}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Logo Website (Utama)</label>
-                                        <input type="file" name="site_logo" accept="image/*"
-                                            class="form-input">
-                                        @if (isset($site_settings['site_logo']))
-                                            <div style="margin-top:8px;">
-                                                <img src="{{ asset($site_settings['site_logo']) }}"
-                                                    style="height:40px; border-radius:4px; background:#f8fafc; padding:4px; border:1px solid #e2e8f0;">
-                                            </div>
-                                        @endif
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Logo Website (Kedua)</label>
-                                        <input type="file" name="site_logo_secondary" accept="image/*"
-                                            class="form-input">
-                                        @if (isset($site_settings['site_logo_secondary']))
-                                            <div style="margin-top:8px;">
-                                                <img src="{{ asset($site_settings['site_logo_secondary']) }}"
-                                                    style="height:40px; border-radius:4px; background:#f8fafc; padding:4px; border:1px solid #e2e8f0;">
-                                            </div>
-                                        @endif
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Favicon (Icon Tab Browser)</label>
-                                        <input type="file" name="site_favicon" accept="image/*,.ico"
-                                            class="form-input">
-                                        <p style="font-size:12px;color:#9ca3af;margin-top:4px;">Format: PNG, JPG,
-                                            WEBP, ICO, SVG.
-                                            Gambar besar akan otomatis dikompres ke 64x64px.</p>
-                                        @if (isset($site_settings['site_favicon']))
-                                            <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
-                                                <img src="{{ asset($site_settings['site_favicon']) }}"
-                                                    style="width:32px; height:32px; border-radius:4px; background:#f8fafc; padding:2px; border:1px solid #e2e8f0;">
-                                                <span style="font-size:12px;color:#6b7280;">Preview Favicon</span>
-                                            </div>
-                                        @endif
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Link Daftar Anggota</label>
-                                        <input type="url" name="member_registration_link" class="form-input"
-                                            value="{{ $site_settings['member_registration_link'] ?? '' }}"
-                                            placeholder="https://example.com/daftar-anggota">
-                                        <p style="font-size:12px;color:#9ca3af;margin-top:4px;">Link untuk button
-                                            "Daftar Anggota" di halaman utama. Contoh: https://forms.google.com/... atau
-                                            https://pi.or.id/daftar</p>
-                                    </div>
-
-                                    <h4
-                                        style="font-size:14px;font-weight:700;margin-top:24px;margin-bottom:12px;color:#f97316;">
-                                        Footer Info</h4>
-                                    <div class="form-group">
-                                        <label class="form-label">Deskripsi Singkat</label>
-                                        <textarea name="footer_description" class="form-input" rows="4">{{ $site_settings['footer_description'] ?? 'Wadah persatuan dan kesatuan insinyur Indonesia untuk memajukan profesi keinsinyuran dan berkontribusi bagi pembangunan bangsa.' }}</textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Teks Copyright</label>
-                                        <input type="text" name="footer_copyright" class="form-input"
-                                            value="{{ $site_settings['footer_copyright'] ?? 'Persatuan Insinyur Indonesia. Hak Cipta Dilindungi.' }}">
-                                    </div>
-                                </div>
-
-                                <!-- Kolom Kanan -->
-                                <div>
-                                    <h4 style="font-size:14px;font-weight:700;margin-bottom:12px;color:#f97316;">
-                                        Sosial Media</h4>
-                                    <div class="form-group">
-                                        <label class="form-label">Facebook URL</label>
-                                        <input type="url" name="footer_facebook" class="form-input"
-                                            value="{{ $site_settings['footer_facebook'] ?? '' }}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Twitter/X URL</label>
-                                        <input type="url" name="footer_twitter" class="form-input"
-                                            value="{{ $site_settings['footer_twitter'] ?? '' }}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Instagram URL</label>
-                                        <input type="url" name="footer_instagram" class="form-input"
-                                            value="{{ $site_settings['footer_instagram'] ?? '' }}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">YouTube URL</label>
-                                        <input type="url" name="footer_youtube" class="form-input"
-                                            value="{{ $site_settings['footer_youtube'] ?? '' }}">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div style="margin-top:24px; border-top:1px solid #f1f5f9; padding-top:24px;">
-                                <h4 style="font-size:14px;font-weight:700;margin-bottom:12px;color:#f97316;">Tautan
-                                    Cepat (Footer)</h4>
-                                @php
-                                    $quick_links = [];
-                                    if (isset($site_settings['footer_quick_links'])) {
-                                        $quick_links = json_decode($site_settings['footer_quick_links'], true) ?? [];
-                                    }
-                                    $available_routes = [
-                                        '' => '-- Pilih Halaman --',
-                                        '/' => 'Beranda',
-                                        '/tentang/sejarah' => 'Tentang PII - Sejarah',
-                                        '/tentang/sekilas' => 'Tentang PII - Sekilas',
-                                        '/tentang/struktur' => 'Tentang PII - Struktur Organisasi',
-                                        '/tentang/kontak' => 'Tentang PII - Kontak',
-                                        '/event' => 'Event & Pelatihan (Semua)',
-                                        '/event/seminar' => 'Event - Seminar',
-                                        '/event/pelatihan' => 'Event - Pelatihan',
-                                        '/event/konferensi' => 'Event - Konferensi',
-                                        '/artikel' => 'Berita & Artikel (Semua)',
-                                        '/artikel/artikel-teknik' => 'Artikel Teknik',
-                                        '/artikel/regulasi' => 'Artikel Regulasi',
-                                        '/artikel/inovasi' => 'Artikel Inovasi',
-                                        '/artikel/opini' => 'Artikel Opini',
-                                        '/gallery' => 'Gallery',
-                                        '/kemitraan' => 'Kemitraan (Semua)',
-                                        '/kemitraan/kampus' => 'Kemitraan Kampus',
-                                        '/kemitraan/industri' => 'Kemitraan Industri',
-                                        '/kemitraan/pemerintah' => 'Kemitraan Pemerintah',
-                                    ];
-                                @endphp
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    @for ($i = 1; $i <= 5; $i++)
-                                        <div style="display:flex; gap:12px;">
-                                            <div class="form-group" style="flex:1; margin-bottom:0;">
-                                                <input type="text" name="quick_link_label_{{ $i }}"
-                                                    class="form-input"
-                                                    placeholder="Label Tautan {{ $i }}"
-                                                    value="{{ $quick_links[$i - 1]['label'] ?? '' }}">
-                                            </div>
-                                            <div class="form-group" style="flex:2; margin-bottom:0;">
-                                                <select name="quick_link_url_{{ $i }}"
-                                                    class="form-input">
-                                                    @foreach ($available_routes as $url => $name)
-                                                        <option value="{{ $url }}"
-                                                            {{ ($quick_links[$i - 1]['url'] ?? '') == $url ? 'selected' : '' }}>
-                                                            {{ $name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                    @endfor
-                                </div>
-                            </div>
-
-                            <div style="margin-top:32px;">
-                                <button type="submit" class="btn-orange"
-                                    style="min-width:200px; justify-content:center;">
-                                    <svg width="18" height="18" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    Simpan Pengaturan
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+            @endif
 
         </div><!-- end content-area -->
     </div><!-- end main-content -->
