@@ -853,7 +853,22 @@
                 <span class="nav-icon">⚙️</span> Pengaturan Situs
             </button>
         </nav>
-        <div class="sidebar-footer" style="display:flex;flex-direction:column;gap:8px;">
+        <div class="sidebar-footer" style="display:flex;flex-direction:column;gap:10px;">
+            <div
+                style="display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);">
+                <div
+                    style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#f97316,#ea580c);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <span
+                        style="color:#fff;font-weight:700;font-size:14px;">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                </div>
+                <div style="overflow:hidden;">
+                    <p
+                        style="color:#fff;font-size:13px;font-weight:600;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                        {{ Auth::user()->name }}</p>
+                    <p style="color:#94a3b8;font-size:11px;margin:0;text-transform:capitalize;">
+                        {{ Auth::user()->role ?? 'User' }}</p>
+                </div>
+            </div>
             <a href="{{ route('home') }}" class="btn-outline" style="width:100%; justify-content:center;">
                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -880,8 +895,8 @@
         <!-- TOPBAR -->
         <div class="topbar">
             <div style="display:flex; align-items:center; gap:12px;">
-                <button type="button" id="mobile-menu-toggle" class="mobile-menu-btn" onclick="toggleMobileSidebar()"
-                    aria-label="Toggle Menu">
+                <button type="button" id="mobile-menu-toggle" class="mobile-menu-btn"
+                    onclick="toggleMobileSidebar()" aria-label="Toggle Menu">
                     <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 6h16M4 12h16M4 18h16" />
@@ -1048,12 +1063,14 @@
                                 <div class="form-group">
                                     <label class="form-label">Button Text</label>
                                     <input type="text" name="button_text" class="form-input"
-                                        placeholder="Teks tombol">
+                                        placeholder="Contoh: Daftar Sekarang">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Button Link</label>
                                     <input type="text" name="button_link" class="form-input"
-                                        placeholder="URL tombol">
+                                        placeholder="contoh: facebook.com atau https://xyz.com">
+                                    <p style="font-size:11px;color:#9ca3af;margin-top:4px;">https:// akan otomatis
+                                        ditambahkan jika tidak diisi</p>
                                 </div>
                                 <div style="display:flex;align-items:center;gap:8px;">
                                     <input type="hidden" name="is_active" value="0">

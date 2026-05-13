@@ -43,7 +43,7 @@
                                     </p>
                                     <div class="flex flex-col sm:flex-row gap-4">
                                         @if ($hero->button_text && $hero->button_link)
-                                            <a href="{{ $hero->button_link }}"
+                                            <a href="{{ $hero->button_link }}" target="_blank" rel="noopener noreferrer"
                                                 class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl font-semibold text-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg shadow-orange-500/20">
                                                 {{ $hero->button_text }}
                                             </a>

@@ -107,6 +107,11 @@ class AdminController extends Controller
             'is_active' => 'boolean',
         ]);
 
+        // Auto-prefix https:// if user didn't include protocol
+        if (!empty($validated['button_link']) && !preg_match('/^https?:\/\//i', $validated['button_link'])) {
+            $validated['button_link'] = 'https://' . $validated['button_link'];
+        }
+
         // Handle image upload
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -137,6 +142,11 @@ class AdminController extends Controller
             'button_link' => 'nullable|string|max:255',
             'is_active' => 'boolean',
         ]);
+
+        // Auto-prefix https:// if user didn't include protocol
+        if (!empty($validated['button_link']) && !preg_match('/^https?:\/\//i', $validated['button_link'])) {
+            $validated['button_link'] = 'https://' . $validated['button_link'];
+        }
 
         // Handle image upload
         if ($request->hasFile('image')) {
