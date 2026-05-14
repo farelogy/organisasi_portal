@@ -64,12 +64,13 @@
                 <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100" data-aos="fade-up" data-aos-delay="100">
                     <!-- Main Image Display -->
                     <div class="relative bg-slate-900">
-                        <div class="relative w-full overflow-hidden" style="aspect-ratio: 21/9; min-height: 280px;">
+                        <div id="slideshow-main" class="relative w-full overflow-hidden" style="min-height: 280px; max-height: 80vh;">
                             @foreach ($galleries as $idx => $slide)
                                 <div id="slide-{{ $idx }}" class="slideshow-slide absolute inset-0" style="opacity: {{ $idx === 0 ? '1' : '0' }}; pointer-events: {{ $idx === 0 ? 'auto' : 'none' }}; transition: opacity 0.7s ease;">
                                     <img src="{{ Str::startsWith($slide->image, ['http://', 'https://']) ? $slide->image : asset($slide->image) }}"
                                         alt="{{ $slide->title }}"
-                                        class="w-full h-full object-cover">
+                                        class="w-full h-full object-contain"
+                                        onload="adjustSlideshowHeight()">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
                                     <div class="absolute bottom-0 left-0 right-0 p-6 md:p-10 text-white">
                                         @if ($slide->category)
@@ -147,6 +148,23 @@
         </style>
 
         <script>
+            window.adjustSlideshowHeight = function() {
+                var container = document.getElementById('slideshow-main');
+                if (!container) return;
+                var activeSlide = container.querySelector('.slideshow-slide[style*="opacity: 1"]') ||
+                                    container.querySelector('.slideshow-slide');
+                if (!activeSlide) return;
+                var img = activeSlide.querySelector('img');
+                if (!img || !img.complete) return;
+                var containerWidth = container.clientWidth;
+                var naturalW = img.naturalWidth || containerWidth;
+                var naturalH = img.naturalHeight || 280;
+                var targetH = containerWidth * (naturalH / naturalW);
+                container.style.height = Math.max(targetH, 280) + 'px';
+            };
+
+            window.addEventListener('resize', window.adjustSlideshowHeight);
+
             (function() {
                 const totalSlides = {{ $galleries->count() }};
                 let currentSlide = 0;
@@ -181,6 +199,7 @@
                         }
                     });
 
+                    window.adjustSlideshowHeight();
                     restartAutoplay();
                 };
 
@@ -203,6 +222,7 @@
                 }
 
                 restartAutoplay();
+                window.adjustSlideshowHeight();
 
                 // Pause autoplay when hovering over slideshow
                 const slideshow = document.querySelector('.slideshow-slide')?.parentElement;

@@ -722,7 +722,7 @@ class AdminController extends Controller
         return redirect($redirectUrl)->with('success', 'Item Struktur Organisasi berhasil dihapus.');
     }
 
-    // Struktur Kepengurusan methods (single record)
+    // Kepengurusan methods (single record)
     public function storeKepengurusan(Request $request)
     {
         $validated = $request->validate([
@@ -751,7 +751,7 @@ class AdminController extends Controller
             StrukturKepengurusan::create($validated);
         }
 
-        return $this->ajaxResponse($request, 'Struktur Kepengurusan berhasil disimpan.');
+        return $this->ajaxResponse($request, 'Kepengurusan berhasil disimpan.');
     }
 
     // Kontak methods (single record)

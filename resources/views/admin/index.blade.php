@@ -271,69 +271,148 @@
         }
 
         /* ---- STAT CARDS ---- */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
+        .stats-card {
+            background: linear-gradient(135deg, #ffffff 0%, #fff7ed 100%);
+            border-radius: 20px;
+            padding: 28px 32px;
+            border: 1px solid #fed7aa;
+            box-shadow: 0 4px 20px rgba(249, 115, 22, 0.10), 0 1px 3px rgba(0,0,0,0.04);
             margin-bottom: 28px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
 
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-        }
-
-        .stat-card::before {
+        .stats-card::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #f97316, #ea580c);
-            opacity: 0;
-            transition: opacity 0.3s;
+            top: -60px;
+            right: -60px;
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, rgba(249,115,22,0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
         }
 
-        .stat-card:hover::before {
-            opacity: 1;
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            bottom: -40px;
+            left: -40px;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(234,88,12,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
         }
 
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
+        .stats-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(249, 115, 22, 0.18), 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        .stats-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stats-card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #7c2d12;
+        }
+
+        .stats-card-title svg {
+            color: #ea580c;
+        }
+
+        .stats-card-badge {
+            font-size: 11px;
+            font-weight: 700;
+            color: #16a34a;
+            background: #dcfce7;
+            padding: 4px 12px;
+            border-radius: 999px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .stats-card-body {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stats-card-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .stats-card-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 22px;
-            margin-bottom: 16px;
-            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            margin-bottom: 4px;
         }
 
-        .stat-num {
-            font-size: 30px;
+        .stats-card-num {
+            font-size: 28px;
             font-weight: 800;
             color: #0f172a;
             letter-spacing: -0.5px;
+            line-height: 1;
         }
 
-        .stat-label {
-            font-size: 13px;
+        .stats-card-label {
+            font-size: 12px;
             color: #94a3b8;
-            font-weight: 500;
-            margin-top: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stats-card-divider {
+            width: 1px;
+            height: 50px;
+            background: linear-gradient(180deg, transparent, #fed7aa, transparent);
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 640px) {
+            .stats-card {
+                padding: 20px 16px;
+            }
+            .stats-card-icon {
+                width: 42px;
+                height: 42px;
+                font-size: 18px;
+            }
+            .stats-card-num {
+                font-size: 22px;
+            }
+            .stats-card-label {
+                font-size: 10px;
+            }
+            .stats-card-divider {
+                height: 36px;
+            }
         }
 
         /* ---- TAB CONTENT ---- */
@@ -825,7 +904,7 @@
                     @endif
                 </button>
                 <button onclick="showTab('kepengurusans')" id="nav-kepengurusans" class="nav-item">
-                    <span class="nav-icon">🧑‍💼</span> Struktur Kepengurusan
+                    <span class="nav-icon">🧑‍💼</span> Kepengurusan
                     @if ($kepengurusans)
                         <span class="nav-count">1</span>
                     @endif
@@ -946,27 +1025,39 @@
             @endif
 
             <!-- Stats -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background:#fff7ed;">📰</div>
-                    <div class="stat-num">
-                        {{ $beritas->total() }}
+            <div class="stats-card">
+                <div class="stats-card-header">
+                    <div class="stats-card-title">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        Ringkasan Konten
                     </div>
-                    <div class="stat-label">Total Berita</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background:#f0fdf4;">📅</div>
-                    <div class="stat-num">
-                        {{ $events->total() }}
+                <div class="stats-card-body">
+                    <div class="stats-card-item">
+                        <div class="stats-card-icon" style="background: linear-gradient(135deg, #fff7ed, #ffedd5); color: #ea580c;">📰</div>
+                        <div class="stats-card-num">{{ $beritas->total() }}</div>
+                        <div class="stats-card-label">Berita</div>
                     </div>
-                    <div class="stat-label">Total Event</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background:#fdf4ff;">🖼️</div>
-                    <div class="stat-num">
-                        {{ $galleries->total() }}
+                    <div class="stats-card-divider"></div>
+                    <div class="stats-card-item">
+                        <div class="stats-card-icon" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); color: #16a34a;">📅</div>
+                        <div class="stats-card-num">{{ $events->total() }}</div>
+                        <div class="stats-card-label">Event</div>
                     </div>
-                    <div class="stat-label">Total Gallery</div>
+                    <div class="stats-card-divider"></div>
+                    <div class="stats-card-item">
+                        <div class="stats-card-icon" style="background: linear-gradient(135deg, #fdf4ff, #f5d0fe); color: #c026d3;">🖼️</div>
+                        <div class="stats-card-num">{{ $galleries->total() }}</div>
+                        <div class="stats-card-label">Gallery</div>
+                    </div>
+                    <div class="stats-card-divider"></div>
+                    <div class="stats-card-item">
+                        <div class="stats-card-icon" style="background: linear-gradient(135deg, #eff6ff, #bfdbfe); color: #2563eb;">🤝</div>
+                        <div class="stats-card-num">{{ $kemitraans->total() }}</div>
+                        <div class="stats-card-label">Kemitraan</div>
+                    </div>
                 </div>
             </div>
 
@@ -1557,67 +1648,68 @@
 
                 {{-- ==================== STRUKTUR ==================== --}}
                 <div id="tab-strukturs" class="tab-panel">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- Header Form (Title + Image) -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h3>👥 Header Struktur Organisasi</h3>
-                                @if ($strukturs)
-                                    <span class="badge-active">Tersimpan</span>
-                                @else
-                                    <span class="badge-inactive">Belum ada</span>
-                                @endif
-                            </div>
-                            <div class="card-body">
-                                <form action="{{ route('admin.strukturs.store') }}" method="POST"
-                                    enctype="multipart/form-data">
-                                    @csrf
-                                    <div class="form-group">
-                                        <label class="form-label">Judul</label>
-                                        <input type="text" name="title" value="{{ $strukturs->title ?? '' }}"
-                                            class="form-input" required
-                                            placeholder="Judul halaman struktur organisasi">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Upload Gambar Bagan</label>
-                                        <div style="margin-bottom:8px;">
-                                            @if ($strukturs && ($strukturs->image ?? false))
-                                                <img id="preview-struktur"
-                                                    src="{{ Str::startsWith($strukturs->image, ['http://', 'https://']) ? $strukturs->image : asset($strukturs->image) }}"
-                                                    alt="Preview"
-                                                    style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
-                                            @else
-                                                <img id="preview-struktur" src="" alt="Preview"
-                                                    style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
-                                            @endif
-                                        </div>
-                                        <input type="file" name="image" accept="image/*" class="form-input"
-                                            onchange="previewImage(this, 'preview-struktur')">
-                                        <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF —
-                                            Maks. 2MB</p>
-                                    </div>
-                                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
-                                        <input type="hidden" name="is_active" value="0">
-                                        <input type="checkbox" name="is_active" value="1"
-                                            id="is_active_struktur"
-                                            style="width:16px;height:16px;accent-color:#f97316;"
-                                            {{ $strukturs->is_active ?? true ? 'checked' : '' }}>
-                                        <label for="is_active_struktur" class="form-label"
-                                            style="margin:0;">Tampilkan di website</label>
-                                    </div>
-                                    <button type="submit" class="btn-orange"
-                                        style="width:100%;justify-content:center;">
-                                        <svg width="16" height="16" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        Simpan Header
-                                    </button>
-                                </form>
-                            </div>
+                    <!-- Header Form (Title + Image) -->
+                    <div class="card" style="margin-bottom:24px;">
+                        <div class="card-header">
+                            <h3>👥 Header Struktur Organisasi</h3>
+                            @if ($strukturs)
+                                <span class="badge-active">Tersimpan</span>
+                            @else
+                                <span class="badge-inactive">Belum ada</span>
+                            @endif
                         </div>
+                        <div class="card-body">
+                            <form action="{{ route('admin.strukturs.store') }}" method="POST"
+                                enctype="multipart/form-data">
+                                @csrf
+                                <div class="form-group">
+                                    <label class="form-label">Judul</label>
+                                    <input type="text" name="title" value="{{ $strukturs->title ?? '' }}"
+                                        class="form-input" required
+                                        placeholder="Judul halaman struktur organisasi">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Upload Gambar Bagan</label>
+                                    <div style="margin-bottom:8px;">
+                                        @if ($strukturs && ($strukturs->image ?? false))
+                                            <img id="preview-struktur"
+                                                src="{{ Str::startsWith($strukturs->image, ['http://', 'https://']) ? $strukturs->image : asset($strukturs->image) }}"
+                                                alt="Preview"
+                                                style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
+                                        @else
+                                            <img id="preview-struktur" src="" alt="Preview"
+                                                style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none;">
+                                        @endif
+                                    </div>
+                                    <input type="file" name="image" accept="image/*" class="form-input"
+                                        onchange="previewImage(this, 'preview-struktur')">
+                                    <p style="font-size:11px;color:#d1d5db;margin-top:4px;">JPEG, PNG, JPG, GIF —
+                                        Maks. 2MB</p>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+                                    <input type="hidden" name="is_active" value="0">
+                                    <input type="checkbox" name="is_active" value="1"
+                                        id="is_active_struktur"
+                                        style="width:16px;height:16px;accent-color:#f97316;"
+                                        {{ $strukturs->is_active ?? true ? 'checked' : '' }}>
+                                    <label for="is_active_struktur" class="form-label"
+                                        style="margin:0;">Tampilkan di website</label>
+                                </div>
+                                <button type="submit" class="btn-orange"
+                                    style="width:100%;justify-content:center;">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Simpan Header
+                                </button>
+                            </form>
+                        </div>
+                    </div>
 
+                    <!-- List + Form Wrapper -->
+                    <div id="struktur-bottom-wrapper" class="grid grid-cols-1 gap-6">
                         <!-- List Panel -->
                         <div class="card">
                             <div class="card-header">
@@ -1741,12 +1833,12 @@
                     </div>
                 </div>
 
-                {{-- ==================== STRUKTUR KEPENGURUSAN ==================== --}}
+                {{-- ==================== KEPENGURUSAN ==================== --}}
                 <div id="tab-kepengurusans" class="tab-panel">
                     <div style="max-width:700px;">
                         <div class="card">
                             <div class="card-header">
-                                <h3>🧑‍💼 Konten Struktur Kepengurusan</h3>
+                                <h3>🧑‍💼 Konten Kepengurusan</h3>
                                 @if ($kepengurusans)
                                     <span class="badge-active">Tersimpan</span>
                                 @else
@@ -1769,7 +1861,7 @@
                                         <label class="form-label">Judul</label>
                                         <input type="text" name="title" value="{{ $kepengurusans->title ?? '' }}"
                                             class="form-input" required
-                                            placeholder="Judul konten struktur kepengurusan">
+                                            placeholder="Judul konten kepengurusan">
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">Upload Gambar</label>
@@ -1792,7 +1884,7 @@
                                     <div class="form-group">
                                         <label class="form-label">Konten</label>
                                         <textarea name="content" id="kepengurusan-editor" class="form-input form-textarea tinymce-editor"
-                                            placeholder="Tuliskan konten struktur kepengurusan PII di sini...">{{ $kepengurusans->content ?? '' }}</textarea>
+                                            placeholder="Tuliskan konten kepengurusan PII di sini...">{{ $kepengurusans->content ?? '' }}</textarea>
                                     </div>
                                     <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
                                         <input type="hidden" name="is_active" value="0">
@@ -1810,7 +1902,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M5 13l4 4L19 7" />
                                         </svg>
-                                        Simpan Struktur Kepengurusan
+                                        Simpan Kepengurusan
                                     </button>
                                 </form>
                             </div>
@@ -2591,7 +2683,7 @@
                                             '/tentang/sejarah' => 'Tentang PII - Sejarah',
                                             '/tentang/sekilas' => 'Tentang PII - Sekilas',
                                             '/tentang/struktur' => 'Tentang PII - Struktur Organisasi',
-                                            '/tentang/kepengurusan' => 'Tentang PII - Struktur Kepengurusan',
+                                            '/tentang/kepengurusan' => 'Tentang PII - Kepengurusan',
                                             '/tentang/kontak' => 'Tentang PII - Kontak',
                                             '/event' => 'Event & Pelatihan (Semua)',
                                             '/event/seminar' => 'Event - Seminar',
@@ -2666,7 +2758,7 @@
             sejarahs: 'Sejarah & Ketua Umum',
             sekilas: 'Sekilas PII',
             strukturs: 'Struktur Organisasi',
-            kepengurusans: 'Struktur Kepengurusan',
+            kepengurusans: 'Kepengurusan',
             kontaks: 'Kontak',
             events: 'Event & Pelatihan',
             galleries: 'Gallery',
@@ -2856,6 +2948,12 @@
             panel.style.display = 'block';
             panel.classList.add('active');
 
+            // Side-by-side layout for struktur-item on large screens
+            if (type === 'struktur-item') {
+                const wrapper = document.getElementById('struktur-bottom-wrapper');
+                if (wrapper) wrapper.classList.add('lg:grid-cols-2');
+            }
+
             const pluralType = pluralMap[type] || type + 's';
             const form = document.getElementById('form-' + type);
             if (!form) return;
@@ -3019,6 +3117,10 @@
             if (panel) {
                 panel.classList.remove('active');
                 panel.style.display = 'none';
+            }
+            if (type === 'struktur-item') {
+                const wrapper = document.getElementById('struktur-bottom-wrapper');
+                if (wrapper) wrapper.classList.remove('lg:grid-cols-2');
             }
             if (type === 'user') resetPasswordUI();
         }

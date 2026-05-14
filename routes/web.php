@@ -110,7 +110,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::put('/struktur-items/{id}', [AdminController::class, 'updateStrukturItem'])->name('strukturItems.update');
         Route::delete('/struktur-items/{id}', [AdminController::class, 'deleteStrukturItem'])->name('strukturItems.delete');
 
-        // Struktur Kepengurusan routes (single record)
+        // Kepengurusan routes (single record)
         Route::post('/kepengurusans', [AdminController::class, 'storeKepengurusan'])->name('kepengurusans.store');
 
         // Kontak routes (single record)

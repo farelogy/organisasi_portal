@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Struktur Kepengurusan - PII')
+@section('title', 'Kepengurusan - PII')
 
 @section('content')
-    <!-- Struktur Kepengurusan Section -->
+    <!-- Kepengurusan Section -->
     <section class="py-20 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
         <!-- Background Pattern -->
         <div class="absolute inset-0 opacity-5">
@@ -25,7 +25,7 @@
                     Tentang PII
                 </span>
                 <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
-                    {{ $kepengurusan->title ?? 'Struktur Kepengurusan' }}
+                    {{ $kepengurusan->title ?? 'Kepengurusan' }}
                 </h1>
             </div>
 
@@ -46,7 +46,7 @@
                                         alt="{{ $kepengurusan->title }}" class="w-full h-auto object-contain rounded-xl">
                                 </div>
                                 <div class="mt-3 text-center">
-                                    <span class="text-sm text-gray-500 font-medium">Bagan Struktur Kepengurusan PII</span>
+                                    <span class="text-sm text-gray-500 font-medium">Bagan Kepengurusan PII</span>
                                 </div>
                             </div>
                         </div>
@@ -55,7 +55,7 @@
                     <!-- Text Content -->
                     <div class="prose prose-lg prose-slate max-w-none text-gray-700 leading-[1.8]">
                         {!! $kepengurusan->content ??
-                            '<p class="text-gray-500 italic">Konten struktur kepengurusan sedang dalam pengembangan.</p>' !!}
+                            '<p class="text-gray-500 italic">Konten kepengurusan sedang dalam pengembangan.</p>' !!}
                     </div>
                 </div>
             </div>
