@@ -299,39 +299,5 @@
         });
     </script>
 
-    <!-- Newsletter Section -->
-    <section class="py-20 bg-gradient-to-r from-slate-900 via-purple-900 to-slate-800 relative overflow-hidden">
-        <div class="absolute inset-0 opacity-10">
-            <div class="absolute inset-0"
-                style="background-image: radial-gradient(circle at 25% 25%, rgba(139,92,246,0.3) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(139,92,246,0.3) 0%, transparent 50%);">
-            </div>
-        </div>
-        <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div class="space-y-6" data-aos="fade-up">
-                <div
-                    class="inline-flex items-center px-4 py-2 bg-purple-500/20 backdrop-blur-sm rounded-full border border-purple-400/30">
-                    <svg class="w-4 h-4 text-purple-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
-                        </path>
-                    </svg>
-                    <span class="text-purple-300 text-sm font-medium">Newsletter</span>
-                </div>
-                <h2 class="text-4xl md:text-5xl font-bold text-white">
-                    Tetap Update dengan <span class="text-purple-400">Inovasi Terbaru</span>
-                </h2>
-                <p class="text-xl text-gray-300 max-w-2xl mx-auto">
-                    Berlangganan newsletter kami dan dapatkan informasi inovasi teknologi terkini langsung ke inbox Anda
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto pt-4">
-                    <input type="email" placeholder="Masukkan email Anda"
-                        class="flex-1 px-6 py-4 rounded-2xl border-0 focus:ring-2 focus:ring-purple-500 text-gray-900 placeholder-gray-500">
-                    <button
-                        class="px-8 py-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-2xl font-semibold hover:from-purple-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                        Berlangganan
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
+
 @endsection

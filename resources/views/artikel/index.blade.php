@@ -256,38 +256,7 @@
         </div>
     </section>
 
-    <!-- Newsletter Section -->
-    <section class="py-24 bg-gradient-to-r from-orange-500 to-orange-600 relative overflow-hidden">
-        <!-- Background Pattern -->
-        <div class="absolute inset-0 opacity-10">
-            <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width="60"
-                height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none"
-                fill-rule="evenodd"%3E%3Cg fill="%23FFFFFF" fill-opacity="0.1"%3E%3Ccircle cx="30"
-                cy="30" r="2" /%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
-        </div>
 
-        <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div class="space-y-8" data-aos="fade-up">
-                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
-                    Tetap Update dengan <span class="block">Artikel Terbaru</span>
-                </h2>
-                <p class="text-xl text-orange-100 mb-8 max-w-2xl mx-auto">
-                    Berlangganan newsletter kami dan dapatkan artikel-artikel menarik langsung ke inbox Anda setiap minggu
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-                    <input type="email" placeholder="Masukkan email Anda"
-                        class="flex-1 px-6 py-4 rounded-2xl border-0 focus:ring-2 focus:ring-white text-gray-900 placeholder-gray-500">
-                    <button
-                        class="px-8 py-4 bg-white text-orange-600 rounded-2xl font-semibold hover:bg-orange-50 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                        Berlangganan
-                    </button>
-                </div>
-                <p class="text-orange-200 text-sm">Kami menghargai privasi Anda. Tidak ada spam, unsubscribe kapan saja.
-                </p>
-            </div>
-        </div>
-        </div>
-    </section>
 
     <!-- AJAX Pagination Script -->
     <script>
