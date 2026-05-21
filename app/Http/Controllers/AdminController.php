@@ -655,9 +655,12 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'link' => 'nullable|url|max:255',
-            'order' => 'integer',
+            'order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);
+
+        $validated['is_active'] = $request->boolean('is_active', false);
+        $validated['order'] = $validated['order'] ?? 0;
 
         if ($request->hasFile('logo')) {
             $image = $request->file('logo');
@@ -680,9 +683,12 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'link' => 'nullable|url|max:255',
-            'order' => 'integer',
+            'order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);
+
+        $validated['is_active'] = $request->boolean('is_active', false);
+        $validated['order'] = $validated['order'] ?? 0;
 
         if ($request->hasFile('logo')) {
             $this->deleteUploadedFile($item->logo);
@@ -953,9 +959,12 @@ class AdminController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'description' => 'nullable|string',
             'category' => 'nullable|string|max:255',
-            'order' => 'integer',
+            'order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);
+
+        $validated['is_active'] = $request->boolean('is_active', false);
+        $validated['order'] = $validated['order'] ?? 0;
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -983,9 +992,12 @@ class AdminController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'description' => 'nullable|string',
             'category' => 'nullable|string|max:255',
-            'order' => 'integer',
+            'order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);
+
+        $validated['is_active'] = $request->boolean('is_active', false);
+        $validated['order'] = $validated['order'] ?? 0;
 
         if ($request->hasFile('image')) {
             // Delete old image if exists
@@ -1042,9 +1054,12 @@ class AdminController extends Controller
             'content' => 'nullable|string',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'link' => 'nullable|string|max:255',
-            'order' => 'integer',
+            'order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);
+
+        $validated['is_active'] = $request->boolean('is_active', false);
+        $validated['order'] = $validated['order'] ?? 0;
 
         if ($request->hasFile('logo')) {
             $image = $request->file('logo');
@@ -1076,9 +1091,12 @@ class AdminController extends Controller
             'content' => 'nullable|string',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'link' => 'nullable|string|max:255',
-            'order' => 'integer',
+            'order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);
+
+        $validated['is_active'] = $request->boolean('is_active', false);
+        $validated['order'] = $validated['order'] ?? 0;
 
         if ($request->hasFile('logo')) {
             // Delete old logo if exists

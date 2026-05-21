@@ -3033,6 +3033,7 @@
                         let input = form.querySelector(`input[type="checkbox"][name="${key}"]`) || form.querySelector(
                             `[name="${key}"]`);
                         if (!input) continue;
+                        if (input.type === 'file') continue;
                         const val = attr.value;
                         if (input.type === 'checkbox') {
                             input.checked = val === 'true' || val === '1';
@@ -3064,6 +3065,7 @@
                             let input = form.querySelector(`input[type="checkbox"][name="${key}"]`) || form
                                 .querySelector(`[name="${key}"]`);
                             if (!input) continue;
+                            if (input.type === 'file') continue;
                             // Skip non-checkbox inputs if already filled by dataset; always update checkboxes
                             if (input.type !== 'checkbox' && input.value) continue;
                             const val = data[key];
