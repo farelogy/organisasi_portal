@@ -56,8 +56,8 @@
                         <!-- Struktur Items Grid -->
                         <div class="mt-12" data-aos="fade-up">
                             <div class="text-center mb-8">
-                                <h2 class="text-2xl font-bold text-gray-900">Daftar <span class="text-orange-500">Struktur Organisasi</span></h2>
-                                <p class="text-gray-500 mt-2">Berikut adalah susunan struktur organisasi Persatuan Insinyur Indonesia</p>
+                                <h2 class="text-2xl font-bold text-gray-900">Daftar <span class="text-orange-500">PII Cabang se Wilayah Prov. Jawa Barat</span></h2>
+                                <p class="text-gray-500 mt-2">Berikut PII Cabang Kota dan Kabupaten se Provinsi Jawa Barat</p>
                             </div>
                             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                                 @foreach ($strukturItems as $item)
