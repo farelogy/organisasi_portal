@@ -165,3 +165,107 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Generic item API for AJAX
     Route::get('/items/{type}/{id}', [AdminController::class, 'getItem'])->name('items.get');
 });
+
+// Programmatic Slug Migration Trigger for Hosting / cPanel
+Route::get('/run-slug-migration', function () {
+    try {
+        $messages = [];
+
+        // 1. Add slug to beritas
+        if (!Illuminate\Support\Facades\Schema::hasColumn('beritas', 'slug')) {
+            Illuminate\Support\Facades\Schema::table('beritas', function (Illuminate\Database\Schema\Blueprint $table) {
+                $table->string('slug')->nullable()->unique();
+            });
+            $messages[] = "Added 'slug' column to 'beritas' table.";
+        } else {
+            $messages[] = "'slug' column already exists in 'beritas' table.";
+        }
+
+        // 2. Add slug to events
+        if (!Illuminate\Support\Facades\Schema::hasColumn('events', 'slug')) {
+            Illuminate\Support\Facades\Schema::table('events', function (Illuminate\Database\Schema\Blueprint $table) {
+                $table->string('slug')->nullable()->unique();
+            });
+            $messages[] = "Added 'slug' column to 'events' table.";
+        } else {
+            $messages[] = "'slug' column already exists in 'events' table.";
+        }
+
+        // 3. Add slug to kemitraans
+        if (!Illuminate\Support\Facades\Schema::hasColumn('kemitraans', 'slug')) {
+            Illuminate\Support\Facades\Schema::table('kemitraans', function (Illuminate\Database\Schema\Blueprint $table) {
+                $table->string('slug')->nullable()->unique();
+            });
+            $messages[] = "Added 'slug' column to 'kemitraans' table.";
+        } else {
+            $messages[] = "'slug' column already exists in 'kemitraans' table.";
+        }
+
+        // 4. Generate slugs for existing Beritas
+        $beritas = Illuminate\Support\Facades\DB::table('beritas')->whereNull('slug')->get();
+        $beritaCount = 0;
+        foreach ($beritas as $row) {
+            $baseSlug = Illuminate\Support\Str::slug($row->title ?: 'berita');
+            if (empty($baseSlug)) {
+                $baseSlug = 'berita-' . $row->id;
+            }
+            $slug = $baseSlug;
+            $count = 1;
+            while (Illuminate\Support\Facades\DB::table('beritas')->where('slug', $slug)->where('id', '!=', $row->id)->exists()) {
+                $slug = $baseSlug . '-' . $count;
+                $count++;
+            }
+            Illuminate\Support\Facades\DB::table('beritas')->where('id', $row->id)->update(['slug' => $slug]);
+            $beritaCount++;
+        }
+        $messages[] = "Generated slugs for {$beritaCount} existing Berita records.";
+
+        // 5. Generate slugs for existing Events
+        $events = Illuminate\Support\Facades\DB::table('events')->whereNull('slug')->get();
+        $eventCount = 0;
+        foreach ($events as $row) {
+            $baseSlug = Illuminate\Support\Str::slug($row->title ?: 'event');
+            if (empty($baseSlug)) {
+                $baseSlug = 'event-' . $row->id;
+            }
+            $slug = $baseSlug;
+            $count = 1;
+            while (Illuminate\Support\Facades\DB::table('events')->where('slug', $slug)->where('id', '!=', $row->id)->exists()) {
+                $slug = $baseSlug . '-' . $count;
+                $count++;
+            }
+            Illuminate\Support\Facades\DB::table('events')->where('id', $row->id)->update(['slug' => $slug]);
+            $eventCount++;
+        }
+        $messages[] = "Generated slugs for {$eventCount} existing Event records.";
+
+        // 6. Generate slugs for existing Kemitraans
+        $kemitraans = Illuminate\Support\Facades\DB::table('kemitraans')->whereNull('slug')->get();
+        $kemitraanCount = 0;
+        foreach ($kemitraans as $row) {
+            $baseSlug = Illuminate\Support\Str::slug($row->name ?: 'mitra');
+            if (empty($baseSlug)) {
+                $baseSlug = 'mitra-' . $row->id;
+            }
+            $slug = $baseSlug;
+            $count = 1;
+            while (Illuminate\Support\Facades\DB::table('kemitraans')->where('slug', $slug)->where('id', '!=', $row->id)->exists()) {
+                $slug = $baseSlug . '-' . $count;
+                $count++;
+            }
+            Illuminate\Support\Facades\DB::table('kemitraans')->where('id', $row->id)->update(['slug' => $slug]);
+            $kemitraanCount++;
+        }
+        $messages[] = "Generated slugs for {$kemitraanCount} existing Kemitraan records.";
+
+        return response()->json([
+            'success' => true,
+            'log' => $messages
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage()
+        ], 500);
+    }
+});
