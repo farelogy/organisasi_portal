@@ -17,7 +17,7 @@ class ArtikelController extends Controller
     /**
      * Columns to select for list views (optimize query performance)
      */
-    private const LIST_COLUMNS = ['id', 'title', 'excerpt', 'category', 'author', 'image', 'published_at', 'is_active'];
+    private const LIST_COLUMNS = ['id', 'slug', 'title', 'excerpt', 'category', 'author', 'image', 'published_at', 'is_active'];
 
     public function index(Request $request)
     {
@@ -45,9 +45,9 @@ class ArtikelController extends Controller
         return view('artikel.index', compact('artikels'));
     }
 
-    public function show($id)
+    public function show($slug)
     {
-        $artikel = Berita::findOrFail($id);
+        $artikel = Berita::where('slug', $slug)->firstOrFail();
         return view('artikel.show', compact('artikel'));
     }
 

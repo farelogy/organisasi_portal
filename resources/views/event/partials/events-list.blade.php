@@ -124,7 +124,7 @@
 
                 <!-- Action Buttons -->
                 <div class="flex gap-2">
-                    <a href="{{ route('event.show', $event->id) }}"
+                    <a href="{{ route('event.show', $event->slug) }}"
                         class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-orange-50 text-orange-600 rounded-xl font-semibold text-sm hover:bg-orange-100 transition-all duration-300 border border-orange-200">
                         Detail
                         <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

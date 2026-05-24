@@ -2,6 +2,15 @@
 
 @section('title', $event->title . ' - PII')
 
+@section('meta')
+    <meta property="og:title" content="{{ $event->title }} | {{ $site_settings['site_title'] ?? 'PII - Persatuan Insinyur Indonesia' }}">
+    <meta property="og:description" content="{{ Str::limit(strip_tags($event->description ?: $event->content ?: ''), 150) }}">
+    <meta property="og:image" content="{{ Str::startsWith($event->image, ['http://', 'https://']) ? $event->image : asset($event->image) }}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta name="twitter:card" content="summary_large_image">
+@endsection
+
 @push('styles')
     <style>
         .rich-content ol {

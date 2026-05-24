@@ -173,7 +173,7 @@
                                                 <span class="text-gray-500 text-sm">Penulis</span>
                                             </div>
                                         </div>
-                                        <a href="{{ route('artikel.show', $featured->id) }}"
+                                        <a href="{{ route('artikel.show', $featured->slug) }}"
                                             class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl font-semibold hover:from-purple-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
                                             <span>Baca Artikel</span>
                                             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor"

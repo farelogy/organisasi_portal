@@ -25,9 +25,9 @@ class EventController extends Controller
         return view('event.index', compact('events'));
     }
 
-    public function show($id)
+    public function show($slug)
     {
-        $event = Event::findOrFail($id);
+        $event = Event::where('slug', $slug)->firstOrFail();
         return view('event.show', compact('event'));
     }
 

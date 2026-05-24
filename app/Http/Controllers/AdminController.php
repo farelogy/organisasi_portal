@@ -28,7 +28,7 @@ class AdminController extends Controller
     /**
      * Columns to select for admin list views
      */
-    private const ADMIN_LIST_COLUMNS = ['id', 'title', 'category', 'sub_category', 'author', 'excerpt', 'image', 'is_active', 'published_at', 'created_at'];
+    private const ADMIN_LIST_COLUMNS = ['id', 'slug', 'title', 'category', 'sub_category', 'author', 'excerpt', 'image', 'is_active', 'published_at', 'created_at'];
 
     public function index()
     {
@@ -223,6 +223,7 @@ class AdminController extends Controller
 
         $validated['published_at'] = now();
         $validated['is_active'] = $request->boolean('is_active', true);
+        $validated['slug'] = Berita::generateUniqueSlug($validated['title']);
 
         Berita::create($validated);
 
@@ -270,6 +271,7 @@ class AdminController extends Controller
         }
 
         $validated['is_active'] = $request->boolean('is_active', true);
+        $validated['slug'] = Berita::generateUniqueSlug($validated['title'], $id);
 
         $berita->update($validated);
 
@@ -824,6 +826,7 @@ class AdminController extends Controller
         }
 
         $validated['is_active'] = $request->boolean('is_active', true);
+        $validated['slug'] = Event::generateUniqueSlug($validated['title']);
 
         Event::create($validated);
 
@@ -869,6 +872,7 @@ class AdminController extends Controller
         }
 
         $validated['is_active'] = $request->boolean('is_active', true);
+        $validated['slug'] = Event::generateUniqueSlug($validated['title'], $id);
         $event->update($validated);
 
         return $this->ajaxResponse($request, 'Event berhasil diperbarui.');
@@ -1070,6 +1074,8 @@ class AdminController extends Controller
             unset($validated['logo']);
         }
 
+        $validated['slug'] = Kemitraan::generateUniqueSlug($validated['name']);
+
         Kemitraan::create($validated);
 
         return $this->ajaxResponse($request, 'Kemitraan berhasil ditambahkan.');
@@ -1109,6 +1115,8 @@ class AdminController extends Controller
         } else {
             unset($validated['logo']);
         }
+
+        $validated['slug'] = Kemitraan::generateUniqueSlug($validated['name'], $id);
 
         $kemitraan->update($validated);
 

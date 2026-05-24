@@ -246,7 +246,7 @@
                                 {{ Str::limit($berita->title, 70) }}</h3>
                             <p class="text-gray-600 mb-6 leading-relaxed">
                                 {{ Str::limit($berita->excerpt ?? strip_tags($berita->content), 120) }}</p>
-                            <a href="{{ route('artikel.show', $berita->id) }}"
+                            <a href="{{ route('artikel.show', $berita->slug) }}"
                                 class="inline-flex items-center text-orange-500 font-semibold hover:text-orange-600 transition-colors group">
                                 <span>Baca Selengkapnya</span>
                                 <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none"
@@ -406,7 +406,7 @@
                                 @endif
                             </div>
                             <div class="flex items-center pt-4 border-t border-white/10">
-                                <a href="{{ route('event.show', $event->id) }}"
+                                <a href="{{ route('event.show', $event->slug) }}"
                                     class="inline-flex items-center {{ $textColorClass }} font-semibold text-sm {{ $hoverColorClass }} transition-colors">
                                     <span>Detail</span>
                                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

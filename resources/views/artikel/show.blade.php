@@ -2,6 +2,15 @@
 
 @section('title', $artikel->title . ' - PII')
 
+@section('meta')
+    <meta property="og:title" content="{{ $artikel->title }} | {{ $site_settings['site_title'] ?? 'PII - Persatuan Insinyur Indonesia' }}">
+    <meta property="og:description" content="{{ Str::limit(strip_tags($artikel->excerpt ?: $artikel->content ?: ''), 150) }}">
+    <meta property="og:image" content="{{ Str::startsWith($artikel->image, ['http://', 'https://']) ? $artikel->image : asset($artikel->image) }}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta name="twitter:card" content="summary_large_image">
+@endsection
+
 @section('content')
     <!-- Hero Header with Image -->
     <section class="relative min-h-[70vh] flex items-end overflow-hidden">
@@ -217,7 +226,7 @@
                                     class="text-lg font-bold text-gray-900 mb-3 group-hover:text-orange-500 transition-colors line-clamp-2">
                                     {{ $related->title }}</h3>
                                 <p class="text-gray-600 text-sm line-clamp-2 mb-4">{{ $related->excerpt }}</p>
-                                <a href="{{ route('artikel.show', $related->id) }}"
+                                <a href="{{ route('artikel.show', $related->slug) }}"
                                     class="inline-flex items-center text-orange-500 font-semibold hover:text-orange-600 transition-colors text-sm">
                                     <span>Baca Selengkapnya</span>
                                     <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"

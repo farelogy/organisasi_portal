@@ -48,7 +48,7 @@
                     class="text-xl font-bold text-gray-900 mb-4 group-hover:text-orange-500 transition-colors line-clamp-2 leading-tight">
                     {{ $artikel->title }}</h3>
                 <p class="text-gray-600 mb-6 line-clamp-3 leading-relaxed">{{ $artikel->excerpt }}</p>
-                <a href="{{ route('artikel.show', $artikel->id) }}"
+                <a href="{{ route('artikel.show', $artikel->slug) }}"
                     class="inline-flex items-center text-orange-500 font-semibold hover:text-orange-600 transition-colors group">
                     <span>Baca Selengkapnya</span>
                     <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none"

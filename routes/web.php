@@ -41,7 +41,7 @@ Route::prefix('event')->name('event.')->group(function () {
     Route::get('/seminar', [EventController::class, 'seminar'])->name('seminar');
     Route::get('/pelatihan', [EventController::class, 'pelatihan'])->name('pelatihan');
     Route::get('/konferensi', [EventController::class, 'konferensi'])->name('konferensi');
-    Route::get('/{id}', [EventController::class, 'show'])->name('show');
+    Route::get('/{slug}', [EventController::class, 'show'])->name('show');
 });
 
 // Berita & Artikel routes
@@ -51,7 +51,7 @@ Route::prefix('artikel')->name('artikel.')->group(function () {
     Route::get('/regulasi', [ArtikelController::class, 'regulasi'])->name('regulasi');
     Route::get('/inovasi', [ArtikelController::class, 'inovasi'])->name('inovasi');
     Route::get('/opini', [ArtikelController::class, 'opini'])->name('opini');
-    Route::get('/{id}', [ArtikelController::class, 'show'])->name('show');
+    Route::get('/{slug}', [ArtikelController::class, 'show'])->name('show');
 });
 
 // Gallery routes
@@ -63,6 +63,7 @@ Route::prefix('kemitraan')->name('kemitraan.')->group(function () {
     Route::get('/kampus', [KemitraanController::class, 'kampus'])->name('kampus');
     Route::get('/industri', [KemitraanController::class, 'industri'])->name('industri');
     Route::get('/pemerintah', [KemitraanController::class, 'pemerintah'])->name('pemerintah');
+    Route::get('/{slug}', [KemitraanController::class, 'show'])->name('show');
 });
 
 // Admin routes with authentication middleware

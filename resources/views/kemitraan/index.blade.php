@@ -67,7 +67,7 @@
         <!-- Kemitraan Grid - Logo Only -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             @foreach($kemitraans as $kemitraan)
-            <a href="{{ $kemitraan->link ?? '#' }}" target="_blank" class="group">
+            <a href="{{ route('kemitraan.show', $kemitraan->slug) }}" class="group">
                 <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-2 transition-all duration-300 aspect-square flex items-center justify-center p-6"
                     data-aos="fade-up" data-aos-delay="{{ ($loop->index % 4) * 100 }}">
                     @if($kemitraan->logo)

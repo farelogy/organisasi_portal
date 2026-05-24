@@ -30,4 +30,10 @@ class KemitraanController extends Controller
         $kemitraans = Kemitraan::where('type', 'program_pemerintah')->where('is_active', true)->orderBy('order')->paginate(12);
         return view('kemitraan.pemerintah', compact('kemitraans'));
     }
+
+    public function show($slug)
+    {
+        $kemitraan = Kemitraan::where('slug', $slug)->firstOrFail();
+        return view('kemitraan.show', compact('kemitraan'));
+    }
 }

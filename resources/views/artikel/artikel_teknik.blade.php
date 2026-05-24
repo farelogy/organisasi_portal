@@ -163,7 +163,7 @@
                                             </div>
                                             <span class="text-gray-600 font-medium">{{ $featured->author }}</span>
                                         </div>
-                                        <a href="{{ route('artikel.show', $featured->id) }}"
+                                        <a href="{{ route('artikel.show', $featured->slug) }}"
                                             class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
                                             <span>Baca Artikel</span>
                                             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor"

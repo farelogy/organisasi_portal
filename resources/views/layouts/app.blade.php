@@ -4,6 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Open Graph / Facebook Meta Tags -->
+    @hasSection('meta')
+        @yield('meta')
+    @else
+        <meta property="og:title" content="{{ $site_settings['site_title'] ?? 'PII - Persatuan Insinyur Indonesia' }}">
+        <meta property="og:description" content="{{ $site_settings['footer_description'] ?? 'Wadah persatuan dan kesatuan insinyur Indonesia untuk memajukan profesi keinsinyuran.' }}">
+        <meta property="og:image" content="{{ isset($site_settings['site_logo']) ? asset($site_settings['site_logo']) : '' }}">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{{ url()->current() }}">
+        <meta name="twitter:card" content="summary_large_image">
+    @endif
+
     <title>@yield('title', 'PII - Persatuan Insinyur Indonesia')</title>
     @if (isset($site_settings['site_favicon']))
         <link rel="icon" type="image/x-icon" href="{{ asset($site_settings['site_favicon']) }}">
